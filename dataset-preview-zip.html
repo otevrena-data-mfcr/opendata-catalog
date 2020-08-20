@@ -1,0 +1,78 @@
+<div class="preview">
+
+  <pre id="resource-preview-zip" class="p-3"></pre>
+
+  <p id="resource-preview-zip-error">Náhled dat se bohužel nyní nedaří načíst.</p>
+
+</div>
+
+<script type="text/javascript">
+
+  (function () {
+    var pageUrl = "{{include.url}}";
+
+    $("#resource-preview-zip").hide();
+    $("#resource-preview-zip-error").hide();
+
+    function buf2hex(buffer) { // buffer is an ArrayBuffer
+      var array = Array.from(new Uint8Array(buffer));
+      return array.map(function (x) { return ('00' + x.toString(16)).slice(-2); }).join('');
+    }
+
+    function hex2string(hex) {
+      var hex = hex.toString();//force conversion
+      var str = '';
+      for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+      return str;
+    }
+
+    function hex2number(string) {
+      return parseInt("0x" + string.match(/.{2}/g).reverse().join(""));
+    }
+
+    getHeaders(pageUrl, function (headers) {
+
+      if (headers["accept-ranges"] !== "bytes") {
+        $("#resource-preview-zip-error").show();
+        return;
+      }
+
+      var size = Number(headers["content-length"]);
+
+      console.log("got header", headers, size)
+
+      downloadPartialBinary(pageUrl, Math.max(0, size - 1024), size, function (message, text, jqXHR) {
+
+        console.log("got partial response", message);
+        var hex = buf2hex(message);
+        console.log("hex", hex)
+        var regexp = /504b0102[a-f0-9]{40}([a-f0-9]{8})([a-f0-9]{4})[a-f0-9]{32}/g;
+        var files = [];
+        var match;
+
+        console.log("matching...");
+
+        while ((match = regexp.exec(hex)) !== null) {
+          console.log(match);
+
+          var length = hex2number(match[2]);
+          var size = prettyBytes(hex2number(match[1]));
+
+
+          var name = hex2string(hex.substr(match.index + 8 + 48 + 4 + 32, length * 2));
+
+
+          files.push({ name: name, size: size });
+        }
+
+        console.log(files);
+
+        $("#resource-preview-zip").text(files.map(function (file) { return `${file.name} (${file.size})`; }).join("\n"));
+        $("#resource-preview-zip").show();
+
+      });
+    });
+  })();
+
+</script>

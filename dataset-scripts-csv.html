@@ -1,0 +1,28 @@
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item"><a class="nav-link active" id="tab-script-python" data-toggle="tab" href="#script-python" role="tab" aria-controls="script-python" aria-selected="true">Python</a></li>
+  <li class="nav-item"><a class="nav-link" id="tab-script-nodejs" data-toggle="tab" href="#script-nodejs" role="tab" aria-controls="script-nodejs" aria-selected="true">NodeJS</a></li>
+  <li class="nav-item"><a class="nav-link" id="tab-script-r" data-toggle="tab" href="#script-r" role="tab" aria-controls="script-r" aria-selected="true">R Studio</a></li>
+  <li class="nav-item"><a class="nav-link" id="tab-script-stata" data-toggle="tab" href="#script-stata" role="tab" aria-controls="script-stata" aria-selected="true">Stata</a></li>
+</ul>
+
+
+<div class="tab-content mt-3">
+  
+  <div class="tab-pane active" id="script-python" role="tabpanel" aria-labelledby="tab-script-python">
+    {% include script.html script="csv-python.py" lang="python" data_url=include.data_url %}
+  </div>
+
+  
+  <div class="tab-pane" id="script-nodejs" role="tabpanel" aria-labelledby="tab-script-nodejs">
+    {% include script.html script="csv-nodejs.js" lang="javascript" data_url=include.data_url %}
+  </div>
+  
+  <div class="tab-pane" id="script-r" role="tabpanel" aria-labelledby="tab-script-r">
+    {% include script.html script="csv-r.r" lang="r" data_url=include.data_url %}
+  </div>
+  
+  <div class="tab-pane" id="script-stata" role="tabpanel" aria-labelledby="tab-script-stata">
+    {% include script.html script="csv-stata.do" lang="stata" data_url=include.data_url %}
+  </div>
+
+</div>

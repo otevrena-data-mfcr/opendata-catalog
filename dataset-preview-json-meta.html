@@ -1,0 +1,26 @@
+<div class="preview">
+
+  <pre id="resource-preview-json-meta" class="p-3"></pre>
+
+  <p id="resource-preview-json-meta-error">Náhled dat se bohužel nyní nedaří načíst.</p>
+
+</div>
+
+<script type="text/javascript">
+
+  (function () {
+    var pageUrl = "{{include.url}}";
+
+    $("#resource-preview-json-meta").hide();
+    $("#resource-preview-json-meta-error").hide();
+
+
+    downloadJSON(pageUrl, function (json, text, jqXHR) {
+
+      $("#resource-preview-json-meta").text(JSON.stringify(json, undefined, 2))
+      $("#resource-preview-json-meta").show();
+
+    });
+  })();
+
+</script>
