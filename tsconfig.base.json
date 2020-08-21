@@ -2,8 +2,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    // "sourceRoot": "./src",
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
@@ -15,6 +16,7 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "strict": true
   }
 }

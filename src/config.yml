@@ -1,0 +1,3 @@
+# endpoint: https://dev.nkod.opendata.cz/sparql
+endpoint: https://pod-test.mvcr.gov.cz/sparql
+publisher: https://data.gov.cz/zdroj/ovm/Poskytovatel2

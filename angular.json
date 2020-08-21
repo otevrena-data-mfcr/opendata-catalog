@@ -25,9 +25,11 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/config.yml"
             ],
             "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -123,6 +125,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "opendata-catalog"
+    }
+  },
+  "defaultProject": "opendata-catalog",
+  "cli": {
+    "analytics": "9ca32815-289e-470b-9841-4913c8d1d04c"
+  }
 }
