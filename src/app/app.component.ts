@@ -12,6 +12,5 @@ export class AppComponent {
   constructor(
     configService: ConfigService
   ) {
-    console.log(configService.config)
   }
 }

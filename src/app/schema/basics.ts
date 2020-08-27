@@ -1,0 +1,1 @@
+export type LangString = { [lang: string]: string[] };

@@ -14,7 +14,7 @@ interface Config {
 })
 export class ConfigService {
 
-  config: Config;
+  config!: Config;
 
   constructor(
     private http: HttpClient,

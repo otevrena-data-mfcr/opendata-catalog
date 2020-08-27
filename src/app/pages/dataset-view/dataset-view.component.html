@@ -1,1 +1,52 @@
-<p>dataset-view works!</p>
+<div class="container">
+
+  <div class="row">
+
+    <div class="col-8 dataset">
+
+
+      <h1>{{dataset?.title}}</h1>
+
+      <p>{{dataset?.description}}</p>
+
+      <div class="scripts">
+        <h3>Příklady</h3>
+        <div *ngFor="let distribution of distributions" class="script">
+          <h4>{{distribution.format}}</h4>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-4 bg-light">
+      <ng-container *ngIf="distributions.length">
+        <h2>Datové soubory</h2>
+
+        <div *ngFor="let distribution of distributions" class="distribution">
+          <h3>{{distribution["dct:format"]}}</h3>
+          <app-distribution-view [distribution]="distribution"></app-distribution-view>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="parentDatasets.length">
+        <h2>Nadřízená datová sada</h2>
+
+        <div *ngFor="let parentDataset of parentDatasets" class="distribution">
+          <h3>{{parentDataset.title}}</h3>
+          <p>{{parentDataset.description}}</p>
+          <a [routerLink]="['/datasets',parentDataset.iri]">Otevřít</a>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="childDatasets.length">
+        <h2>Podřízené datové sady</h2>
+
+        <div *ngFor="let childDataset of childDatasets" class="distribution">
+          <h3>{{childDataset.title}}</h3>
+          <p>{{childDataset.description}}</p>
+          <a [routerLink]="['/datasets',childDataset.iri]">Otevřít</a>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SparqlService } from "app/services/sparql.service";
-import { DatovaSada } from 'otevrene-formalni-normy-dts';
+import { CatalogService } from 'app/services/catalog.service';
+import { Dataset } from 'app/schema';
 
 @Component({
   selector: 'app-dataset-list',
@@ -9,17 +9,17 @@ import { DatovaSada } from 'otevrene-formalni-normy-dts';
 })
 export class DatasetListComponent implements OnInit {
 
-  datasets: Partial<DatovaSada>[] = [];
-  count: number;
+  datasets: Partial<Dataset>[] = [];
+  count: number = 0;
 
-  constructor(private sparql: SparqlService) { }
+  constructor(private catalog: CatalogService) { }
 
   ngOnInit(): void {
     this.loadDatasets();
   }
 
   async loadDatasets() {
-    const result = await this.sparql.loadDatasets({ limit: 20 });
+    const result = await this.catalog.findDatasets({ limit: 20 });
     this.datasets = result.datasets;
     this.count = result.count;
   }

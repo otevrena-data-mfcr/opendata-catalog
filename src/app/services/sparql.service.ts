@@ -1,110 +1,108 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Query } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+
 import { ConfigService } from './config.service';
-import { HttpClient } from '@angular/common/http';
 
-import { DatovaSada } from "otevrene-formalni-normy-dts";
+import { QueryDefinition, Builder, QueryDefinitionPrefixes, QueryDefinitionWhere } from 'app/lib/sparql-builder';
 
-interface SparqlResult<T = { [key: string]: any }> {
+export interface SparqlResult<T extends { [key: string]: any }> {
   head: { link: string[], vars: string[] };
 
   results: {
     distinct: boolean,
     ordered: boolean,
-    bindings: { [K in keyof T]: { type: string, "xml:lang"?: string, value: T[K] } }[]
+    bindings: {
+      [K in keyof T]: {
+        type: string;
+        value: T[K];
+        datatype?: string;
+        "xml:lang"?: string;
+      }
+    }[];
   }
+
 }
 
-type ParsedSparqlResult<P> = P extends SparqlResult<infer T> ? T[] : never;
-
-export class QueryDefinition {
-  prefix: string[] = []
-  select: string[] = [];
-  where?: QueryDefinitionWhere[] = [];
-  filter: string[] = [];
-  limit?: number;
-  offset?: number;
+export interface DocumentFields {
+  field: string;
+  value: any;
 }
 
-type QueryDefinitionWhere = (string | { s: string, p?: string, o?: string, optional?: boolean } | { s: string, po: { p: string, o: string }[], optional?: boolean });
 
 @Injectable({
   providedIn: 'root'
 })
 export class SparqlService {
 
-  constructor(private configService: ConfigService, private http: HttpClient) { }
+  endpoint: string;
 
-  async loadDatasets(options?: { limit?: number }) {
+  constructor(
+    configService: ConfigService,
+    private http: HttpClient,
+  ) {
+    this.endpoint = configService.config.endpoint;
+  }
 
-    const prefix = ["dcat: <http://www.w3.org/ns/dcat#>", "dct: <http://purl.org/dc/terms/>"];
-    const where = [{ s: "?s a dcat:Dataset", po: [{ p: "dct:title", o: "?title" }, { p: "dct:publisher", o: "?publisher" }, { p: "dct:identifier", o: "?iri" }] }];
-    const filter = [`?publisher = <${this.configService.config.publisher}>`];
+  async getDocument<T>(iri: string, type?: string, prefixes: QueryDefinitionPrefixes = {}) {
 
-    let datasetsQuery: QueryDefinition = {
-      prefix,
-      select: ["?iri", "?title"],
-      where,
-      filter,
-      limit: options?.limit
+    const datasetQuery: QueryDefinition = {
+      prefixes,
+      select: ["?field", "?value"],
+      where: [
+        { s: `<${iri}>`, type: type, p: "?field", o: "?value" }
+      ]
     };
 
-    let countQuery: QueryDefinition = {
-      prefix,
-      select: ["(COUNT(*) AS ?count)"],
-      where,
-      filter,
-    };
+    const datasetFieldsResult = await this.getResult<DocumentFields>(datasetQuery);
 
-    const datasets = await this.getResult<Partial<DatovaSada>>(this.buildQuery(datasetsQuery));
+    if (!datasetFieldsResult.results.bindings.length) {
+      throw new HttpErrorResponse({ error: "No fields for document iri", status: 404, statusText: "Not Found", url: this.endpoint });
+    }
 
-    const count = await this.getResult<{ count: number }>(this.buildQuery(countQuery)).then(result => result[0]!.count);
+    return this.parseDocumentResult<T>(datasetFieldsResult, prefixes);
+  }
 
-    return { count, datasets };
+  async query<T>(query: QueryDefinition): Promise<T[]> {
+    const response = await this.getResult<any>(query)
+
+    return response.results.bindings.map(doc => {
+      return Object.entries(doc).reduce((acc, [key, value]) => {
+        acc[key] = value.value;
+        return acc;
+      }, {} as any);
+    });
 
   }
 
-  loadDataset(iri: string) {
-    var query = `
-    PREFIX dcat: <http://www.w3.org/ns/dcat#>
-    PREFIX dct: <http://purl.org/dc/terms/>
-    SELECT ?iri ?title
-    WHERE
-    {
-      ?s a dcat:Dataset;
-          dct:title ?title ;
-          dct:identifier ?iri .
-      FILTER(str(?iri) = "${iri}") .
-    }   
-    LIMIT 1
-        `;
+  async getResult<T>(query: string | QueryDefinition) {
+
+    if (typeof query === "object") query = Builder.buildQuery(query);
+
+    return this.http.get<SparqlResult<T>>(this.endpoint, { params: { query }, headers: { "Accept": "application/json" } }).toPromise()
   }
 
-  async getResult<T>(query: string) {
-    return this.http.get<SparqlResult<T>>(this.configService.config.endpoint, { params: { query }, headers: { "Accept": "application/json" } })
-      .toPromise()
-      .then(result => this.parseResult(result));
-  }
+  private parseDocumentResult<T>(result: SparqlResult<DocumentFields>, prefixes: QueryDefinitionPrefixes = {}): T {
 
-  parseResult<T>(data: SparqlResult<T>): ParsedSparqlResult<SparqlResult<T>> {
-    return data.results.bindings.map(item => Object.entries(item).reduce((acc, [key, value]) => (acc[key] = (<any>value).value, acc), {} as T)); // <any> bcs of some bad type inference in Object.entries
-  }
+    return result.results.bindings.reduce((acc, doc) => {
 
-  buildQuery(def: QueryDefinition): string {
-    return `${def.prefix.map(item => "PREFIX " + item).join("\n")}
-SELECT ${def.select.join(" ")}
-WHERE
-{
-  ${def.where.map(item => this.buildQueryWhere(item)).join("\n")}
-  ${ def.filter.map(item => `FILTER (${item}) .`).join("\n")}
-}
-${ def.offset !== undefined ? "OFFSET " + def.offset : ""}
-${ def.limit !== undefined ? "LIMIT " + def.limit : ""}`;
-  }
+      let value = doc.value.value;
+      let field = doc.field.value;
+      let lang = doc.value["xml:lang"];
 
-  buildQueryWhere(def: QueryDefinitionWhere) {
-    if (typeof def === "string") return `${item} .`;
-    if ("po" in def) return `${def.s} ; ${def.po.map(item => `${item.p} ${item.o}`).join(" ; ")} .`;
-    return `${def.s} ${def.p} ${def.o} .`;
-  }
+      if (doc.field.type === "uri") Object.entries(prefixes).forEach(([prefix, uri]) => field = field.replace(uri, prefix + ":"));
+      if (doc.value.type === "uri" && typeof value === "string") Object.entries(prefixes).forEach(([prefix, uri]) => value = value.replace(uri, prefix + ":"));
 
+      if (lang) {
+        if (!acc[field]) acc[field] = {};
+        if (!acc[field][lang]) acc[field][lang] = [];
+        acc[field][lang].push(value);
+      }
+      else {
+        if (!acc[field]) acc[field] = [];
+        acc[field].push(value);
+      }
+      return acc;
+
+    }, {} as any);
+  };
 }

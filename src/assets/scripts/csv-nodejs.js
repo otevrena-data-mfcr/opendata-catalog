@@ -13,4 +13,4 @@ csv.on("error", () => {
   // panic!
 })
 
-request("{{include.data_url}}").pipe(csvParse());
+request("%%%URL%%%").pipe(csvParse());
