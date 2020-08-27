@@ -14,6 +14,8 @@ export class DistributionViewComponent implements OnInit {
 
   head?: any;
 
+  showInfo = false;
+
   constructor(
     private http: HttpClient
   ) { }
@@ -38,7 +40,7 @@ export class DistributionViewComponent implements OnInit {
         contentType: response.headers.get("content-type"),
         contentLength: Number(response.headers.get("content-length")) || undefined,
       };
-      
+
     } catch (err) {
       this.head = undefined;
     }

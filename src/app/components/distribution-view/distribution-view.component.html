@@ -2,10 +2,15 @@
 
 <a *ngIf="distribution" [href]="distribution!.downloadUrl">Stáhnout</a>
 
-<strong>Typ obsahu:</strong> {{distribution!.mediaType}}<br>
-<strong>Typ komprese:</strong> {{distribution!.compressFormat}}<br>
-<strong>Typ balíčku:</strong> {{distribution!.packageFormat}}<br>
-<h4>HTTP</h4>
-<strong>Poslední změna:</strong> {{head.lastModified | date:"d. M. y H:m:s"}}<br>
-<strong>Typ obsahu MIME:</strong> {{head.contentType}}<br>
 <strong>Velikost:</strong> {{head.contentLength | prettyBytes}}
+
+<a (click)="showInfo = !showInfo">info</a>
+
+<div class="info" [hidden]="!showInfo">
+  <strong>Typ obsahu:</strong> {{distribution!.mediaType}}<br>
+  <strong>Typ komprese:</strong> {{distribution!.compressFormat}}<br>
+  <strong>Typ balíčku:</strong> {{distribution!.packageFormat}}<br>
+  <h4>HTTP</h4>
+  <strong>Poslední změna:</strong> {{head.lastModified | date:"d. M. y H:m:s"}}<br>
+  <strong>Typ obsahu MIME:</strong> {{head.contentType}}<br>
+</div>

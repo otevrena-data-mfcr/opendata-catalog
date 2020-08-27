@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ConfigService } from './services/config.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 'opendata-catalog',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -11,6 +11,5 @@ export class AppComponent {
 
   constructor(
     configService: ConfigService
-  ) {
-  }
+  ) { }
 }

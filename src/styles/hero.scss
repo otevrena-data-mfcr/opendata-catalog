@@ -1,0 +1,32 @@
+.hero {
+  color: $white;
+  background-color: $blue;
+  
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+
+  h1 {
+    font-size: calc(15px + 1.1vw);
+    text-transform: uppercase;
+    text-shadow: $shadow;
+    font-weight: bold;
+    margin: 0;
+  }
+}
+
+.hero > * {
+  position: relative;
+}
+
+
+.hero::before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+}
