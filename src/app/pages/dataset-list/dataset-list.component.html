@@ -1,7 +1,15 @@
 <div class="container">
   <div class="row">
     <div class="col-md-3">
+      <div>
+        <h3>Téma</h3>
+        <nav class="nav flex-column">
+          <a *ngFor="let item of themes" class="nav-item nav-link">{{item.title}}</a>
+        </nav>
 
+        <h3>Organizace</h3>
+        
+      </div>
     </div>
 
     <div class="col-md-9">
