@@ -14,6 +14,12 @@ export class DatasetListComponent implements OnInit {
   datasets: Partial<Dataset>[] = [];
   count: number = 0;
 
+  maxLimit = Infinity;
+  defaultLimit = 5;
+
+  themesLimit = this.defaultLimit;
+  keywordsLimit = this.defaultLimit;
+  formatsLimit = this.defaultLimit;
 
   constructor(public catalog: CatalogService) {
   }
