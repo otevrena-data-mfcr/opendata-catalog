@@ -14,10 +14,8 @@ export class DatasetListComponent implements OnInit {
   datasets: Partial<Dataset>[] = [];
   count: number = 0;
 
-  themes: { title: string, iri: string }[] = Object.entries(Theme).map(([key, value]) => ({ title: key, iri: String(value) }));
 
-
-  constructor(private catalog: CatalogService) {
+  constructor(public catalog: CatalogService) {
   }
 
   ngOnInit(): void {

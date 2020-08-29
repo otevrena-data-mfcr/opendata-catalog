@@ -74,7 +74,7 @@ export class SparqlService {
 
   }
 
-  async getResult<T>(query: string | QueryDefinition) {
+  private async getResult<T>(query: string | QueryDefinition) {
 
     if (typeof query === "object") query = Builder.buildQuery(query);
 

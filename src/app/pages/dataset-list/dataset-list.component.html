@@ -4,7 +4,17 @@
       <div>
         <h3>Téma</h3>
         <nav class="nav flex-column">
-          <a *ngFor="let item of themes" class="nav-item nav-link">{{item.title}}</a>
+          <a *ngFor="let theme of catalog.filters.themes | slice:0:5" class="nav-item nav-link">{{theme.label}} ({{theme.count}})</a>
+        </nav>
+
+        <h3>Klíčová slova</h3>
+        <nav class="nav flex-column">
+          <a *ngFor="let keyword of catalog.filters.keywords | slice:0:5" class="nav-item nav-link">{{keyword.keyword}} ({{keyword.count}})</a>
+        </nav>
+
+        <h3>Formáty</h3>
+        <nav class="nav flex-column">
+          <a *ngFor="let format of catalog.filters.formats | slice:0:5" class="nav-item nav-link">{{format.format}} ({{format.count}})</a>
         </nav>
 
         <h3>Organizace</h3>
