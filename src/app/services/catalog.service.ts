@@ -45,22 +45,25 @@ export class CatalogService {
 
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      where: [{
-        s: "?iri", type: "dcat:Dataset", po: [
-          { p: "dct:title", o: "?title" },
-          { p: "dct:publisher", o: "?publisher" }
-        ]
-      }],
+      where: [
+        {
+          s: "?iri", type: "dcat:Dataset", po: [
+            { p: "dct:title", o: "?title" },
+            { p: "dct:publisher", o: "?publisher" }
+          ]
+        },
+        { s: "?iri", p: "dct:description", o: "?description", optional: true }
+      ],
       filter: [
         `?publisher = <${this.configService.config.publisher}>`,
         `LANG(?title) = '${lang}'`
       ],
     };
 
-    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title"], limit: options?.limit });
+    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit });
     let countQuery = Object.assign({}, query, { select: ["(COUNT(*) AS ?count)"] });
 
-    const datasets = await this.sparql.query<Partial<Dataset>>(datasetsQuery);
+    const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
     const count = await this.sparql.query<{ count: number }>(countQuery).then(result => result[0].count);
 
     return { count, datasets };

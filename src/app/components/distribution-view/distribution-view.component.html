@@ -1,16 +1,35 @@
-<h3>{{distribution?.format}}</h3>
+<div class="bg-white p-3">
+  <h3 class="mb-3">
+    {{distribution?.format}}
+    <span *ngIf="head?.contentLength" class="float-right">
+      {{head?.contentLength | prettyBytes}}
+    </span>
+  </h3>
 
-<a *ngIf="distribution" [href]="distribution!.downloadUrl">Stáhnout</a>
+  <div class="buttons d-flex flex-row">
+    <a *ngIf="distribution?.downloadUrl" [href]="distribution!.downloadUrl" class="btn btn-success flex-fill">Stáhnout</a>
+    <a *ngIf="!distribution?.downloadUrl && distribution?.accessUrl" [href]="distribution!.accessUrl" target="_blank" class="btn btn-success flex-fill">Otevřít</a>
+    <a (click)="showInfo = !showInfo" class="ml-1 btn pr-1">ⓘ</a>
+  </div>
 
-<strong>Velikost:</strong> {{head.contentLength | prettyBytes}}
+  <small *ngIf="head?.lastModified">Poslední změna {{head.lastModified | date:"d. M. y H:m:s"}}</small>
 
-<a (click)="showInfo = !showInfo">info</a>
+  <div class="info mt-3" [hidden]="!showInfo">
+    <table>
+      <tr>
+        <th class="pr-3">Typ obsahu:</th>
+        <td>{{distribution!.mediaType}}</td>
+      </tr>
+      <tr>
+        <th class="pr-3">Typ komprese:</th>
+        <td>{{distribution!.compressFormat || "žádný"}}</td>
+      </tr>
+      <tr>
+        <th class="pr-3">Typ balíčku:</th>
+        <td>{{distribution!.packageFormat || "žádný"}}</td>
+      </tr>
+    </table>
 
-<div class="info" [hidden]="!showInfo">
-  <strong>Typ obsahu:</strong> {{distribution!.mediaType}}<br>
-  <strong>Typ komprese:</strong> {{distribution!.compressFormat}}<br>
-  <strong>Typ balíčku:</strong> {{distribution!.packageFormat}}<br>
-  <h4>HTTP</h4>
-  <strong>Poslední změna:</strong> {{head.lastModified | date:"d. M. y H:m:s"}}<br>
-  <strong>Typ obsahu MIME:</strong> {{head.contentType}}<br>
+
+  </div>
 </div>

@@ -2,37 +2,41 @@
 
   <div class="row h-100">
 
+    <div class="col-xl-9 dataset">
       <div class="pt-2 px-5">
 
         <div class="breadcrumbs text-sm">
           <a routerLink="/">Katalog datových sad</a>
           <span> / </span>
           <ng-container *ngFor="let parentDataset of parentDatasets">
-          <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
+            <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
             <span> / </span>
-      </ng-container>
+          </ng-container>
           <a>{{dataset?.title}}</a>
-    </div>
+        </div>
 
-      <div class="py-4">
         <h1 class="mt-4">{{dataset?.title}}</h1>
 
         <p>{{dataset?.description}}</p>
 
+        <div class="preview">
+          <h3>Ukázka dat</h3>
+        </div>
         <div class="scripts">
-          <h3>Příklady</h3>
+          <h3>Jak stáhnout data?</h3>
           <div *ngFor="let distribution of distributions" class="script">
             <h4>{{distribution.format}}</h4>
           </div>
         </div>
 
       </div>
-
     </div>
-    <div class="col-3 bg-light">
-      <div class="py-4">
+
+    <div class="col-xl-3 bg-light">
+      <div class="pt-2">
+
         <ng-container *ngIf="distributions.length">
-          <h2 class="mt-3">Datové soubory</h2>
+          <h2 class="mt-5 mb-3">Ke stažení</h2>
 
           <div *ngFor="let distribution of distributions" class="distribution">
             <h3>{{distribution["dct:format"]}}</h3>

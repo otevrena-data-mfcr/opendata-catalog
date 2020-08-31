@@ -1,7 +1,7 @@
-<div class="container">
+<div class="container-fluid">
   <div class="row">
     <div class="col-md-3">
-      <div>
+      <div class="px-5 pt-4">
         <h3>Téma</h3>
         <nav class="nav flex-column">
           <a *ngFor="let theme of catalog.filters.themes | slice:0:themesLimit" class="nav-item nav-link">{{theme.label}} ({{theme.count}})</a>
@@ -9,29 +9,35 @@
           <a *ngIf="themesLimit >= maxLimit" (click)="themesLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>
 
-        <h3>Klíčová slova</h3>
+        <h3 class="mt-3">Klíčová slova</h3>
         <nav class="nav flex-column">
           <a *ngFor="let keyword of catalog.filters.keywords | slice:0:keywordsLimit" class="nav-item nav-link">{{keyword.keyword}} ({{keyword.count}})</a>
           <a *ngIf="keywordsLimit < maxLimit" (click)="keywordsLimit = maxLimit" class="nav-item nav-link">více</a>
           <a *ngIf="keywordsLimit >= maxLimit" (click)="keywordsLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>
 
-        <h3>Formáty</h3>
+        <h3 class="mt-3">Formáty</h3>
         <nav class="nav flex-column">
           <a *ngFor="let format of catalog.filters.formats | slice:0:formatsLimit" class="nav-item nav-link">{{format.format}} ({{format.count}})</a>
           <a *ngIf="formatsLimit < maxLimit" (click)="formatsLimit = maxLimit" class="nav-item nav-link">více</a>
           <a *ngIf="formatsLimit >= maxLimit" (click)="formatsLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>
 
-        <h3>Organizace</h3>
+        <h3 class="mt-3">Organizace</h3>
 
       </div>
     </div>
 
     <div class="col-md-9">
-      <div *ngFor="let dataset of datasets" class="dataset">
-        <h3>{{ dataset.title }}</h3>
-        <a [routerLink]="['/datasets',dataset.iri]">Otevřít</a>
+      <div class="px-5 pt-4">
+        <div>
+          <p>Nalezeno {{count}} datových sad.</p>
+        </div>
+        <div *ngFor="let dataset of datasets" class="dataset my-3">
+          <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>
+          <p>{{dataset.description}}</p>
+        </div>
+
       </div>
     </div>
   </div>
