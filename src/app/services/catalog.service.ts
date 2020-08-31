@@ -42,19 +42,16 @@ export class CatalogService {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       where: [
-        {
-          s: "?iri", type: "dcat:Dataset", po: [
-            { p: "dct:title", o: "?title" },
-            { p: "dct:publisher", o: "?publisher" }
-          ]
-        },
+        { s: "?iri", type: "dcat:Dataset", p: "dct:title", o: "?title" },
         { s: "?iri", p: "dct:description", o: "?description", optional: true }
       ],
-      filter: [
-        `?publisher = <${this.configService.config.publisher}>`,
-        `LANG(?title) = '${lang}'`
-      ],
+      filter: [`LANG(?title) = '${lang}'`],
     };
+
+    if (this.configService.config.publishers) {
+      query.where!.push({ s: "?iri", p: "dct:publisher", o: "?publisher" });
+      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+    }
 
     let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit, offset: options?.offset });
     let countQuery = Object.assign({}, query, { select: ["(COUNT(*) AS ?count)"] });
@@ -152,23 +149,18 @@ export class CatalogService {
       prefixes: this.prefixes,
       select: ["?iri", "SAMPLE(?label) AS ?label", "COUNT(*) as ?count"],
       where: [
-        {
-          s: "?s", po: [
-            { p: "dcat:theme", o: "?iri" },
-            { p: "dct:publisher", o: "?publisher" }
-          ]
-        },
-        {
-          s: "?iri", p: "skos:prefLabel", o: "?label"
-        }
+        { s: "?s", p: "dcat:theme", o: "?iri" },
+        { s: "?iri", p: "skos:prefLabel", o: "?label" }
       ],
-      filter: [
-        "LANG(?label) = 'cs'",
-        `?publisher = <${this.configService.config.publisher}>`
-      ],
+      filter: ["LANG(?label) = 'cs'",],
       group: "?iri",
       order: "DESC(?count)"
     };
+
+    if (this.configService.config.publishers) {
+      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
+      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+    }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
 
@@ -178,21 +170,16 @@ export class CatalogService {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       select: ["?label", "COUNT(*) as ?count"],
-      where: [
-        {
-          s: "?s", po: [
-            { p: "dcat:keyword", o: "?label" },
-            { p: "dct:publisher", o: "?publisher" }
-          ]
-        },
-      ],
-      filter: [
-        "LANG(?label) = 'cs'",
-        `?publisher = <${this.configService.config.publisher}>`
-      ],
+      where: [{ s: "?s", p: "dcat:keyword", o: "?label" }],
+      filter: ["LANG(?label) = 'cs'"],
       group: "?label",
       order: "DESC(?count)"
     };
+
+    if (this.configService.config.publishers) {
+      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
+      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+    }
 
     return this.sparql.query<{ label: string, count: string }>(query);
 
@@ -203,22 +190,19 @@ export class CatalogService {
       prefixes: this.prefixes,
       select: ["?iri", "?label", "COUNT(*) as ?count"],
       where: [
-        {
-          s: "?s", type: "dcat:Dataset", po: [
-            { p: "dcat:distribution", o: "?distributionIri" },
-            { p: "dct:publisher", o: "?publisher" }
-          ]
-        },
+        { s: "?s", type: "dcat:Dataset", p: "dcat:distribution", o: "?distributionIri" },
         { s: "?distributionIri", p: "dct:format", o: "?iri" },
         { s: "?iri", p: "skos:prefLabel", o: "?label" }
       ],
-      filter: [
-        "LANG(?label) = 'en'",
-        `?publisher = <${this.configService.config.publisher}>`
-      ],
+      filter: ["LANG(?label) = 'en'"],
       group: "?iri ?label",
       order: "DESC(?count)"
     };
+
+    if (this.configService.config.publishers) {
+      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
+      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+    }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
 

@@ -6,7 +6,7 @@ import * as yamljs from "yamljs";
 
 interface Config {
   endpoint: string;
-  publisher: string;
+  publishers: string[];
 }
 
 @Injectable({
