@@ -34,13 +34,10 @@ export interface DocumentFields {
 })
 export class SparqlService {
 
-  endpoint: string;
-
   constructor(
-    configService: ConfigService,
+    private configService: ConfigService,
     private http: HttpClient,
   ) {
-    this.endpoint = configService.config.endpoint;
   }
 
   async getDocument<T>(iri: string, type?: string, prefixes: QueryDefinitionPrefixes = {}) {
@@ -56,7 +53,7 @@ export class SparqlService {
     const datasetFieldsResult = await this.getResult<DocumentFields>(datasetQuery);
 
     if (!datasetFieldsResult.results.bindings.length) {
-      throw new HttpErrorResponse({ error: "No fields for document iri", status: 404, statusText: "Not Found", url: this.endpoint });
+      throw new HttpErrorResponse({ error: "No fields for document iri", status: 404, statusText: "Not Found", url: this.configService.config.endpoint });
     }
 
     return this.parseDocumentResult<T>(datasetFieldsResult, prefixes);
@@ -78,7 +75,7 @@ export class SparqlService {
 
     if (typeof query === "object") query = Builder.buildQuery(query);
 
-    return this.http.get<SparqlResult<T>>(this.endpoint, { params: { query }, headers: { "Accept": "application/json" } }).toPromise()
+    return this.http.get<SparqlResult<T>>(this.configService.config.endpoint, { params: { query }, headers: { "Accept": "application/json" } }).toPromise()
   }
 
   private parseDocumentResult<T>(result: SparqlResult<DocumentFields>, prefixes: QueryDefinitionPrefixes = {}): T {

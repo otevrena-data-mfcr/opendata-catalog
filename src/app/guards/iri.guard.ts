@@ -22,12 +22,12 @@ export class IriGuard implements CanActivate {
         switch (result.type) {
 
           case "http://www.w3.org/ns/dcat#Dataset":
-            return this.router.createUrlTree(["/datasets", result.iri]);
+            return this.router.createUrlTree(["/datasets", result.iri], { replaceUrl: true });
 
           case "http://www.w3.org/ns/dcat#Distribution":
             const datasetResult = await this.catalog.findDatasetByDistribution(result.iri);
             if (datasetResult[0]) return this.router.createUrlTree(["/datasets", datasetResult[0].iri]);
-            else return this.router.createUrlTree(["/not-found"]);
+            else return this.router.createUrlTree(["/not-found"], { replaceUrl: true });
         }
       }
 
@@ -35,7 +35,7 @@ export class IriGuard implements CanActivate {
 
     }
     catch (err) {
-      if (err.status === 404) return this.router.createUrlTree(["/not-found"]);
+      if (err.status === 404) return this.router.createUrlTree(["/not-found"], { replaceUrl: true });
       throw err;
     }
 

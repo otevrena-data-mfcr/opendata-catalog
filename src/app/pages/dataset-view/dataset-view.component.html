@@ -40,7 +40,7 @@
 
           <div *ngFor="let distribution of distributions" class="distribution">
             <h3>{{distribution["dct:format"]}}</h3>
-            <app-distribution-view [distribution]="distribution"></app-distribution-view>
+            <app-distribution-card [distribution]="distribution"></app-distribution-card>
           </div>
         </ng-container>
 

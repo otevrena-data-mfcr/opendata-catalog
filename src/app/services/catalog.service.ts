@@ -13,11 +13,9 @@ import { Data } from '@angular/router';
 })
 export class CatalogService {
 
-  filters: {
-    themes: { iri: string, label: string, count: string }[],
-    keywords: { keyword: string, count: string }[],
-    formats: { format: string, count: string }[]
-  } = { themes: [], keywords: [], formats: [] };
+  themes: { iri: string, label: string, count: string }[] = [];
+  keywords: { label: string, count: string }[] = [];
+  formats: { iri: string, label: string, count: string }[] = [];
 
   private prefixes = {
     dct: "http://purl.org/dc/terms/",
@@ -31,17 +29,15 @@ export class CatalogService {
   constructor(
     private configService: ConfigService,
     private sparql: SparqlService,
-  ) {
-    this.loadFilters();
+  ) { }
+
+  async loadFilters() {
+    this.themes = await this.getThemes();
+    this.keywords = await this.getKeywords();
+    this.formats = await this.getFormats();
   }
 
-  private async loadFilters() {
-    this.filters.themes = await this.getThemes();
-    this.filters.keywords = await this.getKeywords();
-    this.filters.formats = await this.getFormats();
-  }
-
-  async findDatasets(options?: { limit?: number }, lang: string = "cs") {
+  async findDatasets(options?: { offset?: number, limit?: number }, lang: string = "cs") {
 
     const query: QueryDefinition = {
       prefixes: this.prefixes,
@@ -60,7 +56,7 @@ export class CatalogService {
       ],
     };
 
-    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit });
+    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit, offset: options?.offset });
     let countQuery = Object.assign({}, query, { select: ["(COUNT(*) AS ?count)"] });
 
     const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
@@ -135,9 +131,10 @@ export class CatalogService {
 
   async getDistribution(iri: string): Promise<Distribution> {
     const result = await this.sparql.getDocument<DistributionFields>(iri, "dcat:Distribution", this.prefixes);
+    const format = this.formats.find(format => format.iri === result["dct:format"]?.[0]);
     return {
       iri,
-      format: result["dct:format"]?.[0].replace("http://publications.europa.eu/resource/authority/file-type/", ""),
+      format: format?.label,
       mediaType: result["dcat:mediaType"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
       downloadUrl: result["dcat:downloadURL"]?.[0],
       accessUrl: result["dcat:accessURL"]?.[0],
@@ -180,31 +177,31 @@ export class CatalogService {
   async getKeywords() {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      select: ["?keyword", "COUNT(*) as ?count"],
+      select: ["?label", "COUNT(*) as ?count"],
       where: [
         {
           s: "?s", po: [
-            { p: "dcat:keyword", o: "?keyword" },
+            { p: "dcat:keyword", o: "?label" },
             { p: "dct:publisher", o: "?publisher" }
           ]
         },
       ],
       filter: [
-        "LANG(?keyword) = 'cs'",
+        "LANG(?label) = 'cs'",
         `?publisher = <${this.configService.config.publisher}>`
       ],
-      group: "?keyword",
+      group: "?label",
       order: "DESC(?count)"
     };
 
-    return this.sparql.query<{ keyword: string, count: string }>(query);
+    return this.sparql.query<{ label: string, count: string }>(query);
 
   }
 
   async getFormats() {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      select: ["?format", "COUNT(*) as ?count"],
+      select: ["?iri", "?label", "COUNT(*) as ?count"],
       where: [
         {
           s: "?s", type: "dcat:Dataset", po: [
@@ -212,17 +209,18 @@ export class CatalogService {
             { p: "dct:publisher", o: "?publisher" }
           ]
         },
-        { s: "?distributionIri", p: "dct:format", o: "?formatIri" },
-        { s: "?formatIri", p: "skos:prefLabel", o: "?format" }
+        { s: "?distributionIri", p: "dct:format", o: "?iri" },
+        { s: "?iri", p: "skos:prefLabel", o: "?label" }
       ],
       filter: [
+        "LANG(?label) = 'en'",
         `?publisher = <${this.configService.config.publisher}>`
       ],
-      group: "?format",
+      group: "?iri ?label",
       order: "DESC(?count)"
     };
 
-    return this.sparql.query<{ format: string, count: string }>(query);
+    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
 
   }
 

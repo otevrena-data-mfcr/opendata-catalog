@@ -24,21 +24,12 @@ const routes: Routes = [
   { path: '**', pathMatch: "full", redirectTo: 'not-found' }
 ];
 
-export function initConfig(configService: ConfigService) {
-  return () => configService.loadConfig();
-}
-
 @NgModule({
   imports: [
     RouterModule.forRoot(routes),
     HttpClientModule
   ],
   exports: [RouterModule],
-  providers: [{
-    provide: APP_INITIALIZER,
-    useFactory: initConfig,
-    deps: [ConfigService],
-    multi: true
-  }]
+  providers: []
 })
 export class AppRoutingModule { }

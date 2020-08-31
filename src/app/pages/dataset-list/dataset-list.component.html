@@ -4,21 +4,21 @@
       <div class="px-5 pt-4">
         <h3>Téma</h3>
         <nav class="nav flex-column">
-          <a *ngFor="let theme of catalog.filters.themes | slice:0:themesLimit" class="nav-item nav-link">{{theme.label}} ({{theme.count}})</a>
+          <a *ngFor="let theme of catalog.themes | slice:0:themesLimit" class="nav-item nav-link">{{theme.label}} ({{theme.count}})</a>
           <a *ngIf="themesLimit < maxLimit" (click)="themesLimit = maxLimit" class="nav-item nav-link">více</a>
           <a *ngIf="themesLimit >= maxLimit" (click)="themesLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>
 
         <h3 class="mt-3">Klíčová slova</h3>
         <nav class="nav flex-column">
-          <a *ngFor="let keyword of catalog.filters.keywords | slice:0:keywordsLimit" class="nav-item nav-link">{{keyword.keyword}} ({{keyword.count}})</a>
+          <a *ngFor="let keyword of catalog.keywords | slice:0:keywordsLimit" class="nav-item nav-link">{{keyword.label}} ({{keyword.count}})</a>
           <a *ngIf="keywordsLimit < maxLimit" (click)="keywordsLimit = maxLimit" class="nav-item nav-link">více</a>
           <a *ngIf="keywordsLimit >= maxLimit" (click)="keywordsLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>
 
         <h3 class="mt-3">Formáty</h3>
         <nav class="nav flex-column">
-          <a *ngFor="let format of catalog.filters.formats | slice:0:formatsLimit" class="nav-item nav-link">{{format.format}} ({{format.count}})</a>
+          <a *ngFor="let format of catalog.formats | slice:0:formatsLimit" class="nav-item nav-link">{{format.label}} ({{format.count}})</a>
           <a *ngIf="formatsLimit < maxLimit" (click)="formatsLimit = maxLimit" class="nav-item nav-link">více</a>
           <a *ngIf="formatsLimit >= maxLimit" (click)="formatsLimit = defaultLimit" class="nav-item nav-link">méně</a>
         </nav>

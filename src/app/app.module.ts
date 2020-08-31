@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -12,9 +12,11 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { DataPreviewCsvComponent } from './components/data-preview-csv/data-preview-csv.component';
 import { DataPreviewJsonComponent } from './components/data-preview-json/data-preview-json.component';
 import { DataPreviewZipComponent } from './components/data-preview-zip/data-preview-zip.component';
-import { DistributionViewComponent } from './components/distribution-view/distribution-view.component';
+import { DistributionCardComponent } from './components/distribution-card/distribution-card.component';
 
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
+import { ConfigService } from './services/config.service';
+import { CatalogService } from './services/catalog.service';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,7 @@ import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
     DatasetListComponent,
     DatasetViewComponent,
     NotFoundComponent,
-    DistributionViewComponent,
+    DistributionCardComponent,
 
     DataPreviewCsvComponent,
     DataPreviewJsonComponent,
@@ -41,6 +43,20 @@ import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
       useValue: {
         fullLibraryLoader: () => import('highlight.js'),
       }
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: (configService: ConfigService, catalogService: CatalogService) => async () => {
+        await configService.loadConfig();
+        try {
+          await catalogService.loadFilters();
+        }
+        catch (err) {
+
+        }
+      },
+      deps: [ConfigService, CatalogService],
     }
   ],
   bootstrap: [AppComponent]

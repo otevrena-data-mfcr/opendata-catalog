@@ -22,8 +22,8 @@ export class ConfigService {
   ) { }
 
   async loadConfig() {
+    console.log("loadConfig");
     const baseHref = this.locationStrategy.getBaseHref().replace(/\/$/, "");
-
     this.config = await this.http.get(baseHref + "/config.yml", { responseType: "text" })
       .toPromise()
       .then(yaml => <Config>yamljs.parse(yaml));

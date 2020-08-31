@@ -4,11 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import * as prettyBytes from "pretty-bytes";
 
 @Component({
-  selector: 'app-distribution-view',
-  templateUrl: './distribution-view.component.html',
-  styleUrls: ['./distribution-view.component.scss']
+  selector: 'app-distribution-card',
+  templateUrl: './distribution-card.component.html',
+  styleUrls: ['./distribution-card.component.scss']
 })
-export class DistributionViewComponent implements OnInit {
+export class DistributionCardComponent implements OnInit {
 
   distribution?: Distribution;
 
