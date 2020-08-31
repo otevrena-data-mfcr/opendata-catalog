@@ -35,7 +35,13 @@
         </div>
         <div *ngFor="let dataset of datasets" class="dataset my-3">
           <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>
-          <p>{{dataset.description}}</p>
+          <p>{{dataset.description}}&nbsp;</p>
+        </div>
+
+        <div class="pager text-center">
+
+          <a (click)="loadDatasets(true)" class="btn btn-light">Načíst dalších {{this.limit}}</a>
+
         </div>
 
       </div>

@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CatalogService } from 'app/services/catalog.service';
 import { Dataset } from 'app/schema';
-
-import { Theme } from "otevrene-formalni-normy-dts";
+import { ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'app-dataset-list',
@@ -21,17 +20,49 @@ export class DatasetListComponent implements OnInit {
   keywordsLimit = this.defaultLimit;
   formatsLimit = this.defaultLimit;
 
-  constructor(public catalog: CatalogService) {
+  filter: {
+    themes: string[],
+    keywords: string[],
+    formats: string[]
+  } = { themes: [], keywords: [], formats: [] };
+
+  limit = 20;
+
+  constructor(public catalog: CatalogService, private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    this.loadDatasets();
+
+    this.route.params.subscribe((params: Params) => {
+      this.filter.themes = [params["theme"]] || [];
+      this.filter.keywords = [params["keyword"]] || [];
+      this.filter.formats = [params["format"]] || [];
+
+      this.loadDatasets();
+      window.scrollTo({ top: 0 });
+    });
+
   }
 
-  async loadDatasets() {
-    const result = await this.catalog.findDatasets({ limit: 20 });
-    this.datasets = result.datasets;
-    this.count = result.count;
+  async loadDatasets(more = false) {
+
+    const query = {
+      filter: this.filter,
+      limit: this.limit,
+      offset: more ? this.datasets.length : 0
+    };
+
+    const result = await this.catalog.findDatasets(query);
+
+    if (more) this.datasets.push(...result.datasets);
+    else {
+      this.datasets = result.datasets;
+      this.count = result.count;
+    }
+  }
+
+  getPageLink(page: number) {
+    return ["./", { page }];
   }
 
 }
