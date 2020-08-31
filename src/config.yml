@@ -1,4 +1,3 @@
-endpoint: https://dev.nkod.opendata.cz/sparql
-# endpoint: https://pod-test.mvcr.gov.cz/sparql
-# endpoint: http://localhost:8890/sparql/
-publisher: https://data.gov.cz/zdroj/ovm/Poskytovatel2
+endpoint: https://data.gov.cz/sparql
+publishers: 
+  - https://data.gov.cz/zdroj/ovm/00006947
