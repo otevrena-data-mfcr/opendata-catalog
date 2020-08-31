@@ -41,39 +41,47 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
   }
 
   async loadDataset(iri: string) {
+
     try {
-
       this.dataset = await this.catalog.getDataset(iri);
+    }
+    catch (err) {
+      if (err.status === 404) return this.router.navigate(["/not-found"], { replaceUrl: true });
+      else throw err;
+    }
 
-      this.childDatasets = await this.catalog.findChildDatasets(iri);
-      this.childDatasets.sort((a, b) => a.title.localeCompare(b.title));
+    this.childDatasets = await this.catalog.findChildDatasets(iri);
+    this.childDatasets.sort((a, b) => a.title.localeCompare(b.title));
 
-      this.parentDatasets = [];
+    this.parentDatasets = [];
 
-      if (this.dataset.isPartOf) {
-        let parentIri: string | null = this.dataset.isPartOf[0]
-        while (parentIri) {
+    if (this.dataset.isPartOf) {
+
+      let parentIri: string | null = this.dataset.isPartOf[0]
+
+      while (parentIri) {
+        try {
           const parent: Dataset = await this.catalog.getDataset(parentIri);
           this.parentDatasets.unshift(parent);
           parentIri = parent.isPartOf ? parent.isPartOf[0] : null;
-        }
+        } catch (err) { parentIri = null; }
       }
 
-      this.distributions = [];
-      if (this.dataset.distributions) {
-        for (let distributionIri of this.dataset.distributions) {
-          this.distributions.push(await this.catalog.getDistribution(distributionIri));
-        }
+    }
+
+    this.distributions = [];
+    if (this.dataset.distributions) {
+
+      for (let distributionIri of this.dataset.distributions) {
+
+        try {
+          const distribution = await this.catalog.getDistribution(distributionIri);
+          this.distributions.push(distribution);
+        } catch (err) { }
+
       }
     }
-    catch (err) {
-      if (err.status === 404) {
-        this.router.navigate(["/not-found"]);
-      }
-      else {
-        throw err;
-      }
-    }
+
 
   }
 
