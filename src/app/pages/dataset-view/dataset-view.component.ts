@@ -53,8 +53,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     this.childDatasets = await this.catalog.findChildDatasets(iri);
     this.childDatasets.sort((a, b) => a.title.localeCompare(b.title));
 
-    this.parentDatasets = [];
-
+    const parentDatasets = [];
     if (this.dataset.isPartOf) {
 
       let parentIri: string | null = this.dataset.isPartOf[0]
@@ -62,12 +61,13 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
       while (parentIri) {
         try {
           const parent: Dataset = await this.catalog.getDataset(parentIri);
-          this.parentDatasets.unshift(parent);
+          parentDatasets.unshift(parent);
           parentIri = parent.isPartOf ? parent.isPartOf[0] : null;
         } catch (err) { parentIri = null; }
       }
 
     }
+    this.parentDatasets = parentDatasets;
 
     this.distributions = [];
     if (this.dataset.distributions) {
