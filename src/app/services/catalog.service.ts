@@ -21,7 +21,6 @@ export class CatalogService {
     dct: "http://purl.org/dc/terms/",
     dcat: "http://www.w3.org/ns/dcat#",
     xml: "http://www.w3.org/2001/XMLSchema#",
-    purl: "http://purl.org/dc/terms/",
     rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     skos: "http://www.w3.org/2004/02/skos/core#"
   };
@@ -32,9 +31,11 @@ export class CatalogService {
   ) { }
 
   async loadFilters() {
-    this.themes = await this.getThemes();
-    this.keywords = await this.getKeywords();
-    this.formats = await this.getFormats();
+    return Promise.all([
+      this.getThemes().then(themes => this.themes = themes),
+      this.getKeywords().then(keywords => this.keywords = keywords),
+      this.getFormats().then(formats => this.formats = formats),
+    ]);
   }
 
   async findDatasets(options?: { offset?: number, limit?: number }, lang: string = "cs") {
@@ -53,8 +54,8 @@ export class CatalogService {
       query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
-    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit, offset: options?.offset });
-    let countQuery = Object.assign({}, query, { select: ["(COUNT(*) AS ?count)"] });
+    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit, offset: options?.offset, order: "ASC(?title)" });
+    let countQuery = Object.assign({}, query, { select: ["COUNT(*) AS ?count"] });
 
     const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
     const count = await this.sparql.query<{ count: number }>(countQuery).then(result => result[0].count);
@@ -147,12 +148,12 @@ export class CatalogService {
   async getThemes() {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      select: ["?iri", "SAMPLE(?label) AS ?label", "COUNT(*) as ?count"],
+      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],
       where: [
         { s: "?s", p: "dcat:theme", o: "?iri" },
-        { s: "?iri", p: "skos:prefLabel", o: "?label" }
+        { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
       ],
-      filter: ["LANG(?label) = 'cs'",],
+      filter: ["LANG(?prefLabel) = 'cs'",],
       group: "?iri",
       order: "DESC(?count)"
     };
@@ -188,14 +189,14 @@ export class CatalogService {
   async getFormats() {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      select: ["?iri", "?label", "COUNT(*) as ?count"],
+      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],
       where: [
         { s: "?s", type: "dcat:Dataset", p: "dcat:distribution", o: "?distributionIri" },
         { s: "?distributionIri", p: "dct:format", o: "?iri" },
-        { s: "?iri", p: "skos:prefLabel", o: "?label" }
+        { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
       ],
-      filter: ["LANG(?label) = 'en'"],
-      group: "?iri ?label",
+      filter: ["LANG(?prefLabel) = 'en'"],
+      group: "?iri",
       order: "DESC(?count)"
     };
 
