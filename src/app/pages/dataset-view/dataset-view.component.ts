@@ -49,9 +49,13 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
       this.childDatasets.sort((a, b) => a.title.localeCompare(b.title));
 
       this.parentDatasets = [];
+
       if (this.dataset.isPartOf) {
-        for (let parentIri of this.dataset.isPartOf) {
-          this.parentDatasets.push(await this.catalog.getDataset(parentIri));
+        let parentIri: string | null = this.dataset.isPartOf[0]
+        while (parentIri) {
+          const parent: Dataset = await this.catalog.getDataset(parentIri);
+          this.parentDatasets.unshift(parent);
+          parentIri = parent.isPartOf ? parent.isPartOf[0] : null;
         }
       }
 
