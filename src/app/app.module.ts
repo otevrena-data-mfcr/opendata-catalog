@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
+// import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +17,7 @@ import { DistributionCardComponent } from './components/distribution-card/distri
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
 import { ConfigService } from './services/config.service';
 import { CatalogService } from './services/catalog.service';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -35,26 +36,22 @@ import { CatalogService } from './services/catalog.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HighlightModule
+    // HighlightModule
   ],
   providers: [
-    {
-      provide: HIGHLIGHT_OPTIONS,
-      useValue: {
-        fullLibraryLoader: () => import('highlight.js'),
-      }
-    },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    // {
+    //   provide: HIGHLIGHT_OPTIONS,
+    //   useValue: {
+    //     fullLibraryLoader: () => import('highlight.js'),
+    //   }
+    // },
     {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: (configService: ConfigService, catalogService: CatalogService) => async () => {
         await configService.loadConfig();
-        try {
-          await catalogService.loadFilters();
-        }
-        catch (err) {
-
-        }
+        await catalogService.loadFilters();
       },
       deps: [ConfigService, CatalogService],
     }

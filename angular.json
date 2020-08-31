@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/opendata-catalog",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -28,9 +28,7 @@
               "src/assets",
               "src/config.yml"
             ],
-            "styles": [
-              "./node_modules/bootstrap/dist/css/bootstrap.css",
-              "./node_modules/highlight.js/styles/github.css",
+            "styles": [             
               "src/styles/styles.scss"
             ],
             "scripts": []

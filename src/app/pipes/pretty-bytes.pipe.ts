@@ -7,7 +7,6 @@ import * as prettyBytes from 'pretty-bytes';
 export class PrettyBytesPipe implements PipeTransform {
 
   transform(value: number): string {
-    console.log(value)
     if(!value) return "N/A";
     return prettyBytes(value);
   }

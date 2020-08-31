@@ -19,7 +19,6 @@ export type QueryDefinitionWhere = ({ s: string, type?: string, p?: string, o?: 
 
 function buildQuery(def: QueryDefinition): string {
 
-  console.log(def);
   const prefixes: string = def.prefixes ? Object.entries(def.prefixes).map(([prefix, iri]) => `PREFIX ${prefix}: <${iri}>`).join("\n") : "";
   const select = typeof def.select === "string" ? def.select : def.select?.map(item => item.indexOf(" ") !== -1 ? "(" + item + ")" : item).join(" ");
   const where = def.where?.map(item => buildQueryWhere(item)).join("\n") || "";
