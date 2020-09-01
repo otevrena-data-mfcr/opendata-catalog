@@ -12,9 +12,6 @@
         <h3 class="mt-3">Formáty</h3>
         <app-nav-filter [options]="formats" [(ngModel)]="filter.format" (ngModelChange)="setFilter()"></app-nav-filter>
 
-        <h3 class="mt-3">Nastavení</h3>
-        <label><input type="checkbox" [(ngModel)]="filter.hideChild" (ngModelChange)="setFilter()"> Nezobrazovat podřízené datové sady</label>
-
       </div>
     </div>
 
@@ -22,7 +19,11 @@
       <div class="px-5 pt-4">
 
         <div>
-          <p>Nalezeno {{count}} datových sad.</p>
+          <p>
+            Nalezeno {{count}} datových sad.
+            <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a (click)="filter.hideChild = false; setFilter();">Zobrazit</a></ng-container>
+            <ng-container *ngIf="!filter.hideChild"><a (click)="filter.hideChild = true; setFilter();">Skrýt podřízené datové sady.</a></ng-container>
+          </p>
         </div>
         <div *ngFor="let dataset of datasets" class="dataset my-3">
           <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>

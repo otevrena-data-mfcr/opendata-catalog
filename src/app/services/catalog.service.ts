@@ -35,7 +35,6 @@ export class CatalogService {
     xml: "http://www.w3.org/2001/XMLSchema#",
     rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     skos: "http://www.w3.org/2004/02/skos/core#",
-    arq: "http://jena.apache.org/ARQ/function#"
   };
 
   constructor(
@@ -64,22 +63,22 @@ export class CatalogService {
       filter: [`LANG(?titles) = '${lang}'`],
     };
 
-    if (options?.filter) {
-      if (options.filter.hideChild) query.filter!.push({ ne: true, condition: "{ ?iri dct:isPartOf ?isPart }" });
-      if (options.filter.theme) query.where!.push({ s: "?iri", p: "dcat:theme", o: `<${options.filter.theme}>` });
-      if (options.filter.keyword) {
-        query.where!.push({ s: "?iri", p: "dcat:keyword", o: "?keyword" });
-        query.filter!.push(`?keyword = '${options.filter.keyword}'@${lang}`);
-      }
-      if (options.filter.format) {
-        query.where!.push({ s: "?iri", p: "dcat:distribution", o: "?distribution" });
-        query.where!.push({ s: "?distribution", p: "dct:format", o: `<${options.filter.format}>` });
-      }
+    if (options?.filter?.hideChild) query.filter!.push({ ne: true, condition: "{ ?iri dct:isPartOf ?isPart }" });
+
+    if (options?.filter?.theme) query.where!.push({ s: "?iri", p: "dcat:theme", o: `<${options.filter.theme}>` });
+
+    if (options?.filter?.keyword) {
+      query.where!.push({ s: "?iri", p: "dcat:keyword", o: "?keyword" });
+      query.filter!.push(`?keyword = '${options.filter.keyword}'@${lang}`);
+    }
+    if (options?.filter?.format) {
+      query.where!.push({ s: "?iri", p: "dcat:distribution", o: "?distribution" });
+      query.where!.push({ s: "?distribution", p: "dct:format", o: `<${options.filter.format}>` });
     }
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?iri", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     let datasetsQuery = {
@@ -95,8 +94,10 @@ export class CatalogService {
       select: ["COUNT(distinct ?iri) AS ?count"]
     };
 
-    if (options?.order === "title") datasetsQuery.order = "arq:collation('cs', ?title)";
-
+    if (options?.order && ["title"].indexOf(options.order) !== -1) {
+      if (this.configService.config.ordering === "arq_collation") datasetsQuery.order = `<http://jena.apache.org/ARQ/function#collation>('${lang}', ?title)`;
+      else datasetsQuery.order = `ASC(?${options.order})`;
+    }
 
     const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
     const count = await this.sparql.query<{ count: number }>(countQuery).then(result => result[0].count);
@@ -201,7 +202,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
@@ -220,7 +221,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ label: string, count: string }>(query);
@@ -243,7 +244,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);

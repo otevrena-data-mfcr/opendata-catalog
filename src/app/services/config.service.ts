@@ -7,6 +7,7 @@ import * as yamljs from "yamljs";
 interface Config {
   endpoint: string;
   publishers: string[];
+  ordering: "generic" | "arq_collation";
 }
 
 @Injectable({

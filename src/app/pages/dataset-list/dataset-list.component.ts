@@ -37,11 +37,12 @@ export class DatasetListComponent implements OnInit {
   ngOnInit(): void {
 
     this.route.params.subscribe((params: Params) => {
-      
+
       this.filter.theme = params["theme"];
       this.filter.keyword = params["keyword"];
       this.filter.format = params["format"];
-      this.filter.hideChild = params["hideChild"] === true || params["hideChild"] === "true";     
+      
+      if (params["hideChild"] !== undefined) this.filter.hideChild = (params["hideChild"] === "true" || params["hideChild"] === true);
 
       this.loadDatasets();
       window.scrollTo({ top: 0 });

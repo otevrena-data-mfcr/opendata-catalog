@@ -1,3 +1,8 @@
 endpoint: https://data.gov.cz/sparql
+
+# comment out following list to show all publishers
 publishers: 
   - https://data.gov.cz/zdroj/ovm/00006947
+
+ordering: "generic"
+# ordering: "arq_collation" # use function http://jena.apache.org/ARQ/function#collation for ordering taking into account locale. works only with Jena Fuseki SPARQL endpoint
