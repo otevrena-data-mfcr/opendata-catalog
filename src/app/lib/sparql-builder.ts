@@ -14,7 +14,7 @@ export interface QueryDefinition {
 
 export type QueryDefinitionPrefixes = { [prefix: string]: string };
 
-export type QueryDefinitionWhere = ({ s: string, type?: string, p?: string, o?: string, optional?: boolean } | { s: string, type?: string, po: { p: string, o: string }[], optional?: boolean });
+export type QueryDefinitionWhere = ({ s: string, p?: string, o?: string, optional?: boolean } | { s: string, po: { p: string, o: string }[], optional?: boolean });
 
 export type QueryDefinitionFilter = (string | { condition: string, ne?: boolean });
 
@@ -42,8 +42,6 @@ ${def.limit !== undefined ? "LIMIT " + def.limit : ""}`;
 function buildQueryWhere(def: QueryDefinitionWhere) {
 
   let where = `${def.s}`;
-
-  if (def.type) where += ` a ${def.type} ;`;
 
   if ("po" in def) {
     const po = def.po.map(item => {

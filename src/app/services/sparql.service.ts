@@ -46,7 +46,7 @@ export class SparqlService {
       prefixes,
       select: ["?field", "?value"],
       where: [
-        { s: `<${iri}>`, type: type, p: "?field", o: "?value" }
+        type ? { s: `<${iri}>`, po: [{ p: "a", o: type }, { p: "?field", o: "?value" }] } : { s: `<${iri}>`, p: "?field", o: "?value" }
       ]
     };
 

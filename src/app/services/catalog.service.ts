@@ -56,7 +56,7 @@ export class CatalogService {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       where: [
-        { s: "?iri", type: "dcat:Dataset", p: "dct:title", o: "?titles" },
+        { s: "?iri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dct:title", o: "?titles" }] },
         { s: "?iri", p: "dct:description", o: "?descriptions", optional: true },
         { s: "?iri", p: "dcat:distribution", o: "?distribution", optional: true },
         { s: "?distribution", p: "dct:format", o: `?format`, optional: true }
@@ -232,7 +232,7 @@ export class CatalogService {
       prefixes: this.prefixes,
       select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(DISTINCT ?datasetIri) as ?count"],
       where: [
-        { s: "?datasetIri", type: "dcat:Dataset", p: "dcat:distribution", o: "?distributionIri" },
+        { s: "?datasetIri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dcat:distribution", o: "?distributionIri" }] },
         { s: "?distributionIri", p: "dct:format", o: "?iri" },
         { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
       ],
