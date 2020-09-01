@@ -6,9 +6,9 @@ import * as prettyBytes from 'pretty-bytes';
 })
 export class PrettyBytesPipe implements PipeTransform {
 
-  transform(value: number): string {
-    if(!value) return "N/A";
-    return prettyBytes(value);
+  transform(value: number, locale: boolean | string = "cs"): string {
+    if (!value) return "N/A";
+    return prettyBytes(value, { locale });
   }
 
 }
