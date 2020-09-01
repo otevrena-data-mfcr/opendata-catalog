@@ -1,0 +1,14 @@
+<nav class="nav nav-pills flex-column">
+
+  <li *ngFor="let option of options | slice:0:currentLimit" class="nav-item">
+    <a (click)="select(option)" [class.disabled]="disabled" [class.active]="isSelected(option)" class="nav-link">{{option.label}} ({{option.count}})</a>
+  </li>
+
+  <li *ngIf="currentLimit < options.length && currentLimit < maxLimit" class="nav-item">
+    <a (click)="currentLimit = maxLimit" class="nav-link">více</a>
+  </li>
+
+  <li *ngIf="currentLimit >= maxLimit"s class="nav-item">
+    <a (click)="currentLimit = defaultLimit" class="nav-link">méně</a>
+  </li>
+</nav>

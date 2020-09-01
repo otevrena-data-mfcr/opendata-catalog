@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { CatalogService } from 'app/services/catalog.service';
+import { CatalogService, DatasetQueryOptions } from 'app/services/catalog.service';
 import { Dataset } from 'app/schema';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { NavFilterOption } from 'app/components/nav-filter/nav-filter.component';
 
 @Component({
   selector: 'app-dataset-list',
@@ -13,43 +14,50 @@ export class DatasetListComponent implements OnInit {
   datasets: Partial<Dataset>[] = [];
   count: number = 0;
 
-  maxLimit = Infinity;
-  defaultLimit = 5;
+  themes: NavFilterOption[];
+  keywords: NavFilterOption[];
+  formats: NavFilterOption[];
 
-  themesLimit = this.defaultLimit;
-  keywordsLimit = this.defaultLimit;
-  formatsLimit = this.defaultLimit;
-
-  filter: {
-    themes: string[],
-    keywords: string[],
-    formats: string[]
-  } = { themes: [], keywords: [], formats: [] };
+  filter: DatasetQueryOptions["filter"] = {
+    hideChild: true
+  };
 
   limit = 20;
 
-  constructor(public catalog: CatalogService, private route: ActivatedRoute) {
+  constructor(
+    public catalog: CatalogService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
+    this.themes = this.catalog.themes.map(item => ({ ...item, value: item.iri }));
+    this.keywords = this.catalog.keywords.map(item => ({ ...item, value: item.label }));
+    this.formats = this.catalog.formats.map(item => ({ ...item, value: item.iri }));
   }
 
   ngOnInit(): void {
 
     this.route.params.subscribe((params: Params) => {
-      this.filter.themes = [params["theme"]] || [];
-      this.filter.keywords = [params["keyword"]] || [];
-      this.filter.formats = [params["format"]] || [];
+      
+      this.filter.theme = params["theme"];
+      this.filter.keyword = params["keyword"];
+      this.filter.format = params["format"];
+      this.filter.hideChild = params["hideChild"] === true || params["hideChild"] === "true";     
 
       this.loadDatasets();
       window.scrollTo({ top: 0 });
     });
 
+
+
   }
 
   async loadDatasets(more = false) {
 
-    const query = {
+    const query: DatasetQueryOptions = {
       filter: this.filter,
       limit: this.limit,
-      offset: more ? this.datasets.length : 0
+      offset: more ? this.datasets.length : 0,
+      order: "title",
     };
 
     const result = await this.catalog.findDatasets(query);
@@ -59,6 +67,11 @@ export class DatasetListComponent implements OnInit {
       this.datasets = result.datasets;
       this.count = result.count;
     }
+  }
+
+  setFilter() {
+    const filter = JSON.parse(JSON.stringify(this.filter));
+    this.router.navigate(["./", filter], { replaceUrl: true });
   }
 
   getPageLink(page: number) {

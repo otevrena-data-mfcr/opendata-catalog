@@ -5,7 +5,7 @@ export interface QueryDefinition {
   select?: string[];
   distinct?: boolean;
   where?: QueryDefinitionWhere[];
-  filter?: string[];
+  filter?: QueryDefinitionFilter[];
   group?: string;
   order?: string;
   limit?: number;
@@ -16,13 +16,14 @@ export type QueryDefinitionPrefixes = { [prefix: string]: string };
 
 export type QueryDefinitionWhere = ({ s: string, type?: string, p?: string, o?: string, optional?: boolean } | { s: string, type?: string, po: { p: string, o: string }[], optional?: boolean });
 
+export type QueryDefinitionFilter = (string | { condition: string, ne?: boolean });
 
 function buildQuery(def: QueryDefinition): string {
 
   const prefixes: string = def.prefixes ? Object.entries(def.prefixes).map(([prefix, iri]) => `PREFIX ${prefix}: <${iri}>`).join("\n") : "";
   const select = typeof def.select === "string" ? def.select : def.select?.map(item => item.indexOf(" ") !== -1 ? "(" + item + ")" : item).join(" ");
-  const where = def.where?.map(item => buildQueryWhere(item)).join("\n") || "";
-  const filter = def.filter?.map(item => `FILTER (${item}) .`).join("\n") || "";
+  const where = def.where?.map(item => buildQueryWhere(item)).join("\n");
+  const filter = def.filter?.map(item => buildQueryFilter(item)).join("\n");
 
   return `${prefixes}
 SELECT ${def.distinct ? "DISTINCT " : ""}${select || ""}
@@ -58,12 +59,17 @@ function buildQueryWhere(def: QueryDefinitionWhere) {
   return def.optional ? `OPTIONAL { ${where} }` : where;
 }
 
+function buildQueryFilter(def: QueryDefinitionFilter) {
+  if (typeof def === "string") return `FILTER (${def}) .`;
+  return `FILTER${def.ne ? " NOT EXISTS" : ""} ${def.ne ? def.condition : `(${def.condition})`}`
+}
+
 function extendQuery(...defs: QueryDefinition[]): QueryDefinition {
   const base = {
     prefix: {} as { [prefix: string]: string },
     select: [] as string[],
     where: [] as QueryDefinitionWhere[],
-    filter: [] as string[],
+    filter: [] as QueryDefinitionFilter[],
     group: undefined as (string | undefined),
     limit: undefined as (number | undefined),
     offset: undefined as (number | undefined),

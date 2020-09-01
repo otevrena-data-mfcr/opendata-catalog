@@ -1,5 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { FormsModule } from "@angular/forms";
+
 // import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
 
 import { AppRoutingModule } from './app-routing.module';
@@ -18,6 +20,7 @@ import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
 import { ConfigService } from './services/config.service';
 import { CatalogService } from './services/catalog.service';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { NavFilterComponent } from './components/nav-filter/nav-filter.component';
 
 @NgModule({
   declarations: [
@@ -32,20 +35,15 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
     DataPreviewJsonComponent,
     DataPreviewZipComponent,
     PrettyBytesPipe,
+    NavFilterComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    // HighlightModule
+    FormsModule
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    // {
-    //   provide: HIGHLIGHT_OPTIONS,
-    //   useValue: {
-    //     fullLibraryLoader: () => import('highlight.js'),
-    //   }
-    // },
     {
       provide: APP_INITIALIZER,
       multi: true,

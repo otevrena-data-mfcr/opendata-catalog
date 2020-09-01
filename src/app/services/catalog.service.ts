@@ -8,6 +8,18 @@ import { Dataset, Distribution, DatasetFields, DistributionFields } from 'app/sc
 import { QueryDefinition, Builder } from "app/lib/sparql-builder";
 import { Data } from '@angular/router';
 
+export interface DatasetQueryOptions {
+  limit?: number;
+  offset?: number;
+  order?: "title";
+  filter: {
+    theme?: string[],
+    keyword?: string[],
+    format?: string[],
+    hideChild?: boolean,
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +34,8 @@ export class CatalogService {
     dcat: "http://www.w3.org/ns/dcat#",
     xml: "http://www.w3.org/2001/XMLSchema#",
     rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    skos: "http://www.w3.org/2004/02/skos/core#"
+    skos: "http://www.w3.org/2004/02/skos/core#",
+    arq: "http://jena.apache.org/ARQ/function#"
   };
 
   constructor(
@@ -38,24 +51,52 @@ export class CatalogService {
     ]);
   }
 
-  async findDatasets(options?: { offset?: number, limit?: number }, lang: string = "cs") {
+  async findDatasets(options?: DatasetQueryOptions, lang: string = "cs") {
 
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       where: [
-        { s: "?iri", type: "dcat:Dataset", p: "dct:title", o: "?title" },
-        { s: "?iri", p: "dct:description", o: "?description", optional: true }
+        { s: "?iri", type: "dcat:Dataset", p: "dct:title", o: "?titles" },
+        { s: "?iri", p: "dct:description", o: "?descriptions", optional: true },
+        { s: "?iri", p: "dcat:distribution", o: "?distribution", optional: true },
+        { s: "?distribution", p: "dct:format", o: `?format`, optional: true }
       ],
-      filter: [`LANG(?title) = '${lang}'`],
+      filter: [`LANG(?titles) = '${lang}'`],
     };
+
+    if (options?.filter) {
+      if (options.filter.hideChild) query.filter!.push({ ne: true, condition: "{ ?iri dct:isPartOf ?isPart }" });
+      if (options.filter.theme) query.where!.push({ s: "?iri", p: "dcat:theme", o: `<${options.filter.theme}>` });
+      if (options.filter.keyword) {
+        query.where!.push({ s: "?iri", p: "dcat:keyword", o: "?keyword" });
+        query.filter!.push(`?keyword = '${options.filter.keyword}'@${lang}`);
+      }
+      if (options.filter.format) {
+        query.where!.push({ s: "?iri", p: "dcat:distribution", o: "?distribution" });
+        query.where!.push({ s: "?distribution", p: "dct:format", o: `<${options.filter.format}>` });
+      }
+    }
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?iri", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
-    let datasetsQuery = Object.assign({}, query, { select: ["?iri", "?title", "?description"], limit: options?.limit, offset: options?.offset, order: "ASC(?title)" });
-    let countQuery = Object.assign({}, query, { select: ["COUNT(*) AS ?count"] });
+    let datasetsQuery = {
+      ...query,
+      select: ["?iri", "SAMPLE(?titles) as ?title", "SAMPLE(?descriptions) as ?description"],
+      limit: options?.limit,
+      offset: options?.offset,
+      group: "?iri"
+    };
+
+    let countQuery = {
+      ...query,
+      select: ["COUNT(distinct ?iri) AS ?count"]
+    };
+
+    if (options?.order === "title") datasetsQuery.order = "arq:collation('cs', ?title)";
+
 
     const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
     const count = await this.sparql.query<{ count: number }>(countQuery).then(result => result[0].count);
@@ -160,7 +201,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
@@ -179,7 +220,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ label: string, count: string }>(query);
@@ -189,9 +230,9 @@ export class CatalogService {
   async getFormats() {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
-      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],
+      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(DISTINCT ?datasetIri) as ?count"],
       where: [
-        { s: "?s", type: "dcat:Dataset", p: "dcat:distribution", o: "?distributionIri" },
+        { s: "?datasetIri", type: "dcat:Dataset", p: "dcat:distribution", o: "?distributionIri" },
         { s: "?distributionIri", p: "dct:format", o: "?iri" },
         { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
       ],
@@ -202,7 +243,7 @@ export class CatalogService {
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN (${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+      query.filter!.push(`? publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
