@@ -12,7 +12,7 @@
     <a (click)="showInfo = !showInfo" class="ml-1 btn pr-1">ⓘ</a>
   </div>
 
-  <small *ngIf="head?.lastModified">Poslední změna {{head.lastModified | date:"d. M. y H:m:s"}}</small>
+  <small *ngIf="head?.lastModified">Poslední změna {{head.lastModified | date:"d. M. y H:mm:ss"}}</small>
 
   <div class="info mt-3" [hidden]="!showInfo">
     <table>
