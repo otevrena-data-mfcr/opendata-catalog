@@ -19,11 +19,12 @@
       <div class="px-5 pt-4">
 
         <div>
-          <p>
+          <p *ngIf="!loading">
             Nalezeno {{count}} datových sad.
             <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a (click)="filter.hideChild = false; setFilter();">Zobrazit</a></ng-container>
             <ng-container *ngIf="!filter.hideChild"><a (click)="filter.hideChild = true; setFilter();">Skrýt podřízené datové sady.</a></ng-container>
           </p>
+          <p *ngIf="loading">Načítám...</p>
         </div>
         <div *ngFor="let dataset of datasets" class="dataset my-3">
           <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>

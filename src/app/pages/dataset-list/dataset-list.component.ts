@@ -24,6 +24,8 @@ export class DatasetListComponent implements OnInit {
 
   limit = 20;
 
+  loading: boolean = false;
+
   constructor(
     public catalog: CatalogService,
     private route: ActivatedRoute,
@@ -41,7 +43,7 @@ export class DatasetListComponent implements OnInit {
       this.filter.theme = params["theme"];
       this.filter.keyword = params["keyword"];
       this.filter.format = params["format"];
-      
+
       if (params["hideChild"] !== undefined) this.filter.hideChild = (params["hideChild"] === "true" || params["hideChild"] === true);
 
       this.loadDatasets();
@@ -53,6 +55,12 @@ export class DatasetListComponent implements OnInit {
   }
 
   async loadDatasets(more = false) {
+
+    this.loading = true;
+    if (!more) {
+      this.datasets = [];
+      this.count = 0;
+    }
 
     const query: DatasetQueryOptions = {
       filter: this.filter,
@@ -68,6 +76,8 @@ export class DatasetListComponent implements OnInit {
       this.datasets = result.datasets;
       this.count = result.count;
     }
+
+    this.loading = false;
   }
 
   setFilter() {
