@@ -64,21 +64,45 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
   async loadDataset(iri: string) {
 
+    this.dataset = undefined;
+    this.distributions = [];
+    this.scripts = [];
+    this.previews = [];
+    this.childDatasets = [];
+    this.parentDatasets = [];
+
+    // LOAD DATASET
     try {
       this.dataset = await this.catalog.getDataset(iri);
     }
     catch (err) {
-      if (err.status === 404) return this.router.navigate(["/not-found"], { replaceUrl: true });
+      if (err.status === 404) return this.router.navigate(["/not-found"], { skipLocationChange: true });
       else throw err;
     }
 
+    // LOAD CHILD DATASETS
     this.childDatasets = await this.catalog.findChildDatasets(iri);
     this.childDatasets.sort((a, b) => a.title.localeCompare(b.title));
 
-    const parentDatasets = [];
-    if (this.dataset.isPartOf) {
+    // LOAD PARENT DATASETS
+    this.parentDatasets = await this.loadParentDatasets(this.dataset)
 
-      let parentIri: string | null = this.dataset.isPartOf[0]
+    // LOAD DISTRIBUTIONS
+    this.distributions = this.dataset.distributions.map(distributionIri => ({ iri: distributionIri })) || [];
+
+    await Promise.all(this.distributions.map(distribution => this.loadDistribution(distribution)));
+
+    this.previews = this.distributions.filter(item => item.preview);
+    this.scripts = this.distributions.filter(item => item.metadata?.format && this.scriptFormats.indexOf(item.metadata.format) !== -1);
+
+  }
+
+  async loadParentDatasets(dataset:Dataset){
+    const parentDatasets = [];
+
+    if (dataset.isPartOf) {
+
+      let parentIri: string | null = dataset.isPartOf[0];
 
       while (parentIri) {
         try {
@@ -87,17 +111,9 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
           parentIri = parent.isPartOf ? parent.isPartOf[0] : null;
         } catch (err) { parentIri = null; }
       }
-
     }
-    this.parentDatasets = parentDatasets;
 
-    this.distributions = this.dataset.distributions.map(distributionIri => ({ iri: distributionIri })) || [];
-
-    await Promise.all(this.distributions.map(distribution => this.loadDistribution(distribution)));
-
-    this.previews = this.distributions.filter(item => item.preview);
-    this.scripts = this.distributions.filter(item => item.metadata?.format && this.scriptFormats.indexOf(item.metadata.format) !== -1);
-
+    return parentDatasets;
   }
 
   async loadDistribution(distribution: DistributionInfo) {
