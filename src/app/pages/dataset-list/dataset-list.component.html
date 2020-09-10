@@ -4,13 +4,13 @@
       <div class="px-5 pt-4">
 
         <h3>Téma</h3>
-        <app-nav-filter [options]="themes" [(ngModel)]="filter.theme" (ngModelChange)="setFilter()"></app-nav-filter>
+        <app-nav-filter [options]="themes" [(ngModel)]="filter.theme" (ngModelChange)="updateFilter()"></app-nav-filter>
 
         <h3 class="mt-3">Klíčová slova</h3>
-        <app-nav-filter [options]="keywords" [(ngModel)]="filter.keyword" (ngModelChange)="setFilter()"></app-nav-filter>
+        <app-nav-filter [options]="keywords" [(ngModel)]="filter.keyword" (ngModelChange)="updateFilter()"></app-nav-filter>
 
         <h3 class="mt-3">Formáty</h3>
-        <app-nav-filter [options]="formats" [(ngModel)]="filter.format" (ngModelChange)="setFilter()"></app-nav-filter>
+        <app-nav-filter [options]="formats" [(ngModel)]="filter.format" (ngModelChange)="updateFilter()"></app-nav-filter>
 
       </div>
     </div>
@@ -21,8 +21,8 @@
         <div>
           <p *ngIf="!loading">
             Nalezeno {{count}} datových sad.
-            <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a (click)="filter.hideChild = false; setFilter();">Zobrazit</a></ng-container>
-            <ng-container *ngIf="!filter.hideChild"><a (click)="filter.hideChild = true; setFilter();">Skrýt podřízené datové sady.</a></ng-container>
+            <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a [routerLink]="getFilterLink({hideChild:false})" replaceUrl>Zobrazit</a></ng-container>
+            <ng-container *ngIf="!filter.hideChild"><a [routerLink]="getFilterLink({hideChild:true})" replaceUrl>Skrýt podřízené datové sady.</a></ng-container>
           </p>
           <p *ngIf="loading">Načítám...</p>
         </div>

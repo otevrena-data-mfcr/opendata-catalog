@@ -80,13 +80,13 @@ export class DatasetListComponent implements OnInit {
     this.loading = false;
   }
 
-  setFilter() {
-    const filter = JSON.parse(JSON.stringify(this.filter));
-    this.router.navigate(["./", filter], { replaceUrl: true });
+  getFilterLink(updateFilter: Partial<DatasetQueryOptions["filter"]> = {}, replace = false): any[] {
+    const filter = Object.assign({}, this.filter, updateFilter);
+    return ["./", JSON.parse(JSON.stringify(filter))]; // JSON parse and stringify removes undefined values
   }
 
-  getPageLink(page: number) {
-    return ["./", { page }];
+  updateFilter() {
+    this.router.navigate(this.getFilterLink(), { replaceUrl: true });
   }
 
 }
