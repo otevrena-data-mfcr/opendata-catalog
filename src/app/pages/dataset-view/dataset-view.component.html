@@ -18,16 +18,27 @@
         <h1 class="mt-4">{{dataset?.title}}</h1>
 
         <p>{{dataset?.description}}</p>
-<!-- 
-        <div class="preview">
-          <h3>Ukázka dat</h3>
+
+        <div *ngIf="previews.length">
+          <h2>Ukázka dat</h2>
+
+          <ng-container *ngFor="let distribution of previews">
+
+            <h4 class="mt-4">{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
+
+            <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
+
+          </ng-container>
+
         </div>
-        <div class="scripts">
-          <h3>Jak stáhnout data?</h3>
-          <div *ngFor="let distribution of distributions" class="script">
-            <h4>{{distribution.format}}</h4>
+
+        <div class="scripts" *ngIf="scripts.length">
+          <h2>Jak stáhnout data?</h2>
+          <div *ngFor="let distribution of scripts">
+            <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
+            <div class="script my-3"></div>
           </div>
-        </div> -->
+        </div>
 
       </div>
     </div>
@@ -40,7 +51,7 @@
 
           <div *ngFor="let distribution of distributions" class="distribution">
             <h3>{{distribution["dct:format"]}}</h3>
-            <app-distribution-card [distribution]="distribution"></app-distribution-card>
+            <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
           </div>
         </ng-container>
 

@@ -1,32 +1,32 @@
 <div class="bg-light p-3">
   <h3 class="mb-3">
-    {{distribution?.format}}
-    <span *ngIf="head?.contentLength" class="float-right">
-      {{head?.contentLength | prettyBytes}}
+    {{metadata?.format}}
+    <span *ngIf="headers?.contentLength" class="float-right">
+      {{headers?.contentLength | prettyBytes}}
     </span>
   </h3>
 
   <div class="buttons d-flex flex-row">
-    <a *ngIf="distribution?.downloadUrl" [href]="distribution!.downloadUrl" class="btn btn-success flex-fill">Stáhnout</a>
-    <a *ngIf="!distribution?.downloadUrl && distribution?.accessUrl" [href]="distribution!.accessUrl" target="_blank" class="btn btn-success flex-fill">Otevřít</a>
+    <a *ngIf="metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn btn-success flex-fill">Stáhnout</a>
+    <a *ngIf="!metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn btn-success flex-fill">Otevřít</a>
     <a (click)="showInfo = !showInfo" class="ml-1 btn pr-1">ⓘ</a>
   </div>
 
-  <small *ngIf="head?.lastModified">Poslední změna {{head.lastModified | date:"d. M. y H:mm:ss"}}</small>
+  <small *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
 
   <div class="info mt-3" [hidden]="!showInfo">
     <table>
       <tr>
         <th class="pr-3">Typ obsahu:</th>
-        <td>{{distribution!.mediaType || "neznámý"}}</td>
+        <td>{{metadata?.mediaType || "neznámý"}}</td>
       </tr>
       <tr>
         <th class="pr-3">Typ komprese:</th>
-        <td>{{distribution!.compressFormat || "žádný"}}</td>
+        <td>{{metadata?.compressFormat || "žádný"}}</td>
       </tr>
       <tr>
         <th class="pr-3">Typ balíčku:</th>
-        <td>{{distribution!.packageFormat || "žádný"}}</td>
+        <td>{{metadata?.packageFormat || "žádný"}}</td>
       </tr>
     </table>
 

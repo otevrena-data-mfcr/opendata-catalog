@@ -6,6 +6,22 @@ import { flatMap } from "rxjs/operators";
 import { Dataset, Distribution } from 'app/schema';
 
 import { CatalogService } from 'app/services/catalog.service';
+import { DistributionCardComponent } from 'app/components/distribution-card/distribution-card.component';
+import { HttpClient } from '@angular/common/http';
+
+
+interface DistributionInfo {
+  iri: string;
+  url?: string;
+  metadata?: Distribution;
+  headers?: {
+    lastModified: string | null;
+    contentType: string | null;
+    contentLength: number | null;
+    acceptRanges: string | null;
+  };
+  preview?: string;
+}
 
 @Component({
   selector: 'app-dataset-view',
@@ -15,10 +31,15 @@ import { CatalogService } from 'app/services/catalog.service';
 export class DatasetViewComponent implements OnInit, OnDestroy {
 
   dataset?: Dataset;
-
-  distributions: Distribution[] = [];
   childDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
   parentDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
+
+  distributions: DistributionInfo[] = [];
+  previews: DistributionInfo[] = [];
+  scripts: DistributionInfo[] = [];
+
+  previewFormats = ["text/csv", "application/json"];
+  scriptFormats = ["CSV", "JSON"];
 
   paramsSubscription: Subscription;
 
@@ -26,6 +47,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private catalog: CatalogService,
+    private http: HttpClient
   ) {
 
 
@@ -69,16 +91,38 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     }
     this.parentDatasets = parentDatasets;
 
-    this.distributions = [];
-    if (this.dataset.distributions) {
+    this.distributions = this.dataset.distributions.map(distributionIri => ({ iri: distributionIri })) || [];
 
-      for (let distributionIri of this.dataset.distributions) {
+    await Promise.all(this.distributions.map(distribution => this.loadDistribution(distribution)));
 
-        try {
-          const distribution = await this.catalog.getDistribution(distributionIri);
-          this.distributions.push(distribution);
-        } catch (err) { }
+    this.previews = this.distributions.filter(item => item.preview);
+    this.scripts = this.distributions.filter(item => item.metadata?.format && this.scriptFormats.indexOf(item.metadata.format) !== -1);
 
+  }
+
+  async loadDistribution(distribution: DistributionInfo) {
+
+    distribution.metadata = await this.catalog.getDistribution(distribution.iri);
+
+    const url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
+
+    if (url) {
+      const gatewayUrl = "https://opendata.mfcr.cz/gateway/" + url.replace("//", "/");
+      const response = await this.http.head(gatewayUrl, { observe: "response" }).toPromise();
+
+      distribution.url = gatewayUrl;
+
+      distribution.headers = {
+        lastModified: response.headers.get("last-modified"),
+        contentType: response.headers.get("content-type"),
+        contentLength: Number(response.headers.get("content-length")) || null,
+        acceptRanges: response.headers.get("accept-ranges"),
+      };
+      if (distribution.headers.acceptRanges === "bytes" && distribution.headers.contentType && this.previewFormats.indexOf(distribution.headers.contentType) !== -1) {
+        const headers = {
+          "Range": `bytes=0-2048`
+        };
+        distribution.preview = await this.http.get(url, { headers, responseType: "text" }).toPromise();
       }
     }
 

@@ -1,3 +1,4 @@
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from "@angular/forms";
@@ -7,20 +8,23 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+/* SERVICES */
+import { ConfigService } from './services/config.service';
+import { CatalogService } from './services/catalog.service';
+
+/* PAGES */
 import { DatasetListComponent } from './pages/dataset-list/dataset-list.component';
 import { DatasetViewComponent } from './pages/dataset-view/dataset-view.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 
-import { DataPreviewCsvComponent } from './components/data-preview-csv/data-preview-csv.component';
-import { DataPreviewJsonComponent } from './components/data-preview-json/data-preview-json.component';
-import { DataPreviewZipComponent } from './components/data-preview-zip/data-preview-zip.component';
-import { DistributionCardComponent } from './components/distribution-card/distribution-card.component';
-
-import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
-import { ConfigService } from './services/config.service';
-import { CatalogService } from './services/catalog.service';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+/* COMPONENTS */
 import { NavFilterComponent } from './components/nav-filter/nav-filter.component';
+import { DistributionCardComponent } from './components/distribution-card/distribution-card.component';
+import { DataPreviewComponent } from './components/data-preview/data-preview.component';
+
+/* PIPES */
+import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
+
 
 @NgModule({
   declarations: [
@@ -31,11 +35,9 @@ import { NavFilterComponent } from './components/nav-filter/nav-filter.component
     NotFoundComponent,
     DistributionCardComponent,
 
-    DataPreviewCsvComponent,
-    DataPreviewJsonComponent,
-    DataPreviewZipComponent,
     PrettyBytesPipe,
     NavFilterComponent,
+    DataPreviewComponent,
   ],
   imports: [
     BrowserModule,
