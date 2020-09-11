@@ -85,7 +85,7 @@ export class CatalogService {
 
     let datasetsQuery = {
       ...query,
-      select: ["?iri", "SAMPLE(?titles) as ?title", "SAMPLE(?descriptions) as ?description"],
+      select: ["?iri", "str(SAMPLE(?titles)) as ?title", "SAMPLE(?descriptions) as ?description"],
       limit: options?.limit,
       offset: options?.offset,
       group: "?iri"
