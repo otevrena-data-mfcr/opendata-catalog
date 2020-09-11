@@ -26,6 +26,7 @@
 
             <h4 class="mt-4">{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
 
+
             <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
 
           </ng-container>
@@ -33,7 +34,7 @@
         </div>
 
         <div class="scripts" *ngIf="scripts.length">
-          <h2>Jak stáhnout data?</h2>
+          <h2 class="mt-4">Jak stáhnout data?</h2>
           <div *ngFor="let distribution of scripts">
             <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
             <div class="script my-3"></div>
