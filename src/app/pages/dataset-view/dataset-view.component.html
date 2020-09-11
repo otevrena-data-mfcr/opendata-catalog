@@ -1,73 +1,70 @@
-<div class="container-fluid h-100">
+<div class="row h-100">
 
-  <div class="row h-100">
+  <div class="col-xl-9 dataset">
+    <div class="pt-2">
 
-    <div class="col-xl-9 dataset">
-      <div class="pt-2 px-5">
-
-        <div class="breadcrumbs text-sm">
-          <a routerLink="/">Katalog datových sad</a>
+      <div class="breadcrumbs text-sm">
+        <a routerLink="/">Katalog datových sad</a>
+        <span> / </span>
+        <ng-container *ngFor="let parentDataset of parentDatasets">
+          <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
           <span> / </span>
-          <ng-container *ngFor="let parentDataset of parentDatasets">
-            <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
-            <span> / </span>
-          </ng-container>
-          <a>{{dataset?.title}}</a>
-        </div>
+        </ng-container>
+        <a>{{dataset?.title}}</a>
+      </div>
 
-        <h1 class="mt-4">{{dataset?.title}}</h1>
+      <h2 class="mt-4">{{dataset?.title}}</h2>
 
-        <p>{{dataset?.description}}</p>
+      <p>{{dataset?.description}}</p>
 
-        <div *ngIf="previews.length">
-          <h2>Ukázka dat</h2>
+      <div *ngIf="previews.length">
+        <h2>Ukázka dat</h2>
 
-          <ng-container *ngFor="let distribution of previews">
+        <ng-container *ngFor="let distribution of previews">
 
-            <h4 class="mt-4">{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
+          <h4 class="mt-4">{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
 
 
-            <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
+          <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
 
-          </ng-container>
-
-        </div>
-
-        <div class="scripts" *ngIf="scripts.length">
-          <h2 class="mt-4">Jak stáhnout data?</h2>
-          <div *ngFor="let distribution of scripts">
-            <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
-            <div class="script my-3"></div>
-          </div>
-        </div>
+        </ng-container>
 
       </div>
+
+      <div class="scripts" *ngIf="scripts.length">
+        <h2 class="mt-4">Jak stáhnout data?</h2>
+        <div *ngFor="let distribution of scripts">
+          <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
+          <div class="script my-3"></div>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <div class="col-xl-3">
-      <div class="pt-2">
+  <div class="col-xl-3">
+    <div class="pt-2">
 
-        <ng-container *ngIf="distributions.length">
-          <h2 class="mt-5 mb-3">Ke stažení</h2>
+      <ng-container *ngIf="distributions.length">
+        <h3 class="mt-5 mb-3">Ke stažení</h3>
 
-          <div *ngFor="let distribution of distributions" class="distribution">
-            <h3>{{distribution["dct:format"]}}</h3>
-            <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
-          </div>
-        </ng-container>
+        <div *ngFor="let distribution of distributions" class="distribution">
+          <h4>{{distribution["dct:format"]}}</h4>
+          <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
+        </div>
+      </ng-container>
 
 
 
-        <ng-container *ngIf="childDatasets.length">
-          <h2 class="mt-3">Datové sady</h2>
+      <ng-container *ngIf="childDatasets.length">
+        <h3 class="mt-3">Datové sady</h3>
 
-          <div *ngFor="let childDataset of childDatasets" class="dataset">
-            <h3>{{childDataset.title}}</h3>
-            <p>{{childDataset.description}}</p>
-            <a [routerLink]="['/datasets',childDataset.iri]">Otevřít</a>
-          </div>
-        </ng-container>
-      </div>
+        <div *ngFor="let childDataset of childDatasets" class="dataset">
+          <h4>{{childDataset.title}}</h4>
+          <p>{{childDataset.description}}</p>
+          <a [routerLink]="['/datasets',childDataset.iri]">Otevřít</a>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>
