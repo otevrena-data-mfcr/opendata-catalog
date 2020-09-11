@@ -8,6 +8,7 @@ import { Dataset, Distribution } from 'app/schema';
 import { CatalogService } from 'app/services/catalog.service';
 import { DistributionCardComponent } from 'app/components/distribution-card/distribution-card.component';
 import { HttpClient } from '@angular/common/http';
+import { ConfigService } from 'app/services/config.service';
 
 
 interface DistributionInfo {
@@ -47,12 +48,10 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private catalog: CatalogService,
-    private http: HttpClient
+    private http: HttpClient,
+    private config: ConfigService
   ) {
-
-
     this.paramsSubscription = route.params.subscribe(params => this.loadDataset(params["iri"]))
-
   }
 
   ngOnInit(): void {
@@ -97,7 +96,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
   }
 
-  async loadParentDatasets(dataset:Dataset){
+  async loadParentDatasets(dataset: Dataset) {
     const parentDatasets = [];
 
     if (dataset.isPartOf) {
@@ -120,13 +119,13 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
     distribution.metadata = await this.catalog.getDistribution(distribution.iri);
 
-    const url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
+    let url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
 
     if (url) {
-      const gatewayUrl = "https://opendata.mfcr.cz/gateway/" + url.replace("//", "/");
-      const response = await this.http.head(gatewayUrl, { observe: "response" }).toPromise();
+      if (this.config.config.corsGateway) url = this.config.config.corsGateway + url.replace("//", "/");
+      const response = await this.http.head(url, { observe: "response" }).toPromise();
 
-      distribution.url = gatewayUrl;
+      distribution.url = url;
 
       distribution.headers = {
         lastModified: response.headers.get("last-modified"),

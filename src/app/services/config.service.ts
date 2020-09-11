@@ -8,6 +8,7 @@ interface Config {
   endpoint: string;
   publishers: string[];
   ordering: "generic" | "arq_collation";
+  corsGateway: string
 }
 
 @Injectable({
