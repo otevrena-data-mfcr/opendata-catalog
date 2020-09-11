@@ -117,13 +117,19 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
   async loadDistribution(distribution: DistributionInfo) {
 
+    const cacheHeaders = {
+      'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    };
+
     distribution.metadata = await this.catalog.getDistribution(distribution.iri);
 
     let url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
 
     if (url) {
       if (this.config.config.corsGateway) url = this.config.config.corsGateway + url.replace("//", "/");
-      const response = await this.http.head(url, { observe: "response" }).toPromise();
+      const response = await this.http.head(url, { observe: "response", headers: cacheHeaders }).toPromise();
 
       distribution.url = url;
 
@@ -135,6 +141,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
       };
       if (distribution.headers.acceptRanges === "bytes" && distribution.headers.contentType && this.previewFormats.indexOf(distribution.headers.contentType) !== -1) {
         const headers = {
+          ...cacheHeaders,
           "Range": `bytes=0-2048`
         };
         distribution.preview = await this.http.get(url, { headers, responseType: "text" }).toPromise();
