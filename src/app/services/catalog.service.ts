@@ -1,12 +1,10 @@
-import { Injectable, Query } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
-import { HttpClient } from '@angular/common/http';
 
 import { SparqlService } from "app/services/sparql.service";
 import { Dataset, Distribution, DatasetFields, DistributionFields } from 'app/schema';
 
-import { QueryDefinition, Builder } from "app/lib/sparql-builder";
-import { Data } from '@angular/router';
+import { QueryDefinition } from "app/lib/sparql-builder";
 
 export interface DatasetQueryOptions {
   limit?: number;
