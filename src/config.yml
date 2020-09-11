@@ -1,8 +1,20 @@
-endpoint: https://data.gov.cz/sparql
 
+
+# SPARQL endpoint to load data from
+endpoint: https://data.gov.cz/sparql # NKOD 
+
+# Filter publishers shown in this catalog
 # comment out following list to show all publishers
 publishers: 
-  - https://data.gov.cz/zdroj/ovm/00006947
+  - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
 
+# Ordering method used for sorting datasets
 ordering: "generic"
 # ordering: "arq_collation" # use function http://jena.apache.org/ARQ/function#collation for ordering taking into account locale. works only with Jena Fuseki SPARQL endpoint
+
+# CORS gateway for accessing dataset files' last modified date and previews in case the files are not served with CORS
+# corsGateway: "https://example.com/gateway?url="
+# corsGateway: "https://example.com/gateway/"
+
+# If set to true in the default mode chind datasets will be hidden from the dataset list
+hideChild: false
