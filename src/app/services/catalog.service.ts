@@ -248,7 +248,7 @@ export class CatalogService {
     };
 
     if (this.configService.config.publishers) {
-      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
+      query.where!.push({ s: "?datasetIri", p: "dct:publisher", o: "?publisher" });
       query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
