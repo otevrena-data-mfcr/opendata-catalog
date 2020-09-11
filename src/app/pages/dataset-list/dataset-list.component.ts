@@ -3,6 +3,7 @@ import { CatalogService, DatasetQueryOptions } from 'app/services/catalog.servic
 import { Dataset } from 'app/schema';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NavFilterOption } from 'app/components/nav-filter/nav-filter.component';
+import { ConfigService } from 'app/services/config.service';
 
 @Component({
   selector: 'app-dataset-list',
@@ -18,9 +19,7 @@ export class DatasetListComponent implements OnInit {
   keywords: NavFilterOption[];
   formats: NavFilterOption[];
 
-  filter: DatasetQueryOptions["filter"] = {
-    hideChild: true
-  };
+  filter: DatasetQueryOptions["filter"];
 
   limit = 20;
 
@@ -30,10 +29,15 @@ export class DatasetListComponent implements OnInit {
     public catalog: CatalogService,
     private route: ActivatedRoute,
     private router: Router,
+    private config: ConfigService
   ) {
     this.themes = this.catalog.themes.map(item => ({ ...item, value: item.iri }));
     this.keywords = this.catalog.keywords.map(item => ({ ...item, value: item.label }));
     this.formats = this.catalog.formats.map(item => ({ ...item, value: item.iri }));
+
+    this.filter = {
+      hideChild: config.config.hideChild
+    };
   }
 
   ngOnInit(): void {
