@@ -4,7 +4,8 @@
   "scripts": {
     "build": "ng build --prod --outputHashing=none",
     "dev": "ng serve",
-    "update-portal": "npm run build && rm -fr ../opendata-portal/catalog/dist && cp ./dist ../opendata-portal/catalog/ -R"
+    "package": "rm -f package/*.js package/*.css && cat dist/*.js > package/catalog.js && cp dist/styles.css dist/config.yml dist/3rdpartylicenses.txt package/",
+    "update-portal": "npm run build && npm run package && rm -fr ../opendata-portal/catalog/package && cp ./package ../opendata-portal/catalog/ -R"
   },
   "private": true,
   "dependencies": {
