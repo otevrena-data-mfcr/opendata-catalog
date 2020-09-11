@@ -197,7 +197,12 @@ export class CatalogService {
       prefixes: this.prefixes,
       select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],
       where: [
-        { s: "?s", p: "dcat:theme", o: "?iri" },
+        {
+          s: "?datasetIri", po: [
+            { p: "a", o: "dcat:Dataset" },
+            { p: "dcat:theme", o: "?iri" }
+          ]
+        },
         { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
       ],
       filter: ["LANG(?prefLabel) = 'cs'",],
@@ -206,7 +211,7 @@ export class CatalogService {
     };
 
     if (this.configService.config.publishers) {
-      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
+      query.where!.push({ s: "?datasetIri", p: "dct:publisher", o: "?publisher" });
       query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
