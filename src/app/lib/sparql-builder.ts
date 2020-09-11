@@ -14,7 +14,7 @@ export interface QueryDefinition {
 
 export type QueryDefinitionPrefixes = { [prefix: string]: string };
 
-export type QueryDefinitionWhere = ({ s: string, p?: string, o?: string, optional?: boolean } | { s: string, po: { p: string, o: string }[], optional?: boolean });
+export type QueryDefinitionWhere = ({ s: string, p?: string, o?: string, optional?: boolean, optionalFilter?: QueryDefinitionFilter } | { s: string, po: { p: string, o: string }[], optional?: boolean, optionalFilter?: QueryDefinitionFilter });
 
 export type QueryDefinitionFilter = (string | { condition: string, ne?: boolean });
 
@@ -54,7 +54,7 @@ function buildQueryWhere(def: QueryDefinitionWhere) {
     where += ` ${def.p} ${def.o} .`;
   }
 
-  return def.optional ? `OPTIONAL { ${where} }` : where;
+  return def.optional ? `OPTIONAL { ${where}${def.optionalFilter ? " " + buildQueryFilter(def.optionalFilter) : ""} }` : where;
 }
 
 function buildQueryFilter(def: QueryDefinitionFilter) {

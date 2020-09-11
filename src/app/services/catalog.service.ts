@@ -29,6 +29,8 @@ export class CatalogService {
   keywords: { label: string, count: string }[] = [];
   formats: { iri: string, label: string, count: string }[] = [];
 
+  lang: string = "cs";
+
   private prefixes = {
     dct: "http://purl.org/dc/terms/",
     dcat: "http://www.w3.org/ns/dcat#",
@@ -50,7 +52,7 @@ export class CatalogService {
     ]);
   }
 
-  async findDatasets(options?: DatasetQueryOptions, lang: string = "cs") {
+  async findDatasets(options?: DatasetQueryOptions) {
 
     const query: QueryDefinition = {
       prefixes: this.prefixes,
@@ -60,7 +62,7 @@ export class CatalogService {
         { s: "?iri", p: "dcat:distribution", o: "?distribution", optional: true },
         { s: "?distribution", p: "dct:format", o: `?format`, optional: true }
       ],
-      filter: [`LANG(?titles) = '${lang}'`],
+      filter: [`LANG(?titles) = '${this.lang}'`],
     };
 
     if (options?.filter?.hideChild) query.filter!.push({ ne: true, condition: "{ ?iri dct:isPartOf ?isPart }" });
@@ -69,7 +71,7 @@ export class CatalogService {
 
     if (options?.filter?.keyword) {
       query.where!.push({ s: "?iri", p: "dcat:keyword", o: "?keyword" });
-      query.filter!.push(`?keyword = '${options.filter.keyword}'@${lang}`);
+      query.filter!.push(`?keyword = '${options.filter.keyword}'@${this.lang}`);
     }
     if (options?.filter?.format) {
       query.where!.push({ s: "?iri", p: "dcat:distribution", o: "?distribution" });
@@ -95,7 +97,7 @@ export class CatalogService {
     };
 
     if (options?.order && ["title"].indexOf(options.order) !== -1) {
-      if (this.configService.config.ordering === "arq_collation") datasetsQuery.order = `<http://jena.apache.org/ARQ/function#collation>('${lang}', ?title)`;
+      if (this.configService.config.ordering === "arq_collation") datasetsQuery.order = `<http://jena.apache.org/ARQ/function#collation>('${this.lang}', ?title)`;
       else datasetsQuery.order = `ASC(?${options.order})`;
     }
 
@@ -150,9 +152,12 @@ export class CatalogService {
             { p: "dct:title", o: "?title" }
           ]
         },
-        { s: "?iri", p: "dct:description", o: "?description", optional: true },
+        { s: "?iri", p: "dct:description", o: "?description", optional: true, optionalFilter: `LANG(?description) = '${this.lang}'` },
       ],
-      filter: [`str(?parentIri) = '${parentIri}'`]
+      filter: [
+        `str(?parentIri) = '${parentIri}'`,
+        `LANG(?title) = '${this.lang}'`
+      ]
     };
 
     return this.sparql.query<{ iri: string, title: string, description: string }>(query);

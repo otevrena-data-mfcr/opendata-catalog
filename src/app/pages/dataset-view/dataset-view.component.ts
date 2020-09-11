@@ -88,7 +88,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     this.parentDatasets = await this.loadParentDatasets(this.dataset)
 
     // LOAD DISTRIBUTIONS
-    this.distributions = this.dataset.distributions.map(distributionIri => ({ iri: distributionIri })) || [];
+    this.distributions = this.dataset.distributions?.map(distributionIri => ({ iri: distributionIri })) || [];
 
     await Promise.all(this.distributions.map(distribution => this.loadDistribution(distribution)));
 

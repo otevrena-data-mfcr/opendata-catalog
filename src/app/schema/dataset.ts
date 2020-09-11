@@ -14,5 +14,5 @@ export interface Dataset {
   title: string;
   description: string;
   isPartOf: string[];
-  distributions: string[];
+  distributions?: string[];
 }
