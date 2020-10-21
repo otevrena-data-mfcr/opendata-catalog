@@ -101,14 +101,14 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
     if (dataset.isPartOf) {
 
-      let parentIri: string | null = dataset.isPartOf[0];
+      let parentIri: string | undefined = dataset.isPartOf;
 
       while (parentIri) {
         try {
           const parent: Dataset = await this.catalog.getDataset(parentIri);
           parentDatasets.unshift(parent);
-          parentIri = parent.isPartOf ? parent.isPartOf[0] : null;
-        } catch (err) { parentIri = null; }
+          parentIri = parent.isPartOf;
+        } catch (err) { parentIri = undefined; }
       }
     }
 

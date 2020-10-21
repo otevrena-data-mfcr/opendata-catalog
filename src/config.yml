@@ -1,12 +1,12 @@
 
 
 # SPARQL endpoint to load data from
-endpoint: https://data.gov.cz/sparql # NKOD 
+endpoint: https://opendata.mfcr.cz/lod/sparql # NKOD 
 
 # Filter publishers shown in this catalog
 # comment out following list to show all publishers
-publishers: 
-  - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
+# publishers: 
+  # - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
 
 # Ordering method used for sorting datasets
 ordering: "generic"

@@ -24,6 +24,7 @@ import { DataPreviewComponent } from './components/data-preview/data-preview.com
 
 /* PIPES */
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
+import { DatasetCardComponent } from './components/dataset-card/dataset-card.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
     PrettyBytesPipe,
     NavFilterComponent,
     DataPreviewComponent,
+    DatasetCardComponent,
   ],
   imports: [
     BrowserModule,

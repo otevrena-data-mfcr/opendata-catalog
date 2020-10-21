@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 
 import { SparqlService } from "app/services/sparql.service";
-import { Dataset, Distribution, DatasetFields, DistributionFields } from 'app/schema';
+import { Dataset, Distribution, DatasetFields, DistributionFields, DistributionServiceFields } from 'app/schema';
 
 import { QueryDefinition } from "app/lib/sparql-builder";
 
@@ -35,6 +35,7 @@ export class CatalogService {
     xml: "http://www.w3.org/2001/XMLSchema#",
     rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     skos: "http://www.w3.org/2004/02/skos/core#",
+    foaf: "http://xmlns.com/foaf/0.1/",
   };
 
   constructor(
@@ -162,20 +163,74 @@ export class CatalogService {
   }
 
   async getDataset(iri: string, lang: string = "cs"): Promise<Dataset> {
-    const result = await this.sparql.getDocument<DatasetFields>(iri, "dcat:Dataset", this.prefixes);
+
+    const datasetQuery: QueryDefinition = {
+      prefixes: this.prefixes,
+      select: [
+        "?title",
+        "?description",
+        "?isPartOf",
+        "?publisher",
+        "?documentation",
+      ],
+      where: [
+        { s: `<${iri}>`, p: "dct:title", o: "?title" },
+        { s: `<${iri}>`, optional: true, p: "dct:description", o: "?description" },
+        { s: `<${iri}>`, optional: true, p: "dct:isPartOf", o: "?isPartOf" },
+        { s: `<${iri}>`, optional: true, p: "foaf:page", o: "?documentation" },
+        { s: `<${iri}>`, optional: true, p: "dct:publisher", o: "?publisher" },
+      ]
+    };
+
+    const dataset = await this.sparql.query<Pick<Dataset, "title" | "description" | "isPartOf" | "publisher" | "documentation">>(datasetQuery).then(results => results[0]);
+
+    const keywordsQuery = {
+      prefixes: this.prefixes,
+      select: ["?keyword"],
+      where: [{ s: `<${iri}>`, p: "dct:keyword", o: "?keyword" }]
+    };
+    const keywords = await this.sparql.query<{ keyword: string }>(keywordsQuery).then(results => results.map(result => result.keyword));
+
+    const themesQuery = {
+      prefixes: this.prefixes,
+      select: ["?iri", "?title"],
+      where: [
+        { s: `<${iri}>`, p: "dcat:theme", o: "?iri" },
+        { s: "?iri", p: "skos:prefLabel", o: "?title" },
+      ],
+      filter: [`LANG(?title) = '${lang}'`]
+    };
+    const themes = await this.sparql.query<{ iri: string, title: string }>(themesQuery);
+
+    const distributionsQuery = {
+      prefixes: this.prefixes,
+      select: ["?distributionIri"],
+      where: [{ s: `<${iri}>`, p: "dcat:distribution", o: "?distributionIri" }],
+    };
+    const distributions = await this.sparql.query<{ distributionIri: string }>(distributionsQuery).then(results => results.map(result => result.distributionIri));
+
     return {
       iri,
-      title: result["dct:title"][lang][0],
-      description: result["dct:description"][lang][0],
-      isPartOf: result["dct:isPartOf"],
-      distributions: result["dcat:distribution"]
+      ...dataset,
+      keywords,
+      themes,
+      distributions,
+      // accrualPeriodicity: result["dct:accrualPeriodicity"]?.[0],
+      // // conformsTo,
+      // contactPoint: result["dcat:contactPoint"]?.[0],
+      // publisher: result["dct:publisher"]?.[0],
+      // // spatial,
+      // // spatialResolutionInMeters,
+      // // temporal,
+      // // temporalResolution,
     };
   }
 
-  async getDistribution(iri: string): Promise<Distribution> {
-    const result = await this.sparql.getDocument<DistributionFields>(iri, "dcat:Distribution", this.prefixes);
+  async getDistribution(iri: string, lang: string = "cs"): Promise<Distribution> {
+    const result = await this.sparql.getDocumentFields<DistributionFields>(iri, "dcat:Distribution", this.prefixes);
     const format = this.formats.find(format => format.iri === result["dct:format"]?.[0]);
-    return {
+
+    const distribution: Distribution = {
       iri,
       format: format?.label,
       mediaType: result["dcat:mediaType"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
@@ -184,10 +239,23 @@ export class CatalogService {
       compressFormat: result["dcat:compressFormat"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
       packageFormat: result["dcat:packageFormat"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
     };
+
+    if (result["dcat:accessService"]) {
+      const serviceResult = await this.sparql.getDocumentFields<DistributionServiceFields>(result["dcat:accessService"][0], "dcat:DataService", this.prefixes);
+
+      distribution.accessService = {
+        iri: result["dcat:accessService"]?.[0],
+        title: serviceResult["dct:title"]?.[lang]?.[0],
+        endpointURL: serviceResult["dcat:endpointURL"]?.[0],
+        endpointDescription: serviceResult["dcat:endpointDescription"]?.[0],
+      }
+    }
+
+    return distribution;
   }
 
   async getDocument(iri: string) {
-    return this.sparql.getDocument<Dataset | Distribution>(iri, undefined, this.prefixes);
+    return this.sparql.getDocumentFields<Dataset | Distribution>(iri, undefined, this.prefixes);
   }
 
   async getThemes() {

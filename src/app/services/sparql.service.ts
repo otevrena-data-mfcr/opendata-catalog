@@ -40,7 +40,7 @@ export class SparqlService {
   ) {
   }
 
-  async getDocument<T>(iri: string, type?: string, prefixes: QueryDefinitionPrefixes = {}) {
+  async getDocumentFields<T>(iri: string, type?: string, prefixes: QueryDefinitionPrefixes = {}) {
 
     const datasetQuery: QueryDefinition = {
       prefixes,

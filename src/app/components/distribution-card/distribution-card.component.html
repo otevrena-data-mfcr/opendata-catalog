@@ -1,21 +1,32 @@
 <div class="bg-light p-3">
-  <h3 class="mb-3">
+  <h3 *ngIf="metadata?.accessService" class="mb-3">
+    {{metadata?.accessService?.title}}
+  </h3>
+  <h3 *ngIf="!metadata?.accessService" class="mb-3">
     {{metadata?.format}}
     <span *ngIf="headers?.contentLength" class="float-right">
       {{headers?.contentLength | prettyBytes}}
     </span>
   </h3>
 
-  <div class="buttons d-flex flex-row">
-    <a *ngIf="metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn btn-success flex-fill">Stáhnout</a>
-    <a *ngIf="!metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn btn-success flex-fill">Otevřít</a>
-    <a (click)="showInfo = !showInfo" class="ml-1 btn pr-1">ⓘ</a>
+  <div class="buttons">
+    <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn btn-success w-100">Popis služby</a>
+    <a *ngIf="!metadata?.accessService && metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn btn-success w-100">Stáhnout</a>
+    <a *ngIf="!metadata?.accessService && !metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn btn-success w-100">Otevřít</a>
+
   </div>
-
-  <small *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
-
-  <div class="info mt-3" [hidden]="!showInfo">
-    <table>
+  <div class="info">
+    <small>
+      <ng-container *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</ng-container>
+      <a (click)="showInfo = !showInfo" class="ml-1 pr-1">zobrazit metadata</a>
+    </small>
+  </div>
+  <div class="metadata small mt-3" *ngIf="showInfo">
+    <table class="table table-sm table-responsive">
+      <tr>
+        <th class="pr-3">IRI</th>
+        <td>{{metadata?.iri}}</td>
+      </tr>
       <tr>
         <th class="pr-3">Typ obsahu:</th>
         <td>{{metadata?.mediaType || "neznámý"}}</td>
