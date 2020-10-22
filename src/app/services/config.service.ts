@@ -9,7 +9,8 @@ interface Config {
   publishers: string[];
   ordering: "generic" | "arq_collation";
   corsGateway: string,
-  hideChild: boolean
+  hideChild: boolean,
+  themesPrefix?: string,
 }
 
 @Injectable({

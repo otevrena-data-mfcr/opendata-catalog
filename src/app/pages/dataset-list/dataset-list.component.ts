@@ -35,6 +35,10 @@ export class DatasetListComponent implements OnInit {
     this.keywords = this.catalog.keywords.map(item => ({ ...item, value: item.label }));
     this.formats = this.catalog.formats.map(item => ({ ...item, value: item.iri }));
 
+    if (this.config.config.themesPrefix) {
+      this.themes = this.themes.filter(theme => theme.value.startsWith(this.config.config.themesPrefix!));
+    }
+
     this.filter = {
       hideChild: config.config.hideChild
     };
