@@ -37,13 +37,13 @@
 
       </div>
 
-      <div class="scripts" *ngIf="scripts.length">
+      <!-- <div class="scripts" *ngIf="scripts.length">
         <h3 class="mt-4">Jak stáhnout data?</h3>
         <div *ngFor="let distribution of scripts">
           <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
           <div class="script my-3"></div>
         </div>
-      </div>
+      </div> -->
 
       <div *ngIf="childDatasets.length" class="childDatasets">
         <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="my-3"></app-dataset-card>
