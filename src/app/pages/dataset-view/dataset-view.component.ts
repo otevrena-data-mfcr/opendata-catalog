@@ -127,7 +127,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
     let url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
 
-    if (url) {
+    if (url && !distribution.metadata.accessService) {
       if (this.config.config.corsGateway) url = this.config.config.corsGateway + url.replace("//", "/");
       const response = await this.http.head(url, { observe: "response", headers: cacheHeaders }).toPromise();
 
