@@ -38,6 +38,14 @@ export class CatalogService {
     foaf: "http://xmlns.com/foaf/0.1/",
   };
 
+  private prefixesString = `PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX dcat: <http://www.w3.org/ns/dcat#>
+  PREFIX xml: <http://www.w3.org/2001/XMLSchema#>
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  `
+
   constructor(
     private configService: ConfigService,
     private sparql: SparqlService,
@@ -175,11 +183,12 @@ export class CatalogService {
       ],
       where: [
         { s: `<${iri}>`, p: "dct:title", o: "?title" },
-        { s: `<${iri}>`, optional: true, p: "dct:description", o: "?description" },
+        { s: `<${iri}>`, optional: true, p: "dct:description", o: "?description", optionalFilter: `LANG(?description) = '${this.lang}'` },
         { s: `<${iri}>`, optional: true, p: "dct:isPartOf", o: "?isPartOf" },
         { s: `<${iri}>`, optional: true, p: "foaf:page", o: "?documentation" },
         { s: `<${iri}>`, optional: true, p: "dct:publisher", o: "?publisher" },
-      ]
+      ],
+      filter: [`LANG(?title) = '${this.lang}'`]
     };
 
     const dataset = await this.sparql.query<Pick<Dataset, "title" | "description" | "isPartOf" | "publisher" | "documentation">>(datasetQuery).then(results => results[0]);
@@ -191,22 +200,19 @@ export class CatalogService {
     };
     const keywords = await this.sparql.query<{ keyword: string }>(keywordsQuery).then(results => results.map(result => result.keyword));
 
-    const themesQuery = {
-      prefixes: this.prefixes,
-      select: ["?iri", "?title"],
-      where: [
-        { s: `<${iri}>`, p: "dcat:theme", o: "?iri" },
-        { s: "?iri", p: "skos:prefLabel", o: "?title" },
-      ],
-      filter: [`LANG(?title) = '${lang}'`]
-    };
+    const themesQuery = `${this.prefixesString}
+    SELECT ?iri ?title
+    WHERE {
+      <${iri}> dcat:theme ?iri .
+      ?iri skos:prefLabel ?title .
+      FILTER ( LANG(?title) = '${this.lang}' )
+    }`;
     const themes = await this.sparql.query<{ iri: string, title: string }>(themesQuery);
 
-    const distributionsQuery = {
-      prefixes: this.prefixes,
-      select: ["?distributionIri"],
-      where: [{ s: `<${iri}>`, p: "dcat:distribution", o: "?distributionIri" }],
-    };
+    const distributionsQuery = `${this.prefixesString}
+    SELECT ?distributionIri
+    WHERE { <${iri}> dcat:distribution ?distributionIri }
+    `;
     const distributions = await this.sparql.query<{ distributionIri: string }>(distributionsQuery).then(results => results.map(result => result.distributionIri));
 
     return {
@@ -226,6 +232,7 @@ export class CatalogService {
     };
   }
 
+  // TODO: rewrite to direct query instead of getDocumentFields
   async getDistribution(iri: string, lang: string = "cs"): Promise<Distribution> {
     const result = await this.sparql.getDocumentFields<DistributionFields>(iri, "dcat:Distribution", this.prefixes);
     const format = this.formats.find(format => format.iri === result["dct:format"]?.[0]);
@@ -259,6 +266,7 @@ export class CatalogService {
   }
 
   async getThemes() {
+
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],

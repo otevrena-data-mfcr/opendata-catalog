@@ -59,7 +59,7 @@ export class SparqlService {
     return this.parseDocumentResult<T>(datasetFieldsResult, prefixes);
   }
 
-  async query<T>(query: QueryDefinition): Promise<T[]> {
+  async query<T>(query: QueryDefinition | string): Promise<T[]> {
     const response = await this.getResult<any>(query)
 
     return response.results.bindings.map(doc => {
