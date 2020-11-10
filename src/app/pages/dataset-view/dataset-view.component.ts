@@ -39,7 +39,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
   previews: DistributionInfo[] = [];
   scripts: DistributionInfo[] = [];
 
-  previewFormats = ["text/csv", "application/json"];
+  previewFormats = ["text/csv", "application/json", "application/xml"];
   scriptFormats = ["CSV", "JSON"];
 
   paramsSubscription: Subscription;
