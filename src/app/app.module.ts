@@ -1,6 +1,6 @@
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, DoBootstrap, ApplicationRef, Injector } from '@angular/core';
 import { FormsModule } from "@angular/forms";
 
 // import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
@@ -25,6 +25,7 @@ import { DataPreviewComponent } from './components/data-preview/data-preview.com
 /* PIPES */
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
 import { DatasetCardComponent } from './components/dataset-card/dataset-card.component';
+import { createCustomElement } from '@angular/elements';
 
 
 @NgModule({
@@ -58,6 +59,21 @@ import { DatasetCardComponent } from './components/dataset-card/dataset-card.com
       deps: [ConfigService, CatalogService],
     }
   ],
-  bootstrap: [AppComponent]
+  // bootstrap: [AppComponent]
+  entryComponents: [AppComponent]
 })
-export class AppModule { }
+export class AppModule implements DoBootstrap {
+
+  constructor(private injector: Injector) { }
+
+  ngDoBootstrap() {
+    // using createCustomElement from angular package it will convert angular component to stander web component
+    const el = createCustomElement(AppComponent, {
+      injector: this.injector
+    });
+    
+    // using built in the browser to create your own custome element name
+    customElements.define('opendata-catalog', el);
+  }
+
+}
