@@ -1,13 +1,14 @@
 {
-  "name": "opendata-catalog",
-  "version": "0.0.0",
+  "name": "@otevrena-data-mfcr/opendata-catalog",
+  "version": "1.0.0",
   "scripts": {
     "build": "ng build --prod --outputHashing=none",
     "dev": "ng serve",
     "package": "rm -f package/*.js package/*.css && cat dist/*.js > package/catalog.js && cp dist/styles.css dist/config.yml dist/3rdpartylicenses.txt package/",
-    "update-portal": "npm run build && npm run package && rm -fr ../opendata-portal/catalog/package && cp ./package ../opendata-portal/catalog/ -R"
+    "update-portal": "npm run build && npm run package && rm -fr ../opendata-portal/catalog/package && cp ./package ../opendata-portal/catalog/ -R",
+    "prepublishOnly": "npm run build && npm run package"
   },
-  "private": true,
+  "main": "./package/catalog.js",
   "dependencies": {
     "@angular/animations": "~10.0.11",
     "@angular/common": "~10.0.11",
