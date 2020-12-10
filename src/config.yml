@@ -1,12 +1,12 @@
 
 
 # SPARQL endpoint to load data from
-endpoint: https://opendata.mfcr.cz/lod/sparql # NKOD 
+endpoint: https://data.gov.cz/sparql # NKOD 
 
 # Filter publishers shown in this catalog
 # comment out following list to show all publishers
-# publishers: 
-  # - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
+publishers: 
+  - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
 
 # Ordering method used for sorting datasets
 ordering: "generic"
@@ -16,5 +16,5 @@ ordering: "generic"
 # corsGateway: "https://example.com/gateway?url="
 # corsGateway: "https://example.com/gateway/"
 
-# If set to true in the default mode chind datasets will be hidden from the dataset list
+# If set to true datasets will be hidden from the dataset list
 hideChild: false
