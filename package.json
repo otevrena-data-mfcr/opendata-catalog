@@ -19,7 +19,6 @@
     "@angular/platform-browser-dynamic": "~10.0.11",
     "@angular/router": "~10.0.11",
     "@types/yamljs": "^0.2.31",
-    "bootstrap": "^4.5.2",
     "highlight.js": "^10.1.2",
     "ngx-highlightjs": "^4.1.1",
     "otevrene-formalni-normy-dts": "^0.1.12",
