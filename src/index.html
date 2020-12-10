@@ -14,42 +14,40 @@
       --menu-active-bg: #09f;
     }
 
+    html,
+    body {
+      font-family: "Inter var", Verdana, sans-serif;
+      font-size: var(--font-size, 12pt);
+      margin: 0;
+      padding: 0;
+    }
+
     header {
       border-bottom: 2px solid #ccc;
       background-color: #eee;
+      padding: 0.667em 1em;
+      margin: 0 0 5px 0;
+
+
     }
 
-    /* Doesnt work properly, boottsrap limitation */
-    /* opendata-catalog {
-      --blue: #007bff;
-      --indigo: #6610f2;
-      --purple: #6f42c1;
-      --pink: #e83e8c;
-      --red: #dc3545;
-      --orange: #fd7e14;
-      --yellow: #ffc107;
-      --green: #28a745;
-      --teal: #20c997;
-      --cyan: #17a2b8;
-      --white: #fff;
-      --gray: #6c757d;
-      --gray-dark: #343a40;
-      --primary: #007bff;
-      --secondary: #6c757d;
-      --success: #28a745;
-      --info: #17a2b8;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --light: #f8f9fa;
-      --dark: #343a40;
-      --breakpoint-xs: 0;
-      --breakpoint-sm: 576px;
-      --breakpoint-md: 768px;
-      --breakpoint-lg: 992px;
-      --breakpoint-xl: 1200px;
-      --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-      --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    } */
+    header h1 {
+      margin: 0;
+    }
+
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+
+    opendata-catalog {
+      --link-color: #09f;
+      --button-border-radius: 1px;
+      --button-primary-color: #fff;
+      --button-primary-background: #09f;
+    }
   </style>
 </head>
 
@@ -57,7 +55,7 @@
   <header>
     <div class="container">
       <h1>Katalog otevřených dat Našeho města</h1>
-      <p>Náš katalog je rozhodně lepší než váš katalog</p>
+      <p>Naše město je lepší než vaše město a náš katalog je rozhodně lepší než váš katalog</p>
     </div>
   </header>
 
