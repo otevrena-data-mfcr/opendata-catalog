@@ -51,5 +51,14 @@
   },
   "browser": {
     "fs": false
-  }
+  },
+  "description": "Projekt sdíleného katalogu otevřených dat pro české organizace, který zobrazuje data z vystaveného SPARQL endpointu dle [OFN Ministerstva vnitra](https://ofn.gov.cz/rozhran%C3%AD-katalog%C5%AF-otev%C5%99en%C3%BDch-dat/draft/).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otevrena-data-mfcr/opendata-catalog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/otevrena-data-mfcr/opendata-catalog/issues"
+  },
+  "homepage": "https://github.com/otevrena-data-mfcr/opendata-catalog#readme"
 }
