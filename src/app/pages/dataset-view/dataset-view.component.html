@@ -24,7 +24,7 @@
       </div>
 
       <div *ngIf="previews.length">
-        <h3>Ukázka dat</h3>
+        <h3 class="mt-4">Ukázka dat</h3>
 
         <ng-container *ngFor="let distribution of previews">
 
@@ -49,7 +49,7 @@
         <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="my-3"></app-dataset-card>
       </div>
 
-      <h3 class="mb-3">Katalogizační záznam</h3>
+      <h3 class="mb-3 mt-4">Katalogizační záznam</h3>
       <table class="table table-sm table-hover table-responsive metadata">
         <tbody>
           <tr>
