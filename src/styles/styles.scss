@@ -1,3 +1,75 @@
+@import url("https://rsms.me/inter/inter.css");
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Inter var", Verdana, sans-serif;
+  font-size: var(--font-size, 12pt);
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  border-bottom: 2px solid #ccc;
+  background-color: #eee;
+  padding: 0.667em 1em;
+  margin: 0 0 5px 0;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+p {
+  text-align: justify;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+tr:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
+td,
+th {
+  padding: 0.3em 1em;
+  vertical-align: top;
+}
+th {
+  text-align: left;
+  padding-left: 0.3em;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 0.667em 1em;
+  border-radius: var(--button-border-radius, 0);
+}
+a.btn:hover {
+  text-decoration: none;
+}
+a.btn.primary,
+a.btn.active {
+  color: var(--button-primary-color, #fff);
+  background: var(--button-primary-background, #09f);
+}
+
+/* LINKS */
 a {
+  text-decoration: none;
   color: var(--link-color, #09f);
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: underline;
 }

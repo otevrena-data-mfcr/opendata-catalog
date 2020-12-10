@@ -1,3 +1,6 @@
+:host {
+}
+
 .script {
   min-height: 10vh;
   background-color: #000;
@@ -5,7 +8,42 @@
 }
 
 .metadata {
+  table {
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  tr:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+  }
+  td,
+  th {
+    padding: 0.3em 1em;
+    vertical-align: top;
+  }
   th {
     white-space: nowrap;
+    text-align: left;
+    border-right: 1px solid #333;
+    padding-left: 0.3em;
+  }
+  .list a {
+    display: block;
   }
 }
+
+.distribution {
+  margin-bottom: 1em;
+}
+
+// @media screen and (min-width: 768px) {
+//   .distributions {
+//     display: flex;
+//     flex-wrap: wrap;
+//     margin: 0 -1em;
+//   }
+//   .distribution {
+//     flex: 0 0 50%;
+//     max-width: 50%;
+//     padding: 0 1em 1em 1em;
+//   }
+// }

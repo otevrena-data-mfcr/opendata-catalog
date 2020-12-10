@@ -9,12 +9,9 @@
 
   <style type="text/css">
     :root {
-      --link-color: #09f;
-    }
-
-    header {
-      border-bottom: 2px solid #ccc;
-      background-color: #eee;
+      --button-border-radius: 1px;
+      --menu-active-text: #fff;
+      --menu-active-bg: #09f;
     }
   </style>
 </head>
@@ -22,27 +19,14 @@
 <body>
   <header>
     <div class="container">
-      <div class="row">
-        <div class="col-md-8">
-          <div class="my-3">
-            <h1>Naše město</h1>
-            <p>Webové stránky Našeho města</p>
-          </div>
-        </div>
-      </div>
+      <h1>Katalog otevřených dat Našeho města</h1>
+      <p>Náš katalog je rozhodně lepší než váš katalog</p>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="pt-1 pb-5">
-        <opendata-catalog></opendata-catalog>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-  </footer>
+  <div class="container">
+    <opendata-catalog></opendata-catalog>
+  </div>
 </body>
 
 </html>

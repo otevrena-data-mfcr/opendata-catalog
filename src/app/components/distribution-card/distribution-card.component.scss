@@ -1,4 +1,26 @@
+:host {
+  display: block;
+  background: var(--distribution-card-background, #eee);
+  padding: 0.667em 1em;
+}
+
+h3 {
+  margin: 0 0 1em 0;
+}
+
+table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  font-size: 0.9em;
+}
+
 table th {
   white-space: nowrap;
   vertical-align: top;
+}
+
+.btn {
+  width: 100%;
+  text-align: center;
 }
