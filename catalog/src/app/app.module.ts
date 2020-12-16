@@ -47,7 +47,7 @@ import { createCustomElement } from '@angular/elements';
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
-    // { provide: ErrorHandler, useClass: GlobalErrorHandler }
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ],
   entryComponents: [AppComponent]
 })
