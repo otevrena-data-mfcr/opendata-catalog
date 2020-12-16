@@ -24,7 +24,7 @@ Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci sta�
 | theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                    |
 
 
-s## Kde je implementováno
+## Kde je implementováno
 
  - Ministerstvo financí (https://opendata.mfcr.cz/catalog)
 
