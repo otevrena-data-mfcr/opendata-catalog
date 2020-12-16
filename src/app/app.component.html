@@ -1,1 +1,5 @@
+<div *ngIf="errorService.errors.length" class="errors">
+  <h3>Chyba:</h3>
+  <p *ngFor="let error of errorService.errors">{{error}}</p>
+</div>
 <router-outlet></router-outlet>

@@ -1,4 +1,4 @@
-<div class="breadcrumbs text-sm">
+<div class="breadcrumbs">
   <a routerLink="/">Katalog datových sad</a>
   <span> / </span>
   <ng-container *ngFor="let parentDataset of parentDatasets">
@@ -8,93 +8,66 @@
   <a>{{dataset?.title}}</a>
 </div>
 
-<div class="d-block d-md-none">
-  <h2 class="mt-4 mb-3">{{dataset?.title}}</h2>
+<div class="description">
+  <h2>{{dataset?.title}}</h2>
+
   <p>{{dataset?.description}}</p>
 </div>
 
-<div class="row mt-lg-4">
+<div *ngIf="previews.length">
+  <h3>Ukázka dat</h3>
 
-  <div class="col-md-8 dataset order-last order-md-first">
-    <div class="pt-2">
-      <div class="d-none d-md-block">
-        <h2 class="mb-3">{{dataset?.title}}</h2>
+  <ng-container *ngFor="let distribution of previews">
 
-        <p>{{dataset?.description}}</p>
-      </div>
+    <h4>{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
 
-      <div *ngIf="previews.length">
-        <h3 class="mt-4">Ukázka dat</h3>
+    <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
 
-        <ng-container *ngFor="let distribution of previews">
+  </ng-container>
 
-          <h4 class="mt-4">{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
+</div>
 
+<div *ngIf="childDatasets.length" class="childDatasets">
+  <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset"></app-dataset-card>
+</div>
 
-          <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
+<div *ngIf="dataset?.documentation" class="documentation">
+  <a class="btn primary" [href]="dataset?.documentation">Otevřít dokumentaci</a>
+</div>
 
-        </ng-container>
-
-      </div>
-
-      <!-- <div class="scripts" *ngIf="scripts.length">
-        <h3 class="mt-4">Jak stáhnout data?</h3>
-        <div *ngFor="let distribution of scripts">
-          <h4 class="mt-4">{{distribution.metadata!.format}}</h4>
-          <div class="script my-3"></div>
-        </div>
-      </div> -->
-
-      <div *ngIf="childDatasets.length" class="childDatasets">
-        <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="my-3"></app-dataset-card>
-      </div>
-
-      <h3 class="mb-3 mt-4">Katalogizační záznam</h3>
-      <table class="table table-sm table-hover table-responsive metadata">
-        <tbody>
-          <tr>
-            <th class="pr-3">IRI:</th>
-            <td>{{dataset?.iri}}</td>
-          </tr>
-          <tr>
-            <th class="pr-3">Název:</th>
-            <td>{{dataset?.title}}</td>
-          </tr>
-          <tr>
-            <th class="pr-3">Poskytovatel:</th>
-            <td>{{dataset?.publisher}}</td>
-          </tr>
-          <tr>
-            <th class="pr-3">Témata:</th>
-            <td>
-              <ul class="m-0">
-                <li *ngFor="let theme of dataset?.themes"><a [routerLink]="['/datasets',{theme:theme.iri}]">{{theme.title}}</a></li>
-              </ul>
-            </td>
-          </tr>
-          <tr *ngIf="dataset?.accrualPeriodicity">
-            <th class="pr-3">Frekvence aktualizace:</th>
-            <td>{{dataset?.accrualPeriodicity}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<h3 *ngIf="distributions?.length">Datové soubory</h3>
+<div class="distributions">
+  <div *ngFor="let distribution of distributions" class="distribution">
+    <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
   </div>
+</div>
 
-  <div class="col-md-4 order-first order-md-last">
-    <div class="pt-2 pb-md-5">
-
-      <div *ngIf="dataset?.documentation" class="bg-light p-3">
-        <h3 class="mb-3">Dokumentace</h3>
-        <div class="buttons d-flex flex-row">
-          <a class="btn btn-primary w-100" [href]="dataset?.documentation">Otevřít</a>
-        </div>
-      </div>
-
-      <div *ngFor="let distribution of distributions" class="my-3">
-        <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
-      </div>
-
-    </div>
-  </div>
+<div class="metadata">
+  <h3>Katalogizační záznam</h3>
+  <table>
+    <tbody>
+      <tr>
+        <th>IRI:</th>
+        <td>{{dataset?.iri}}</td>
+      </tr>
+      <tr>
+        <th>Název:</th>
+        <td>{{dataset?.title}}</td>
+      </tr>
+      <tr>
+        <th>Poskytovatel:</th>
+        <td>{{dataset?.publisher}}</td>
+      </tr>
+      <tr>
+        <th>Témata:</th>
+        <td class="list">
+          <a *ngFor="let theme of dataset?.themes" [routerLink]="['/datasets',{theme:theme.iri}]">{{theme.title}}</a>
+        </td>
+      </tr>
+      <tr *ngIf="dataset?.accrualPeriodicity">
+        <th>Frekvence aktualizace:</th>
+        <td>{{dataset?.accrualPeriodicity}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

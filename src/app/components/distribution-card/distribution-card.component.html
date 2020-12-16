@@ -1,46 +1,44 @@
-<div class="bg-light p-3">
-  <h3 *ngIf="metadata?.accessService" class="mb-3">
-    {{metadata?.accessService?.title}}
-  </h3>
-  <h3 *ngIf="!metadata?.accessService" class="mb-3">
-    {{metadata?.format}}
-    <span *ngIf="headers?.contentLength" class="float-right">
-      {{headers?.contentLength | prettyBytes}}
-    </span>
-  </h3>
+<h3 *ngIf="metadata?.accessService">
+  {{metadata?.accessService?.title}}
+</h3>
+<h3 *ngIf="!metadata?.accessService">
+  {{metadata?.format}}
+  <span *ngIf="headers?.contentLength">
+    {{headers?.contentLength | prettyBytes}}
+  </span>
+</h3>
 
-  <div class="buttons">
-    <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn btn-success w-100">Popis služby</a>
-    <a *ngIf="!metadata?.accessService && metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn btn-success w-100">Stáhnout</a>
-    <a *ngIf="!metadata?.accessService && !metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn btn-success w-100">Otevřít</a>
+<div class="buttons">
+  <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn primary">Popis služby</a>
+  <a *ngIf="!metadata?.accessService && metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn primary">Stáhnout</a>
+  <a *ngIf="!metadata?.accessService && !metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn primary">Otevřít</a>
 
-  </div>
-  <div class="info">
-    <small>
-      <ng-container *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</ng-container>
-      <a (click)="showInfo = !showInfo" class="ml-1 pr-1">zobrazit metadata</a>
-    </small>
-  </div>
-  <div class="metadata small mt-3" *ngIf="showInfo">
-    <table class="table table-sm table-responsive">
-      <tr>
-        <th class="pr-3">IRI</th>
-        <td>{{metadata?.iri}}</td>
-      </tr>
-      <tr>
-        <th class="pr-3">Typ obsahu:</th>
-        <td>{{metadata?.mediaType || "neznámý"}}</td>
-      </tr>
-      <tr>
-        <th class="pr-3">Typ komprese:</th>
-        <td>{{metadata?.compressFormat || "žádný"}}</td>
-      </tr>
-      <tr>
-        <th class="pr-3">Typ balíčku:</th>
-        <td>{{metadata?.packageFormat || "žádný"}}</td>
-      </tr>
-    </table>
+</div>
+<div class="info">
+  <small>
+    <ng-container *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</ng-container>
+    <a (click)="showInfo = !showInfo">zobrazit metadata</a>
+  </small>
+</div>
+<div class="metadata" *ngIf="showInfo">
+  <table>
+    <tr>
+      <th>IRI</th>
+      <td>{{metadata?.iri}}</td>
+    </tr>
+    <tr>
+      <th>Typ obsahu:</th>
+      <td>{{metadata?.mediaType || "neznámý"}}</td>
+    </tr>
+    <tr>
+      <th>Typ komprese:</th>
+      <td>{{metadata?.compressFormat || "žádný"}}</td>
+    </tr>
+    <tr>
+      <th>Typ balíčku:</th>
+      <td>{{metadata?.packageFormat || "žádný"}}</td>
+    </tr>
+  </table>
 
 
-  </div>
 </div>

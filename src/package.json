@@ -1,6 +1,10 @@
 {
-  "name": "opendata-catalog",
   "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  },
+  "node": {
     "fs": false
   }
 }

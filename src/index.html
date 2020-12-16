@@ -7,44 +7,63 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-
   <style type="text/css">
     :root {
-      --link-color: #09f;
+      --button-border-radius: 1px;
+      --menu-active-text: #fff;
+      --menu-active-bg: #09f;
+    }
+
+    html,
+    body {
+      font-family: "Inter var", Verdana, sans-serif;
+      font-size: var(--font-size, 12pt);
+      margin: 0;
+      padding: 0;
     }
 
     header {
       border-bottom: 2px solid #ccc;
       background-color: #eee;
+      padding: 0.667em 1em;
+      margin: 0 0 5px 0;
+
+
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+
+    opendata-catalog {
+      --link-color: #09f;
+      --button-border-radius: 1px;
+      --button-primary-color: #fff;
+      --button-primary-background: #09f;
     }
   </style>
 </head>
 
 <body>
+
   <header>
     <div class="container">
-      <div class="row">
-        <div class="col-md-8">
-          <div class="my-3">
-            <h1>Naše město</h1>
-            <p>Webové stránky Našeho města</p>
-          </div>
-        </div>
-      </div>
+      <h1>Katalog otevřených dat Našeho města</h1>
+      <p>Naše město je lepší, než vaše město, a náš katalog je rozhodně lepší, než váš katalog</p>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="pt-1 pb-5">
-        <opendata-catalog></opendata-catalog>
-      </div>
-    </div>
-  </main>
+  <div class="container">
+    <opendata-catalog endpoint="https://opendata.mfcr.cz/lod/sparql"></opendata-catalog>
+  </div>
 
-  <footer>
-  </footer>
 </body>
 
 </html>

@@ -1,15 +1,13 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { LocationStrategy } from '@angular/common';
 
-import * as yamljs from "yamljs";
-
-interface Config {
+export interface Config {
   endpoint: string;
-  publishers: string[];
   ordering: "generic" | "arq_collation";
-  corsGateway: string,
   hideChild: boolean,
+  publishers?: string[];
+  corsGateway?: string,
   themesPrefix?: string,
 }
 
@@ -20,16 +18,17 @@ export class ConfigService {
 
   config!: Config;
 
-  constructor(
-    private http: HttpClient,
-    private locationStrategy: LocationStrategy
-  ) { }
+  constructor() { }
 
-  async loadConfig() {
-
-    this.config = await this.http.get("./config.yml", { responseType: "text" })
-      .toPromise()
-      .then(yaml => <Config>yamljs.parse(yaml));
-
+  public setConfig(config: Config) {
+    this.config = config;
   }
+
+  // private async loadConfig() {
+
+  //   return await this.http.get("./config.yml", { responseType: "text" })
+  //     .toPromise()
+  //     .then(yaml => <Config>yamljs.parse(yaml));
+
+  // }
 }

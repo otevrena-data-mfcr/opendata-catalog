@@ -1,0 +1,15 @@
+nav {
+  padding: 0;
+
+  a {
+    display: block;
+    list-style: none;
+    padding: 1em;
+    margin: 0 1em;
+    border-radius: var(--button-border-radius, 0);
+  }
+  a.active {
+    color: var(--menu-active-text, #fff);
+    background: var(--menu-active-bg, #09f);
+  }
+}

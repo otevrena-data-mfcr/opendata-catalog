@@ -4,43 +4,24 @@ Projekt sdíleného katalogu otevřených dat pro české organizace, který zob
 
 Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci stačí do HTML stránky vložit skript a konfigurační soubor.
 
-## Instalace
+## Použití
 
- 1) Do stránky vašeho webu vložit před uzavírací tag `</body>` následující skript:
+### Kód pro vložení do webu
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@1.0.0/package/catalog.min.js"></script>
+<opendata-catalog endpoint="https://data.gov.cz/sparql" publishers="https://data.gov.cz/zdroj/ovm/00006947"></opendata-catalog>
+
+<script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@1.1.0/package/catalog.min.js"></script>
 ```
+### Nastavení
 
-
- 2) Do stránky vašeho webu, na místo, kde se má vykreslit katalog, vložit následující HTML tag:
-```html
-<opendata-catalog></opendata-catalog>
-```
-
-
- 3) Do stejného adresáře, jako je stránka vložit konfigurační soubor `config.yml`, který bude obsahovat nastavení:
-```yml
-# SPARQL endpoint to load data from
-endpoint: https://data.gov.cz/sparql # NKOD 
-
-# Filter publishers shown in this catalog
-# comment out following list to show all publishers
-# don't comment out for NKOD catalog, bad things will happen
-publishers: 
-  - https://data.gov.cz/zdroj/ovm/00006947 # Ministry of Finance
-
-# Ordering method used for sorting datasets
-ordering: "generic"
-# ordering: "arq_collation" # use function http://jena.apache.org/ARQ/function#collation for ordering taking into account locale. works only with Jena Fuseki SPARQL endpoint
-
-# CORS gateway for accessing dataset files' last modified date and previews in case the files are not served with CORS
-# corsGateway: "https://example.com/gateway?url="
-# corsGateway: "https://example.com/gateway/"
-
-# If set to true, child datasets (datasets with dct:isPartOf) will be hidden from the dataset list
-# Not supported by current NKOD
-hideChild: false
-```
+| Nastavení    | Povinný | Formát                                     | Výchozí   | Popis                                                                                                                                          |
+|--------------|---------|--------------------------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| endpoint     | Ano     | URL                                        |           | SPARQL endpoint ze kterého se načítají datové sady                                                                                             |
+| publishers   | Ne      | URL&nbsp;oddělená&nbsp;čárkou              |           | Připoužití NKOD omezí výběr dat na datové sady těchto subjektů                                                                                 |
+| ordering     | Ne      | "generic"&nbsp;&#124;&nbsp;"arq_collation" | "generic" | Funkce pro řazení datových sad. Funkce "arq_collation" umí řadit podle lokálních znaků, ale je dostupná pouze na SPARQL endpointech ApacheJena |
+| hide-child   | Ne      | "true"&nbsp;&#124;&nbsp;"false"            | "false"   |                                                                                                                                                |
+| cors-gateway | Ne      | URL                                        |           |                                                                                                                                                |
+| theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                    |
 
 ## Kde je implementováno
 
