@@ -64,12 +64,10 @@ export class CatalogService {
     const query: QueryDefinition = {
       prefixes: this.prefixes,
       where: [
-        { s: "?iri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dct:title", o: "?titles" }] },
-        { s: "?iri", p: "dct:description", o: "?descriptions", optional: true },
-        { s: "?iri", p: "dcat:distribution", o: "?distribution", optional: true },
-        { s: "?distribution", p: "dct:format", o: `?format`, optional: true }
+        { s: "?iri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dct:title", o: "?title" }] },
+        { s: "?iri", p: "dct:description", o: "?description", optional: true, optionalFilter: `LANG(?description) = '${this.lang}'` },
       ],
-      filter: [`LANG(?titles) = '${this.lang}'`],
+      filter: [`LANG(?title) = '${this.lang}'`],
     };
 
     if (options?.filter?.hideChild) query.filter!.push({ ne: true, condition: "{ ?iri dct:isPartOf ?isPart }" });
@@ -92,15 +90,14 @@ export class CatalogService {
 
     let datasetsQuery = {
       ...query,
-      select: ["?iri", "str(SAMPLE(?titles)) as ?title", "SAMPLE(?descriptions) as ?description"],
+      select: ["?iri", "?title", "?description"],
       limit: options?.limit,
-      offset: options?.offset,
-      group: "?iri"
+      offset: options?.offset
     };
 
     let countQuery = {
       ...query,
-      select: ["COUNT(distinct ?iri) AS ?count"]
+      select: ["COUNT(?iri) AS ?count"]
     };
 
     if (options?.order && ["title"].indexOf(options.order) !== -1) {
