@@ -24,16 +24,7 @@ Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci sta�
 | theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                    |
 
 
-### Ukázka
-
-<p class="codepen" data-height="571" data-theme-id="light" data-default-tab="css,result" data-user="smallhillcz" data-slug-hash="RwGVVvM" style="height: 571px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="RwGVVvM">
-  <span>See the Pen <a href="https://codepen.io/smallhillcz/pen/RwGVVvM">
-  RwGVVvM</a> by Martin Kopeček (<a href="https://codepen.io/smallhillcz">@smallhillcz</a>)
-  on <a href="https://codepen.io">CodePen</a>.</span>
-</p>
-<script async src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
-
-## Kde je implementováno
+s## Kde je implementováno
 
  - Ministerstvo financí (https://opendata.mfcr.cz/catalog)
 
