@@ -14,14 +14,14 @@ Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci sta�
 ```
 ### Nastavení
 
-| Nastavení    | Povinný | Formát                                     | Výchozí   | Popis                                                                                                                                          |
-|--------------|---------|--------------------------------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| endpoint     | Ano     | URL                                        |           | SPARQL endpoint ze kterého se načítají datové sady                                                                                             |
-| publishers   | Ne      | URL&nbsp;oddělená&nbsp;čárkou              |           | Připoužití NKOD omezí výběr dat na datové sady těchto subjektů                                                                                 |
-| ordering     | Ne      | "generic"&nbsp;&#124;&nbsp;"arq_collation" | "generic" | Funkce pro řazení datových sad. Funkce "arq_collation" umí řadit podle lokálních znaků, ale je dostupná pouze na SPARQL endpointech ApacheJena |
-| hide-child   | Ne      | "true"&nbsp;&#124;&nbsp;"false"            | "false"   |                                                                                                                                                |
-| cors-gateway | Ne      | URL                                        |           |                                                                                                                                                |
-| theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                    |
+| Nastavení    | Povinný | Formát                                     | Výchozí   | Popis                                                                                                                                           |
+|--------------|---------|--------------------------------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| endpoint     | Ano     | URL                                        |           | SPARQL endpoint ze kterého se načítají datové sady                                                                                              |
+| publishers   | Ne      | URL&nbsp;oddělená&nbsp;čárkou              |           | Připoužití NKOD omezí výběr dat na datové sady těchto subjektů                                                                                  |
+| ordering     | Ne      | "generic"&nbsp;&#124;&nbsp;"arq_collation" | "generic" | Funkce pro řazení datových sad. Funkce "arq_collation" umí řadit podle lokálních znaků, ale je dostupná pouze na SPARQL endpointech Apache Jena |
+| hide-child   | Ne      | "true"&nbsp;&#124;&nbsp;"false"            | "false"   |                                                                                                                                                 |
+| cors-gateway | Ne      | URL                                        |           |                                                                                                                                                 |
+| theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                     |
 
 
 ## Kde je implementováno
