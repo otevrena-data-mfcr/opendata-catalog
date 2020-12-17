@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   /**
    * SPARQL endpoint to load data from
    */
-  @Input() endpoint: string = "https://data.gov.cz/sparql" // NKOD 
+  @Input() endpoint?: string; // NKOD 
 
   /**
    * Filter publishers shown in this catalog
@@ -57,6 +57,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
+    if (!this.endpoint) {
+      throw new Error("Endpoint property of <opendata-catalog> is required.")
+    }
+
     const config: Config = {
       endpoint: this.endpoint,
       publishers: this.publishers ? this.publishers?.split(",") : undefined,
@@ -65,10 +69,6 @@ export class AppComponent implements OnInit {
       hideChild: this.hideChild ? !!JSON.parse(this.hideChild) : false,
       themesPrefix: this.themesPrefix,
     };
-
-    if (!config.endpoint) {
-      throw new Error("Endpoint property of <opendata-catalog> is required.")
-    }
 
     this.initApp(config);
   }
