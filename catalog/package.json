@@ -1,6 +1,6 @@
 {
   "name": "@otevrena-data-mfcr/opendata-catalog",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "scripts": {
     "build": "ng build --prod --outputHashing=none",
     "dev": "ng serve",
