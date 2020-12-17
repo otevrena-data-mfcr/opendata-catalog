@@ -10,7 +10,7 @@ Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci sta�
 ```html
 <opendata-catalog endpoint="https://data.gov.cz/sparql" publishers="https://data.gov.cz/zdroj/ovm/00006947"></opendata-catalog>
 
-<script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@1.1.0/package/catalog.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@1.1.1/package/catalog.min.js"></script>
 ```
 ### Nastavení
 
