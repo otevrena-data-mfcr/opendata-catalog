@@ -19,9 +19,9 @@ var data = {
       <opendata-catalog
         endpoint="https://opendata.mfcr.cz/lod/sparql"
         ordering="arq_collation"
-        corsGateway="https://opendata.mfcr.cz/gateway/"
-        hideChild="false"
-        themesPrefix="https://opendata.mfcr.cz/topics/"
+        cors-gateway="https://opendata.mfcr.cz/gateway/"
+        hide-child="false"
+        themes-prefix="https://opendata.mfcr.cz/topics/"
       ></opendata-catalog>`,
     css: `
         html,
