@@ -41,7 +41,7 @@ var data = {
 };
 
 function renderHTML(src) {
-  return `
+  return `<!DOCTYPE html>
   <html>
     <head>
       <style>
