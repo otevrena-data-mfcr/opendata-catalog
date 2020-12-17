@@ -52,7 +52,7 @@ function renderHTML(src) {
     <body>
       ${src.html}
   
-      <script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@1.1.1/package/catalog.min.js"><${""}/script>
+      <script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@latest/package/catalog.min.js"><${""}/script>
   
     </body>
   </html>
