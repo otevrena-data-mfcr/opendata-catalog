@@ -1,7 +1,6 @@
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, DoBootstrap, ApplicationRef, Injector, ErrorHandler } from '@angular/core';
-import { FormsModule } from "@angular/forms";
+import { NgModule, DoBootstrap, Injector, ErrorHandler } from '@angular/core';
 
 // import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
 
@@ -43,7 +42,6 @@ import { createCustomElement } from '@angular/elements';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },

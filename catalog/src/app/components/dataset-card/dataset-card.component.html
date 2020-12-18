@@ -1,5 +1,11 @@
-<h4>{{dataset.title}}</h4>
-<p>{{dataset.description}}</p>
-<div>
-  <a class="btn primary" [routerLink]="['/datasets',dataset.iri]">Otevřít</a>
+<div class="row">
+  <div class="col-md-8">
+    <h4>{{dataset.title}}</h4>
+    <p>{{dataset.description}}</p>
+  </div>
+  <div class="col-md-4">
+    <div>
+      <a class="btn primary" [routerLink]="['/datasets',dataset.iri]">Otevřít</a>
+    </div>
+  </div>
 </div>

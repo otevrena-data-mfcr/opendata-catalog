@@ -1,5 +1,4 @@
-import { Component, OnInit, forwardRef, Input } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, OnInit, forwardRef, Input, EventEmitter, Output } from '@angular/core';
 
 export type NavFilterOption = { label: string, count: string, value: string };
 
@@ -7,13 +6,8 @@ export type NavFilterOption = { label: string, count: string, value: string };
   selector: 'app-nav-filter',
   templateUrl: './nav-filter.component.html',
   styleUrls: ['./nav-filter.component.scss'],
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => NavFilterComponent),
-    multi: true
-  }]
 })
-export class NavFilterComponent implements OnInit, ControlValueAccessor {
+export class NavFilterComponent implements OnInit {
 
   maxLimit = Infinity;
   defaultLimit = 5;
@@ -23,27 +17,16 @@ export class NavFilterComponent implements OnInit, ControlValueAccessor {
   @Input()
   options: NavFilterOption[] = [];
 
+  @Input()
   selected: NavFilterOption["value"] | undefined;
+  @Output()
+  selectedChange = new EventEmitter<NavFilterOption["value"]>();
 
+  @Input()
   disabled: boolean = false;
 
-  onChange = (value: any) => { };
-  onTouched = () => { };
 
   constructor() { }
-
-  writeValue(obj: NavFilterOption["value"]): void {
-    this.selected = obj;
-  }
-  registerOnChange(fn: (value: any) => void): void {
-    this.onChange = fn;
-  }
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-  }
 
   ngOnInit(): void {
   }
@@ -51,11 +34,11 @@ export class NavFilterComponent implements OnInit, ControlValueAccessor {
   select(option: NavFilterOption) {
 
     if (this.disabled) return;
-    
+
     if (this.selected === option.value) this.selected = undefined;
     else this.selected = option.value;
 
-    this.onChange(this.selected);
+    this.selectedChange.emit(this.selected);
   }
 
   isSelected(option: NavFilterOption) {

@@ -1,28 +1,6 @@
-:host {
-  display: flex;
-  flex-direction: row;
-  padding: 1em 0;
-}
-
 menu {
-  display: block;
-  padding: 0 1em;
-  min-width: 360px;
   margin: 0;
-}
-main {
-  min-width: 360px;
-  padding: 0 1em;
-  .info {
-    text-align: center;
-  }
 }
 .pager {
   text-align: center;
-}
-
-@media screen and (max-width: 768px) {
-  :host {
-    display: block;
-  }
 }

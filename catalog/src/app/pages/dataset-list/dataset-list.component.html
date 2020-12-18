@@ -1,36 +1,38 @@
-<menu>
+<div class="row">
+  <menu class="col-4">
 
-  <h3>Téma</h3>
-  <app-nav-filter [options]="themes" [(ngModel)]="filter.theme" (ngModelChange)="updateFilter()"></app-nav-filter>
+    <h3>Téma</h3>
+    <app-nav-filter [options]="themes" [(selected)]="filter.theme" (selectedChange)="updateFilter()"></app-nav-filter>
 
-  <h3>Klíčová slova</h3>
-  <app-nav-filter [options]="keywords" [(ngModel)]="filter.keyword" (ngModelChange)="updateFilter()"></app-nav-filter>
+    <h3 class="mt-5">Klíčová slova</h3>
+    <app-nav-filter [options]="keywords" [(selected)]="filter.keyword" (selectedChange)="updateFilter()"></app-nav-filter>
 
-  <h3>Formáty</h3>
-  <app-nav-filter [options]="formats" [(ngModel)]="filter.format" (ngModelChange)="updateFilter()"></app-nav-filter>
+    <h3 class="mt-5">Formáty</h3>
+    <app-nav-filter [options]="formats" [(selected)]="filter.format" (selectedChange)="updateFilter()"></app-nav-filter>
 
-</menu>
+  </menu>
 
-<main>
+  <main class="col-8">
 
-  <div class="info">
-    <p *ngIf="!loading">
-      Nalezeno {{count}} datových sad.
-      <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a [routerLink]="getFilterLink({hideChild:false})" replaceUrl>Zobrazit</a></ng-container>
-      <ng-container *ngIf="!filter.hideChild"><a [routerLink]="getFilterLink({hideChild:true})" replaceUrl>Skrýt podřízené datové sady.</a></ng-container>
-    </p>
-    <p *ngIf="loading">Načítám...</p>
-  </div>
-
-  <div class="datasets">
-    <div *ngFor="let dataset of datasets" class="dataset">
-      <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>
-      <p>{{dataset.description}}&nbsp;</p>
+    <div class="info">
+      <p *ngIf="!loading">
+        Nalezeno {{count}} datových sad.
+        <ng-container *ngIf="filter.hideChild">Podřízené datové sady jsou skryté. <a [routerLink]="getFilterLink({hideChild:false})" replaceUrl>Zobrazit</a></ng-container>
+        <ng-container *ngIf="!filter.hideChild"><a [routerLink]="getFilterLink({hideChild:true})" replaceUrl>Skrýt podřízené datové sady.</a></ng-container>
+      </p>
+      <p *ngIf="loading">Načítám...</p>
     </div>
-  </div>
 
-  <div class="pager">
-    <a *ngIf="datasets.length < count" (click)="loadDatasets(true)" class="btn">Načíst dalších {{limit}}</a>
-  </div>
+    <div class="datasets">
+      <div *ngFor="let dataset of datasets" class="dataset">
+        <h4><a [routerLink]="['/datasets',dataset.iri]">{{ dataset.title }}</a></h4>
+        <p>{{dataset.description}}&nbsp;</p>
+      </div>
+    </div>
 
-</main>
+    <div class="pager">
+      <a *ngIf="datasets.length < count" (click)="loadDatasets(true)" class="btn">Načíst dalších {{limit}}</a>
+    </div>
+
+  </main>
+</div>
