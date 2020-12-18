@@ -1,5 +1,9 @@
 @import url("https://rsms.me/inter/inter.css");
 
+@import "node_modules/bootstrap/scss/bootstrap-grid";
+@import "node_modules/bootstrap/scss/bootstrap-reboot";
+
+
 * {
   box-sizing: border-box;
 }
