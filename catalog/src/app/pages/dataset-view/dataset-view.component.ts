@@ -35,24 +35,13 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
   childDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
   parentDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
 
-  distributions: DistributionInfo[] = [];
-  previews: DistributionInfo[] = [];
-  scripts: DistributionInfo[] = [];
-
-  previewFormats = ["text/csv", "application/json", "application/xml"];
-  scriptFormats = ["CSV", "JSON"];
-
-  paramsSubscription: Subscription;
+  private paramsSubscription = this.route.params.subscribe(params => this.loadDataset(params["iri"]));
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private catalog: CatalogService,
-    private http: HttpClient,
-    private config: ConfigService
-  ) {
-    this.paramsSubscription = route.params.subscribe(params => this.loadDataset(params["iri"]))
-  }
+  ) { }
 
   ngOnInit(): void {
   }
@@ -64,9 +53,6 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
   async loadDataset(iri: string) {
 
     this.dataset = undefined;
-    this.distributions = [];
-    this.scripts = [];
-    this.previews = [];
     this.childDatasets = [];
     this.parentDatasets = [];
 
@@ -85,15 +71,6 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
     // LOAD PARENT DATASETS
     this.parentDatasets = await this.loadParentDatasets(this.dataset)
-
-    // LOAD DISTRIBUTIONS
-    this.distributions = this.dataset.distributions?.map(distributionIri => ({ iri: distributionIri })) || [];
-
-    await Promise.all(this.distributions.map(distribution => this.loadDistribution(distribution)));
-
-    this.previews = this.distributions.filter(item => item.preview);
-    this.scripts = this.distributions.filter(item => item.metadata?.format && this.scriptFormats.indexOf(item.metadata.format) !== -1);
-
   }
 
   async loadParentDatasets(dataset: Dataset) {
@@ -113,42 +90,6 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
     }
 
     return parentDatasets;
-  }
-
-  async loadDistribution(distribution: DistributionInfo) {
-
-    const cacheHeaders = {
-      'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    };
-
-    distribution.metadata = await this.catalog.getDistribution(distribution.iri);
-
-    let url = distribution.metadata.downloadUrl || distribution.metadata.accessUrl;
-
-    if (url && !distribution.metadata.accessService) {
-      if (this.config.config.corsGateway) url = this.config.config.corsGateway + url.replace("//", "/");
-      const response = await this.http.head(url, { observe: "response", headers: cacheHeaders }).toPromise();
-
-      distribution.url = url;
-
-      distribution.headers = {
-        lastModified: response.headers.get("last-modified"),
-        contentType: response.headers.get("content-type"),
-        contentLength: Number(response.headers.get("content-length")) || null,
-        acceptRanges: response.headers.get("accept-ranges"),
-      };
-      if (distribution.headers.acceptRanges === "bytes" && distribution.headers.contentType && this.previewFormats.indexOf(distribution.headers.contentType) !== -1) {
-        const headers = {
-          ...cacheHeaders,
-          "Range": `bytes=0-2048`
-        };
-        distribution.preview = await this.http.get(url, { headers, responseType: "text" }).toPromise();
-      }
-    }
-
-
   }
 
 }
