@@ -4,8 +4,7 @@
   "scripts": {
     "build": "ng build --prod --outputHashing=none",
     "dev": "ng serve",
-    "package": "rm -f package/*.js package/*.css && cat dist/*.js > package/catalog.js && cp dist/3rdpartylicenses.txt package/",
-    "update-portal": "npm run build && npm run package && rm -fr ../opendata-portal/catalog/package && cp ./package ../opendata-portal/catalog/ -R",
+    "package": "gulp buildPackage",
     "prepublishOnly": "npm run build && npm run package"
   },
   "main": "./package/catalog.js",
@@ -34,10 +33,14 @@
     "@angular-devkit/build-angular": "~0.1000.7",
     "@angular/cli": "~10.0.7",
     "@angular/compiler-cli": "~10.0.11",
+    "@types/gulp": "^4.0.7",
+    "@types/gulp-concat": "0.0.32",
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
@@ -46,7 +49,7 @@
     "karma-jasmine": "~3.3.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
-    "ts-node": "~8.3.0",
+    "ts-node": "^8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~3.9.5"
   },
