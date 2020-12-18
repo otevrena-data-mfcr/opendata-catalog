@@ -1,50 +1,56 @@
 <div class="row">
-  <div class="col-md-8 col-xl-10">
-<h3 *ngIf="metadata?.accessService">
-  {{metadata?.accessService?.title}}
-</h3>
-<h3 *ngIf="!metadata?.accessService">
-  {{metadata?.format}}
-  <span *ngIf="headers?.contentLength">
-    {{headers?.contentLength | prettyBytes}}
-  </span>
-</h3>
+  <div class="col-md-8 col-xl-9">
+    <h3 *ngIf="metadata?.accessService">
+      {{metadata?.accessService?.title}}
+    </h3>
+    <h3 *ngIf="!metadata?.accessService">
+      {{metadata?.format}}
 
-<div class="buttons">
-  <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn primary">Popis služby</a>
-  <a *ngIf="!metadata?.accessService && metadata?.downloadUrl" [href]="metadata?.downloadUrl" class="btn primary">Stáhnout</a>
-  <a *ngIf="!metadata?.accessService && !metadata?.downloadUrl && metadata?.accessUrl" [href]="metadata?.accessUrl" target="_blank" class="btn primary">Otevřít</a>
+    </h3>
 
-</div>
-<div class="info">
-  <small>
-    <ng-container *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</ng-container>
-    <a (click)="showInfo = !showInfo">zobrazit metadata</a>
-  </small>
-</div>
-<div class="metadata" *ngIf="showInfo">
-  <table>
-    <tr>
-      <th>IRI</th>
-      <td>{{metadata?.iri}}</td>
-    </tr>
-    <tr>
-      <th>Typ obsahu:</th>
-      <td>{{metadata?.mediaType || "neznámý"}}</td>
-    </tr>
-    <tr>
-      <th>Typ komprese:</th>
-      <td>{{metadata?.compressFormat || "žádný"}}</td>
-    </tr>
-    <tr>
-      <th>Typ balíčku:</th>
-      <td>{{metadata?.packageFormat || "žádný"}}</td>
-    </tr>
-  </table>
+    <div class="previews">
+      <app-data-preview-code *ngIf="showPreview.code" [mime]="metadata?.mediaType" [url]="metadata?.downloadUrl"></app-data-preview-code>
+    </div>
 
 
-</div>
+    <div class="metadata">
+      <table class="small">
+        <tr>
+          <th>IRI:</th>
+          <td>{{iri}}</td>
+        </tr>
+
+        <tr>
+          <th>Typ obsahu:</th>
+          <td>{{metadata?.mediaType || "neznámý"}}</td>
+        </tr>
+        <tr>
+          <th>Typ komprese:</th>
+          <td>{{metadata?.compressFormat || "žádný"}}</td>
+        </tr>
+        <tr>
+          <th>Typ balíčku:</th>
+          <td>{{metadata?.packageFormat || "žádný"}}</td>
+        </tr>
+      </table>
+    </div>
   </div>
-  <div class="col-md-4 col-xl-2">
+
+  <div class="col-md-4 col-xl-3">
+
+    <div class="buttons mb-3">
+      <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn primary">
+        Popis služby
+      </a>
+      <a *ngIf="metadata?.accessService && !metadata?.accessService?.endpointDescription && url" [href]="url" target="_blank" class="btn primary">
+        URL služby
+      </a>
+      <a *ngIf="!metadata?.accessService && url" [href]="url" class="btn primary">
+        Stáhnout <ng-container *ngIf="headers?.contentLength">{{headers.contentLength | prettyBytes}}</ng-container>
+      </a>
+      <small *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
+    </div>
+
+
   </div>
 </div>

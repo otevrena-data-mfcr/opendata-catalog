@@ -17,7 +17,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 /* COMPONENTS */
 import { NavFilterComponent } from './components/nav-filter/nav-filter.component';
 import { DistributionCardComponent } from './components/distribution-card/distribution-card.component';
-import { DataPreviewComponent } from './components/data-preview/data-preview.component';
+import { DataPreviewCodeComponent } from './components/data-preview-code/data-preview-code.component';
 
 /* PIPES */
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
@@ -36,8 +36,8 @@ import { createCustomElement } from '@angular/elements';
 
     PrettyBytesPipe,
     NavFilterComponent,
-    DataPreviewComponent,
     DatasetCardComponent,
+    DataPreviewCodeComponent,
   ],
   imports: [
     BrowserModule,

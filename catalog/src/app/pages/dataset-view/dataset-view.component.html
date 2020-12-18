@@ -8,43 +8,27 @@
   <a>{{dataset?.title}}</a>
 </div>
 
-<div class="description">
-  <h2>{{dataset?.title}}</h2>
-
+<div class="description my-4">
+  <h2 class="mb-3">{{dataset?.title}}</h2>
   <p>{{dataset?.description}}</p>
 </div>
 
-<div *ngIf="previews.length">
-  <h3>Ukázka dat</h3>
-
-  <ng-container *ngFor="let distribution of previews">
-
-    <h4>{{distribution.metadata?.format}} ({{distribution.headers?.contentType}})</h4>
-
-    <app-data-preview [data]="distribution.preview" [mimeType]="distribution.headers.contentType"></app-data-preview>
-
-  </ng-container>
-
+<div *ngIf="childDatasets.length" class="childDatasets mb-5">
+  <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="mb-3"></app-dataset-card>
 </div>
 
-<div *ngIf="childDatasets.length" class="childDatasets">
-  <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset"></app-dataset-card>
-</div>
-
-<div *ngIf="dataset?.documentation" class="documentation">
+<div *ngIf="dataset?.documentation" class="documentation mb-5">
   <a class="btn primary" [href]="dataset?.documentation">Otevřít dokumentaci</a>
 </div>
 
-<h3 *ngIf="distributions?.length">Datové soubory</h3>
-<div class="distributions">
-  <div *ngFor="let distribution of distributions" class="distribution">
-    <app-distribution-card [metadata]="distribution.metadata" [headers]="distribution.headers"></app-distribution-card>
-  </div>
+<div *ngIf="dataset?.distributions?.length" class="distributions mb-5">
+  <h3>Datové soubory</h3>
+  <app-distribution-card *ngFor="let distribution of dataset!.distributions" [iri]="distribution" class="mb-3"></app-distribution-card>
 </div>
 
-<div class="metadata">
+<div class="metadata mb-5">
   <h3>Katalogizační záznam</h3>
-  <table>
+  <table class="small">
     <tbody>
       <tr>
         <th>IRI:</th>

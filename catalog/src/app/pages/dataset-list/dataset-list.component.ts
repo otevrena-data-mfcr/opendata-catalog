@@ -8,7 +8,10 @@ import { ConfigService } from 'app/services/config.service';
 @Component({
   selector: 'app-dataset-list',
   templateUrl: './dataset-list.component.html',
-  styleUrls: ['./dataset-list.component.scss']
+  styleUrls: ['./dataset-list.component.scss'],
+  host: {
+    "class": "d-block py-3"
+  }
 })
 export class DatasetListComponent implements OnInit {
 
