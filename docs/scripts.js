@@ -15,7 +15,7 @@ function renderSnippet(data) {
   return o;
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener('DOMContentLoaded', function (event) {
 
   ace.config.set('basePath', 'https://pagecdn.io/lib/ace/1.4.12/');
 
@@ -47,7 +47,7 @@ function renderIframe() {
 function renderCode() {
 
   var data = Object.fromEntries(new FormData(document.getElementById("data-form")).entries());
-  
+
   if (data.endpoint === "https://data.gov.cz/sparql" && !data.publishers) {
     alert("Při použití NKOD jako SPARQL endpointu prosím specifikujte publikující subjekty.")
     return;
