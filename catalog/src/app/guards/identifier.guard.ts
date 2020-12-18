@@ -21,9 +21,9 @@ export class IdentifierGuard implements CanActivate {
       for (let result of results) {
         switch (result.type) {
           case "http://www.w3.org/ns/dcat#Dataset":
-            return this.router.createUrlTree(["/datasets", result.iri], { replaceUrl: true });
+            return this.router.createUrlTree(["/datasets", result.iri], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
           case "http://www.w3.org/ns/dcat#Distribution":
-            return this.router.createUrlTree(["/distributions", result.iri], { replaceUrl: true });
+            return this.router.createUrlTree(["/distributions", result.iri], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
         }
       }
 
@@ -31,7 +31,7 @@ export class IdentifierGuard implements CanActivate {
 
     }
     catch (err) {
-      if (err.status === 404) return this.router.createUrlTree(["/not-found"], { replaceUrl: true });
+      if (err.status === 404) return this.router.createUrlTree(["/not-found"], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
       throw err;
     }
   }
