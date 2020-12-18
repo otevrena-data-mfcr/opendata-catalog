@@ -26,7 +26,7 @@
 
     #editor {
       width: 100%;
-      height: 350px;
+      height: 150px;
     }
 
     iframe {
@@ -46,24 +46,93 @@
   </header>
   <main>
     <div class="container">
-      <!-- <h2>Použití</h2>
-      <h4 class="mt-4">Nastavení</h4> -->
+      <h3 class="mt-5 mb-4">Nastavení</h3>
+      <form id="data-form" onsubmit="renderCode();event.preventDefault()">
+        <!-- var data = {
+          "nkod-mf": {
+            endpoint: "https://data.gov.cz/sparql",
+            publishers: "https://data.gov.cz/zdroj/ovm/00006947"
+          },
+          "mf": {
+            endpoint: "https://opendata.mfcr.cz/lod/sparql",
+            ordering: "arq_collation",
+            corsGateway: "https://opendata.mfcr.cz/gateway/",
+            hideChild: "false",
+            themesPrefix: "https://opendata.mfcr.cz/topics/",
+          }
+        }; -->
+        <div class="form-group">
+          <label for="input-endpoint">SPARQL endpoint*</label>
+          <input type="text" name="endpoint" class="form-control" id="input-endpoint" aria-describedby="help-endpoint" value="https://data.gov.cz/sparql" required>
+          <small id="help-endpoint" class="form-text text-muted">Povinný. URL SPARQL endpointu ze kterého se mají brát data</small>
+        </div>
 
-      <h4 class="mt-4">Kód</h4>
-      <div id="editor"></div>
-      <form class="form-inline my-3">
+        <div class="form-group">
+          <label for="input-publishers">Publikující subjekty</label>
+          <input type="text" name="publishers" class="form-control" id="input-publishers" aria-describedby="help-publishers" value="https://data.gov.cz/zdroj/ovm/00006947,https://data.gov.cz/zdroj/ovm/72080043">
+          <small id="help-publishers" class="form-text text-muted">V katalogu budou zobrazeny jen datové sady těchto publikujících subjetů. Vyplňte jejich IRI ve formě https://data.gov.cz/zdroj/ovm/12345678 (kde 12345678 je IČO subjektu), oddělená čárkou.</small>
+        </div>
 
-        <label for="code-selector">Předvyplnit kód šablonou:</label>
-        <select class="form-control mx-3" id="code-selector">
-          <option value="mf" selected>Katalog Opendata MFČR</option>
-          <option value="nkod-mf">Datové sady MF z NKOD</option>
-        </select>
+        <div class="form-group">
+          <label>Řazení</label>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="input-ordering-generic" name="ordering" value="generic" class="custom-control-input" checked>
+            <label class="custom-control-label" for="input-ordering-generic">Výchozí</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="input-ordering-arq" name="ordering" value="arq_collation" class="custom-control-input">
+            <label class="custom-control-label" for="input-ordering-arq">Lokalizované pro češtinu (pouze pro SPARQL endpoint Apache Jena)</label>
+          </div>
+          <small id="help-endpoint" class="form-text text-muted">Zvolte, jakým způsobem se mají řadit datové sady podle abecedy.</small>
+        </div>
 
-        <button class="btn btn-secondary mr-3" type="button" onclick="renderForm()">Generovat kód</button>
+        <div class="form-group">
+          <label>Brána pro přístup k datům chráněným CORS</label>
+          <input type="text" name="corsGateway" class="form-control" id="input-corsGateway" aria-describedby="help-corsGateway">
+          <small id="help-corsGateway" class="form-text text-muted"></small>
+        </div>
 
-        <button class="btn btn-primary" type="button" onclick="renderCatalog()">Aktualizovat náhled</button>
+        <div class="form-group">
+          <label>Zobrazení zastřešujících datových sad</label>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="input-hideChild-false" name="hideChild" value="false" class="custom-control-input" checked>
+            <label class="custom-control-label" for="input-hideChild">Zobrazit všechny datové sady</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="input-hideChild-true" name="hideChild" value="true" class="custom-control-input">
+            <label class="custom-control-label" for="input-hideChild-true">Zobrazit pouze nadřazené datové sady</label>
+          </div>
+          <small id="help-corsGateway" class="form-text text-muted"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Filtr témat</label>
+          <input type="text" name="themesPrefix" class="form-control" id="input-themesPrefix" aria-describedby="help-themesPrefix">
+          <small id="help-themesPrefix" class="form-text text-muted">Zobrazí pouze témata jejichž IRI splňují daný prefix</small>
+        </div>
+
+        <div class="form-group">
+          <label>Verze katalogu</label>
+          <input type="text" name="version" class="form-control" id="input-version" aria-describedby="help-version" value="latest">
+          <small id="help-version" class="form-text text-muted">Uveďte požadovanou verzi katalogu ve formě X.X.X, případně slovo "latest" pro použití aktuální verze. <a href="https://www.npmjs.com/package/@otevrena-data-mfcr/opendata-catalog?activeTab=versions" target="_blank">Seznam verzí</a></small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Generovat kód</button>
       </form>
-      <h4 class="mt-4">Náhled</h4>
+
+      <h3 class="mt-5 mb-4">Kód pro vložení do stránky</h3>
+      <pre id="editor">
+&lt;opendata-catalog
+  endpoint="https://opendata.mfcr.cz/lod/sparql"
+  ordering="arq_collation"
+  cors-gateway="https://opendata.mfcr.cz/gateway/"
+  hide-child="false"
+  themes-prefix="https://opendata.mfcr.cz/topics/"
+&gt;&lt;/opendata-catalog&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@latest/package/catalog.min.js"&gt;&lt;/script&gt;
+      </pre>
+      <button class="btn btn-primary" type="button" onclick="renderIframe()">Aktualizovat náhled</button>
+      <h3 class="mt-5 mb-4">Náhled katalogu</h3>
       <div id="catalog-container">
 
       </div>

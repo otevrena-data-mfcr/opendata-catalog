@@ -1,62 +1,18 @@
 var editor;
 
-var data = {
-  "nkod-mf": {
-    html: `
-      <opendata-catalog
-        endpoint="https://data.gov.cz/sparql"
-        publishers="https://data.gov.cz/zdroj/ovm/00006947"
-      ></opendata-catalog>`,
-    css: `
-        html,
-        body {
-          font-family: "Inter var", Verdana, sans-serif;
-          font-size: 11pt;
-        }`
-  },
-  "mf": {
-    html: `
-      <opendata-catalog
-        endpoint="https://opendata.mfcr.cz/lod/sparql"
-        ordering="arq_collation"
-        cors-gateway="https://opendata.mfcr.cz/gateway/"
-        hide-child="false"
-        themes-prefix="https://opendata.mfcr.cz/topics/"
-      ></opendata-catalog>`,
-    css: `
-        html,
-        body {
-          font-family: "Inter var", Verdana, sans-serif;
-          font-size: 11pt;
-        }
+function renderSnippet(data) {
 
-        opendata-catalog {
-          --link-color: #09f;
-          --button-border-radius: 1px;
-          --button-primary-color: #fff;
-          --button-primary-background: #09f;
-        }`
-  }
+  var o = "<opendata-catalog\n";
+  if (data.publishers) o += "  endpoint=\"" + (data.endpoint || "https://data.gov.cz/sparql") + "\"\n";
+  if (data.publishers) o += "  publishers=\"" + data.publishers + "\"\n";
+  if (data.ordering) o += "  ordering=\"" + data.ordering + "\"\n";
+  if (data.corsGateway) o += "  cors-gateway=\"" + data.corsGateway + "\"\n";
+  if (data.hideChild) o += "  hide-child=\"" + data.hideChild + "\"\n";
+  if (data.themesPrefix) o += "  themes-prefix=\"" + data.themesPrefix + "\"\n";
+  o += "></opendata-catalog>\n";
+  o += "<script src=\"https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@" + (data.version || "latest") + "/package/catalog.min.js\"><" + "/script>";
 
-};
-
-function renderHTML(src) {
-  return `<!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-      ${src.css}
-
-      </style>
-    </head>
-    <body>
-      ${src.html}
-  
-      <script src="https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@latest/package/catalog.min.js"><${""}/script>
-  
-    </body>
-  </html>
-  `;
+  return o;
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -67,32 +23,39 @@ window.addEventListener('DOMContentLoaded', (event) => {
   editor.setTheme("ace/theme/xcode");
   editor.session.setMode("ace/mode/html");
 
-  renderForm();
-  // renderCatalog();
+  renderIframe();
 });
 
-function renderCatalog() {
+function renderIframe() {
+
   var container = document.getElementById("catalog-container");
   container.innerHTML = "";
 
-  var html = editor.getValue();
+  var snippet = editor.getValue();
+  var style = "html,body{font-family: sans-serif;font-size: 11pt;}";
+
+  var iframeHtml = "<!DOCTYPE html><html><head><style>" + style + "</style></head><body>" + snippet + "</body></html>";
 
   var iframe = document.createElement("iframe");
   container.appendChild(iframe);
   iframe.contentWindow.document.open();
-  iframe.contentWindow.document.write(html);
+  iframe.contentWindow.document.write(iframeHtml);
   iframe.contentWindow.document.close();
 
 }
 
-function renderForm() {
+function renderCode() {
 
-  var id = document.getElementById("code-selector").value;
-  console.log(id)
+  var data = Object.fromEntries(new FormData(document.getElementById("data-form")).entries());
+  
+  if (data.endpoint === "https://data.gov.cz/sparql" && !data.publishers) {
+    alert("Při použití NKOD jako SPARQL endpointu prosím specifikujte publikující subjekty.")
+    return;
+  }
 
-  editor.setValue(this.renderHTML(data[id]));
+  editor.setValue(renderSnippet(data));
   editor.clearSelection();
   editor.setShowPrintMargin(false);
 
-  renderCatalog();
+  renderIframe();
 }
