@@ -3,11 +3,9 @@
 @import "node_modules/bootstrap/scss/bootstrap-grid";
 @import "node_modules/bootstrap/scss/bootstrap-reboot";
 
-
 * {
   box-sizing: border-box;
 }
-
 
 p {
   text-align: justify;
@@ -33,22 +31,28 @@ th {
 /* BUTTONS */
 .btn {
   display: inline-block;
-  padding: 0.667em 1em;
-  border-radius: var(--button-border-radius, 0);
+  padding: 0.6em 1em;
+  border-radius: var(--button-border-radius, 2px);
 }
 a.btn:hover {
   text-decoration: none;
 }
+
 a.btn.primary,
 a.btn.active {
-  color: var(--button-primary-color, #fff);
-  background: var(--button-primary-background, #09f);
+  background-color: var(--primary, #0087c8);
+  color: #fff;
+}
+
+a.btn.secondary {
+  background-color: var(--secondary, #00a5a5);
+  color: #fff;
 }
 
 /* LINKS */
 a {
   text-decoration: none;
-  color: var(--link-color, #09f);
+  color: var(--link-color, #093d93);
   cursor: pointer;
 }
 a:hover {
