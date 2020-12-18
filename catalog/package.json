@@ -20,6 +20,7 @@
     "@angular/router": "~11.0.5",
     "@types/yamljs": "^0.2.31",
     "@webcomponents/custom-elements": "^1.4.3",
+    "bootstrap": "^4.5.3",
     "document-register-element": "^1.7.2",
     "highlight.js": "^10.1.2",
     "ngx-highlightjs": "^4.1.1",
