@@ -22,12 +22,12 @@ export class IriGuard implements CanActivate {
         switch (result.type) {
 
           case "http://www.w3.org/ns/dcat#Dataset":
-            return this.router.createUrlTree(["/datasets", result.iri], { replaceUrl: true });
+            return this.router.createUrlTree(["/datasets", result.iri], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
 
           case "http://www.w3.org/ns/dcat#Distribution":
             const datasetResult = await this.catalog.findDatasetByDistribution(result.iri);
             if (datasetResult[0]) return this.router.createUrlTree(["/datasets", datasetResult[0].iri]);
-            else return this.router.createUrlTree(["/not-found"], { replaceUrl: true });
+            else return this.router.createUrlTree(["/not-found"], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
         }
       }
 
@@ -35,7 +35,7 @@ export class IriGuard implements CanActivate {
 
     }
     catch (err) {
-      if (err.status === 404) return this.router.createUrlTree(["/not-found"], { replaceUrl: true });
+      if (err.status === 404) return this.router.createUrlTree(["/not-found"], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
       throw err;
     }
 
