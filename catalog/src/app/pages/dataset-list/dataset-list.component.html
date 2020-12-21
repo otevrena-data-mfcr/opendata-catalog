@@ -6,20 +6,14 @@
       <app-nav-filter [options]="publishers" [(selected)]="filter.publisher" (selectedChange)="updateFilter()"></app-nav-filter>
     </ng-container>
 
-    <ng-container *ngIf="themes.length > 1">
-      <h3 class="mt-5">Téma</h3>
-      <app-nav-filter [options]="themes" [(selected)]="filter.theme" (selectedChange)="updateFilter()"></app-nav-filter>
-    </ng-container>
+    <h3 class="mt-5">Téma</h3>
+    <app-nav-filter [options]="themes" [(selected)]="filter.theme" (selectedChange)="updateFilter()"></app-nav-filter>
 
-    <ng-container *ngIf="keywords.length > 1">
-      <h3 class="mt-5">Klíčová slova</h3>
-      <app-nav-filter [options]="keywords" [(selected)]="filter.keyword" (selectedChange)="updateFilter()"></app-nav-filter>
-    </ng-container>
+    <h3 class="mt-5">Klíčová slova</h3>
+    <app-nav-filter [options]="keywords" [(selected)]="filter.keyword" (selectedChange)="updateFilter()"></app-nav-filter>
 
-    <ng-container *ngIf="formats.length > 1">
-      <h3 class="mt-5">Formáty</h3>
-      <app-nav-filter [options]="formats" [(selected)]="filter.format" (selectedChange)="updateFilter()"></app-nav-filter>
-    </ng-container>
+    <h3 class="mt-5">Formáty</h3>
+    <app-nav-filter [options]="formats" [(selected)]="filter.format" (selectedChange)="updateFilter()"></app-nav-filter>
 
   </menu>
 
