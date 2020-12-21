@@ -59,7 +59,7 @@ export class SparqlService {
     return this.parseDocumentResult<T>(datasetFieldsResult, prefixes);
   }
 
-  async query<T>(query: QueryDefinition | string): Promise<T[]> {
+  async query<T>(query: string): Promise<T[]> {
     const response = await this.getResult<any>(query)
 
     return response.results.bindings.map(doc => {
@@ -71,10 +71,7 @@ export class SparqlService {
 
   }
 
-  private async getResult<T>(query: string | QueryDefinition) {
-
-    if (typeof query === "object") query = Builder.buildQuery(query);
-
+  private async getResult<T>(query: string) {
     return this.http.get<SparqlResult<T>>(this.configService.config.endpoint, { params: { query }, headers: { "Accept": "application/json" } }).toPromise()
   }
 

@@ -21,6 +21,7 @@ export class DatasetListComponent implements OnInit {
   themes: NavFilterOption[];
   keywords: NavFilterOption[];
   formats: NavFilterOption[];
+  publishers: NavFilterOption[];
 
   filter: DatasetQueryOptions["filter"];
 
@@ -34,6 +35,7 @@ export class DatasetListComponent implements OnInit {
     private router: Router,
     private config: ConfigService
   ) {
+    this.publishers = this.catalog.publishers.map(item => ({ ...item, value: item.iri }));
     this.themes = this.catalog.themes.map(item => ({ ...item, value: item.iri }));
     this.keywords = this.catalog.keywords.map(item => ({ ...item, value: item.label }));
     this.formats = this.catalog.formats.map(item => ({ ...item, value: item.iri }));
@@ -51,11 +53,12 @@ export class DatasetListComponent implements OnInit {
 
     this.route.params.subscribe((params: Params) => {
 
-      this.filter.theme = params["theme"];
-      this.filter.keyword = params["keyword"];
-      this.filter.format = params["format"];
+      this.filter.theme = <string>params["theme"];
+      this.filter.keyword = <string>params["keyword"];
+      this.filter.format = <string>params["format"];
+      this.filter.publisher = <string>params["publisher"];
 
-      if (params["hideChild"] !== undefined) this.filter.hideChild = (params["hideChild"] === "true" || params["hideChild"] === true);
+      if (params["hideChild"] !== undefined) this.filter.hideChild = (<string>params["hideChild"] === "true" || params["hideChild"] === true);
 
       this.loadDatasets();
       window.scrollTo({ top: 0 });
