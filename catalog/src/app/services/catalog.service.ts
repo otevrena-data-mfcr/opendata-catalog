@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 
 import { SparqlService } from "app/services/sparql.service";
-import { Dataset, Distribution, DatasetFields, DistributionFields, DistributionServiceFields } from 'app/schema';
+import { Dataset, Distribution, DistributionFields, DistributionServiceFields } from 'app/schema';
 
-import { QueryDefinition } from "app/lib/sparql-builder";
+import { buildQuery, QueryDefinition } from "app/lib/sparql-builder";
 
 export interface DatasetQueryOptions {
   limit?: number;
@@ -101,8 +101,8 @@ export class CatalogService {
       else datasetsQuery.order = `ASC(?${options.order})`;
     }
 
-    const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(datasetsQuery);
-    const count = await this.sparql.query<{ count: number }>(countQuery).then(result => result[0].count);
+    const datasets = await this.sparql.query<Pick<Dataset, "iri" | "title" | "description">>(buildQuery(datasetsQuery));
+    const count = await this.sparql.query<{ count: number }>(buildQuery(countQuery)).then(result => result[0].count);
 
     return { count, datasets };
 
@@ -116,7 +116,7 @@ export class CatalogService {
       filter: [`str(?iri) = '${iri}'`]
     };
 
-    return this.sparql.query<{ iri: string, type: string }>(query);
+    return this.sparql.query<{ iri: string, type: string }>(buildQuery(query));
   }
 
   async findDocumentsByIdentifier(identifier: string) {
@@ -127,7 +127,7 @@ export class CatalogService {
       filter: [`str(?identifier) = '${identifier}'`]
     };
 
-    return this.sparql.query<{ iri: string, type: string }>(query);
+    return this.sparql.query<{ iri: string, type: string }>(buildQuery(query));
   }
 
   async findDatasetByDistribution(iri: string) {
@@ -138,7 +138,7 @@ export class CatalogService {
       filter: [`str(?distribution) = '${iri}'`]
     };
 
-    return this.sparql.query<{ iri: string }>(query);
+    return this.sparql.query<{ iri: string }>(buildQuery(query));
   }
 
   async findChildDatasets(parentIri: string) {
@@ -160,7 +160,7 @@ export class CatalogService {
       ]
     };
 
-    return this.sparql.query<{ iri: string, title: string, description: string }>(query);
+    return this.sparql.query<{ iri: string, title: string, description: string }>(buildQuery(query));
   }
 
   async getDataset(iri: string, lang: string = "cs"): Promise<Dataset> {
@@ -184,14 +184,14 @@ export class CatalogService {
       filter: [`LANG(?title) = '${this.lang}'`]
     };
 
-    const dataset = await this.sparql.query<Pick<Dataset, "title" | "description" | "isPartOf" | "publisher" | "documentation">>(datasetQuery).then(results => results[0]);
+    const dataset = await this.sparql.query<Pick<Dataset, "title" | "description" | "isPartOf" | "publisher" | "documentation">>(buildQuery(datasetQuery)).then(results => results[0]);
 
     const keywordsQuery = {
       prefixes: this.prefixes,
       select: ["?keyword"],
       where: [{ s: `<${iri}>`, p: "dct:keyword", o: "?keyword" }]
     };
-    const keywords = await this.sparql.query<{ keyword: string }>(keywordsQuery).then(results => results.map(result => result.keyword));
+    const keywords = await this.sparql.query<{ keyword: string }>(buildQuery(keywordsQuery)).then(results => results.map(result => result.keyword));
 
     const themesQuery = `${this.prefixesString}
     SELECT ?iri ?title
@@ -282,7 +282,7 @@ export class CatalogService {
       query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
-    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+    return this.sparql.query<{ iri: string, label: string, count: string }>(buildQuery(query));
 
   }
 
@@ -301,7 +301,7 @@ export class CatalogService {
       query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
-    return this.sparql.query<{ label: string, count: string }>(query);
+    return this.sparql.query<{ label: string, count: string }>(buildQuery(query));
 
   }
 
@@ -324,7 +324,7 @@ export class CatalogService {
       query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
     }
 
-    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+    return this.sparql.query<{ iri: string, label: string, count: string }>(buildQuery(query));
 
   }
 

@@ -1,4 +1,3 @@
-import { forwardRef } from '@angular/core';
 
 export interface QueryDefinition {
   prefixes?: QueryDefinitionPrefixes;
@@ -18,7 +17,7 @@ export type QueryDefinitionWhere = ({ s: string, p?: string, o?: string, optiona
 
 export type QueryDefinitionFilter = (string | { condition: string, ne?: boolean });
 
-function buildQuery(def: QueryDefinition): string {
+export function buildQuery(def: QueryDefinition): string {
 
   const prefixes: string = def.prefixes ? Object.entries(def.prefixes).map(([prefix, iri]) => `PREFIX ${prefix}: <${iri}>`).join("\n") : "";
   const select = typeof def.select === "string" ? def.select : def.select?.map(item => item.indexOf(" ") !== -1 ? "(" + item + ")" : item).join(" ");
@@ -62,7 +61,7 @@ function buildQueryFilter(def: QueryDefinitionFilter) {
   return `FILTER${def.ne ? " NOT EXISTS" : ""} ${def.ne ? def.condition : `(${def.condition})`}`
 }
 
-function extendQuery(...defs: QueryDefinition[]): QueryDefinition {
+export function extendQuery(...defs: QueryDefinition[]): QueryDefinition {
   const base = {
     prefix: {} as { [prefix: string]: string },
     select: [] as string[],
@@ -85,9 +84,3 @@ function extendQuery(...defs: QueryDefinition[]): QueryDefinition {
 
   return base;
 }
-
-export const Builder = {
-  buildQuery,
-  buildQueryWhere,
-  extendQuery
-};
