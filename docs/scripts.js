@@ -3,7 +3,7 @@ var editor;
 function renderSnippet(data) {
 
   var o = "<opendata-catalog\n";
-  if (data.publishers) o += "  endpoint=\"" + (data.endpoint || "https://data.gov.cz/sparql") + "\"\n";
+  if (data.endpoint) o += "  endpoint=\"" + (data.endpoint || "https://data.gov.cz/sparql") + "\"\n";
   if (data.publishers) o += "  publishers=\"" + data.publishers + "\"\n";
   if (data.ordering) o += "  ordering=\"" + data.ordering + "\"\n";
   if (data.corsGateway) o += "  cors-gateway=\"" + data.corsGateway + "\"\n";
