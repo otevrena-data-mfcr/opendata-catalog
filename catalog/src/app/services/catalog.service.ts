@@ -152,13 +152,23 @@ export class CatalogService {
   async getDataset(iri: string, lang: string = "cs"): Promise<Dataset> {
 
     const datasetQuery = `${this.createPrefixes()}
-      SELECT ?title ?description ?isPartOf ?publisher ?documentation
+      SELECT ?title ?description ?isPartOf ?publisher ?publisherIri ?documentation ?accrualPeriodicity
       WHERE {
         <${iri}> dct:title ?title .
         OPTIONAL { <${iri}> dct:description ?description . FILTER(LANG(?description) = '${this.lang}') }
         OPTIONAL { <${iri}> dct:isPartOf ?isPartOf . }
         OPTIONAL { <${iri}> foaf:page ?documentation . }
-        OPTIONAL { <${iri}> dct:publisher ?publisher . }
+        OPTIONAL { 
+          <${iri}> dct:publisher ?publisherIri .
+          ?publisherIri foaf:name|rpp:má-název-orgánu-veřejné-moci ?publisher .
+          FILTER(LANG(?publisher) = '${this.lang}') .
+        }
+        OPTIONAL { 
+          <${iri}> dct:accrualPeriodicity ?accrualPeriodicityIri .
+          ?accrualPeriodicityIri skos:prefLabel ?accrualPeriodicity .
+          FILTER(LANG(?accrualPeriodicity) = '${this.lang}')
+        }
+
         FILTER(LANG(?title) = '${this.lang}') .
       }`;
 
@@ -167,13 +177,15 @@ export class CatalogService {
       "description": string,
       "isPartOf": string,
       "publisher": string,
+      "publisherIri": string,
       "documentation": string,
+      "accrualPeriodicity": string,     
     }>(datasetQuery).then(results => results[0]);
 
-    const keywordsQuery = `${this.createPrefixes()}
+    const keywordsQuery = `${this.createPrefixes(["dcat"])}
       SELECT ?keyword
       WHERE {
-        <${iri}> dct:keyword ?keyword
+        <${iri}> dcat:keyword ?keyword
         FILTER ( LANG(?keyword) = '${this.lang}' )
       }`;
     const keywords = await this.sparql.query<{ keyword: string }>(keywordsQuery).then(results => results.map(result => result.keyword));
@@ -198,15 +210,7 @@ export class CatalogService {
       ...dataset,
       keywords,
       themes,
-      distributions,
-      // accrualPeriodicity: result["dct:accrualPeriodicity"]?.[0],
-      // // conformsTo,
-      // contactPoint: result["dcat:contactPoint"]?.[0],
-      // publisher: result["dct:publisher"]?.[0],
-      // // spatial,
-      // // spatialResolutionInMeters,
-      // // temporal,
-      // // temporalResolution,
+      distributions,     
     };
   }
 
@@ -309,16 +313,6 @@ export class CatalogService {
       return acc;
 
     }, {} as any);
-  }
-
-  async getPublisher(iri: string) {
-    const query = `${this.createPrefixes(["skos", "rpp", "dcat"])}
-    SELECT ?name
-    WHERE {
-      <${iri}> foaf:name|rpp:má-název-orgánu-veřejné-moci ?name .
-      FILTER(LANG(?labels) = '${this.lang}') .
-    }`;
-    return this.sparql.query<{ name: string }>(query);
   }
 
 

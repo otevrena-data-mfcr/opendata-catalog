@@ -38,4 +38,6 @@ export interface Dataset {
   themes: { iri: string, title: string }[];
 
   documentation?: string;
+  
+  publisherIri?: string;
 }
