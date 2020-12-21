@@ -60,6 +60,10 @@
         <th>Frekvence aktualizace:</th>
         <td>{{dataset?.accrualPeriodicity}}</td>
       </tr>
+      <tr>
+        <th>Časové rozmezí:</th>
+        <td>{{dataset?.temporalFrom | date: "d. M. y"}} - {{dataset?.temporalTo | date: "d. M. y"}}</td>
+      </tr>
     </tbody>
   </table>
 </div>

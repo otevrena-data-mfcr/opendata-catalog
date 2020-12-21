@@ -34,10 +34,11 @@ export interface Dataset {
   contactPoint?: string;
   conformsTo?: string;
   spatialResolutionInMeters?: string;
-  temporalResolution?: string;
   themes: { iri: string, title: string }[];
-
+  
   documentation?: string;
   
+  temporalFrom?: string;
+  temporalTo?: string;
   publisherIri?: string;
 }

@@ -164,13 +164,13 @@ export class CatalogService {
 
   async getDataset(iri: string): Promise<Dataset> {
 
-    const datasetQuery = `${this.createPrefixes()}
-      SELECT ?title ?description ?isPartOf ?publisher ?publisherIri ?documentation ?accrualPeriodicity
+    const datasetQuery = `${this.createPrefixes(["dct", "foaf", "rpp", "skos", "dcat"])}
+      SELECT ?title ?description ?publisher ?publisherIri ?documentation ?accrualPeriodicity ?temporalFrom ?temporalTo
       WHERE {
         <${iri}> dct:title ?title .
         FILTER(LANG(?title) = '${this.lang}') .
 
-        OPTIONAL { <${iri}> dct:description ?description . FILTER(LANG(?description) = '${this.lang}') }
+        OPTIONAL { <${iri}> dct:description ?description . FILTER(LANG(?description) = '${this.lang}') }       
         OPTIONAL { <${iri}> foaf:page ?documentation . }
         OPTIONAL { 
           <${iri}> dct:publisher ?publisherIri .
@@ -182,8 +182,8 @@ export class CatalogService {
           ?accrualPeriodicityIri skos:prefLabel ?accrualPeriodicity .
           FILTER(LANG(?accrualPeriodicity) = '${this.lang}')
         }
-
-        FILTER(LANG(?title) = '${this.lang}') .
+        OPTIONAL { <${iri}> dct:temporal [ dcat:startDate ?temporalFrom ; dcat:endDate ?temporalTo ] . }
+        
       }`;
 
     const dataset = await this.sparql.query<{
@@ -194,6 +194,8 @@ export class CatalogService {
       "publisherIri": string,
       "documentation": string,
       "accrualPeriodicity": string,
+      "temporalFrom": string,
+      "temporalTo": string,
     }>(datasetQuery).then(results => results[0]);
 
     const keywordsQuery = `${this.createPrefixes(["dcat"])}
