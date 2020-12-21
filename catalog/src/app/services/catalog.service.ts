@@ -179,7 +179,7 @@ export class CatalogService {
       "publisher": string,
       "publisherIri": string,
       "documentation": string,
-      "accrualPeriodicity": string,     
+      "accrualPeriodicity": string,
     }>(datasetQuery).then(results => results[0]);
 
     const keywordsQuery = `${this.createPrefixes(["dcat"])}
@@ -202,7 +202,10 @@ export class CatalogService {
 
     const distributionsQuery = `${this.createPrefixes(["dcat"])}
       SELECT ?distributionIri
-      WHERE { <${iri}> dcat:distribution ?distributionIri }`;
+      WHERE {
+        <${iri}> dcat:distribution ?distributionIri .
+        FILTER (!isBlank(?distributionIri))
+      }`;
     const distributions = await this.sparql.query<{ distributionIri: string }>(distributionsQuery).then(results => results.map(result => result.distributionIri));
 
     return {
@@ -210,13 +213,13 @@ export class CatalogService {
       ...dataset,
       keywords,
       themes,
-      distributions,     
+      distributions,
     };
   }
 
   async getDistribution(iri: string): Promise<Distribution> {
 
-    const distributionQuery = `${this.createPrefixes()}
+    const distributionQuery = `${this.createPrefixes(["dct", "dcat"])}
       SELECT ?format ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
       WHERE {       
         OPTIONAL { <${iri}> dct:format ?format . }
