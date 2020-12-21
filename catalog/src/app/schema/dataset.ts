@@ -29,16 +29,16 @@ export interface Dataset {
   publisher?: string;
   accrualPeriodicity?: string;
   keywords: string[];
-  spatial?: string;
   temporal?: string;
   contactPoint?: string;
   conformsTo?: string;
-  spatialResolutionInMeters?: string;
   themes: { iri: string, title: string }[];
   
   documentation?: string;
   
+  spatial?: string[];
   temporalFrom?: string;
   temporalTo?: string;
+  temporalResolution?: string;
   publisherIri?: string;
 }

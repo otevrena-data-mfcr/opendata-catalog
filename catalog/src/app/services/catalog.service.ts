@@ -162,10 +162,10 @@ export class CatalogService {
 
   }
 
-  async getDataset(iri: string): Promise<Dataset> {
+  async getDataset(iri: string) {
 
     const datasetQuery = `${this.createPrefixes(["dct", "foaf", "rpp", "skos", "dcat"])}
-      SELECT ?title ?description ?publisher ?publisherIri ?documentation ?accrualPeriodicity ?temporalFrom ?temporalTo
+      SELECT ?title ?description ?publisher ?publisherIri ?documentation ?accrualPeriodicity ?temporalFrom ?temporalTo ?temporalResolution ?contactPoint
       WHERE {
         <${iri}> dct:title ?title .
         FILTER(LANG(?title) = '${this.lang}') .
@@ -183,6 +183,8 @@ export class CatalogService {
           FILTER(LANG(?accrualPeriodicity) = '${this.lang}')
         }
         OPTIONAL { <${iri}> dct:temporal [ dcat:startDate ?temporalFrom ; dcat:endDate ?temporalTo ] . }
+        OPTIONAL { <${iri}> dcat:temporalResolution ?temporalResolution . }
+        OPTIONAL { <${iri}> dcat:contactPoint ?contactPoint . }
         
       }`;
 
@@ -196,6 +198,8 @@ export class CatalogService {
       "accrualPeriodicity": string,
       "temporalFrom": string,
       "temporalTo": string,
+      "temporalResolution": string,
+      "spatial": string,
     }>(datasetQuery).then(results => results[0]);
 
     const keywordsQuery = `${this.createPrefixes(["dcat"])}
@@ -224,12 +228,16 @@ export class CatalogService {
       }`;
     const distributions = await this.sparql.query<{ distributionIri: string }>(distributionsQuery).then(results => results.map(result => result.distributionIri));
 
+    const spatialQuery = `${this.createPrefixes(["dct"])} SELECT ?spatial WHERE { <${iri}> dct:spatial ?spatial . }`;
+    const spatial = await this.sparql.query<{ spatial: string }>(spatialQuery).then(results => results.map(result => result.spatial));
+
     return {
       iri,
       ...dataset,
       keywords,
       themes,
       distributions,
+      spatial,
     };
   }
 

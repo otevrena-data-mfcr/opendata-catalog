@@ -44,11 +44,20 @@
       </tr>
       <tr>
         <th>Dokumentace:</th>
-        <td><a *ngIf="dataset?.documentation" [href]="dataset?.documentation">{{dataset?.documentation}}</a></td>
+        <td><a *ngIf="dataset?.documentation" [href]="dataset?.documentation" target="_blank">{{dataset?.documentation}}</a></td>
+      </tr>
+      <tr>
+        <th>Kontaktní bod:</th>
+        <td>{{dataset?.contactPoint}}</td>
       </tr>
       <tr>
         <th>Klíčová slova:</th>
-        <td>{{dataset?.keywords.join(", ")}}</td>
+        <td>
+          <ng-container *ngFor="let keyword of dataset?.keywords;let isLast=last">
+            <a [routerLink]="['/datasets',{keyword:keyword}]">{{keyword}}</a>
+            <ng-container *ngIf="!isLast">, </ng-container>
+          </ng-container>
+        </td>
       </tr>
       <tr>
         <th>Témata:</th>
@@ -61,8 +70,16 @@
         <td>{{dataset?.accrualPeriodicity}}</td>
       </tr>
       <tr>
-        <th>Časové rozmezí:</th>
+        <th>Časové pokrytí:</th>
         <td>{{dataset?.temporalFrom | date: "d. M. y"}} - {{dataset?.temporalTo | date: "d. M. y"}}</td>
+      </tr>
+      <tr>
+        <th>Časové rozlišení:</th>
+        <td>{{dataset?.temporalResolution}}</td>
+      </tr>
+      <tr>
+        <th>Související území:</th>
+        <td><a *ngFor="let url of dataset?.spatial" [href]="dataset?.spatial" target="_blank">{{url}}</a></td>
       </tr>
     </tbody>
   </table>
