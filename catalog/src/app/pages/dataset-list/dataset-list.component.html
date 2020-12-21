@@ -1,6 +1,9 @@
 <div class="row">
   <menu class="col-4">
 
+    <h3>Poskytovatel</h3>
+    <app-nav-filter [options]="publishers" [(selected)]="filter.publisher" (selectedChange)="updateFilter()"></app-nav-filter>
+
     <h3>Téma</h3>
     <app-nav-filter [options]="themes" [(selected)]="filter.theme" (selectedChange)="updateFilter()"></app-nav-filter>
 

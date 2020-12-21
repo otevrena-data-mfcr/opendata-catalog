@@ -11,9 +11,10 @@ export interface DatasetQueryOptions {
   offset?: number;
   order?: "title";
   filter: {
-    theme?: string[],
-    keyword?: string[],
-    format?: string[],
+    publisher?: string,
+    theme?: string,
+    keyword?: string,
+    format?: string,
     hideChild?: boolean,
   };
 }
@@ -26,6 +27,7 @@ export class CatalogService {
   themes: { iri: string, label: string, count: string }[] = [];
   keywords: { label: string, count: string }[] = [];
   formats: { iri: string, label: string, count: string }[] = [];
+  publishers: { iri: string, label: string, count: string }[] = [];
 
   lang: string = "cs";
 
@@ -36,6 +38,7 @@ export class CatalogService {
     rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
     skos: "http://www.w3.org/2004/02/skos/core#",
     foaf: "http://xmlns.com/foaf/0.1/",
+    rpp: "https://slovník.gov.cz/legislativní/sbírka/111/2009/pojem/",
   };
 
   private prefixesString = Object.entries(this.prefixes)
@@ -52,6 +55,7 @@ export class CatalogService {
       this.getThemes().then(themes => this.themes = themes),
       this.getKeywords().then(keywords => this.keywords = keywords),
       this.getFormats().then(formats => this.formats = formats),
+      this.getPublishers().then(publishers => this.publishers = publishers),
     ]);
   }
 
@@ -78,6 +82,9 @@ export class CatalogService {
       query.where!.push({ s: "?iri", p: "dcat:distribution", o: "?distribution" });
       query.where!.push({ s: "?distribution", p: "dct:format", o: `<${options.filter.format}>` });
     }
+    if (options?.filter?.publisher) {
+      query.where!.push({ s: "?iri", p: "dct:publisher", o: `<${options.filter.publisher}>` });
+    }
 
     if (this.configService.config.publishers) {
       query.where!.push({ s: "?iri", p: "dct:publisher", o: "?publisher" });
@@ -88,12 +95,13 @@ export class CatalogService {
       ...query,
       select: ["?iri", "?title", "?description"],
       limit: options?.limit,
-      offset: options?.offset
+      offset: options?.offset,
+      group: "?iri ?title ?description"
     };
 
     let countQuery = {
       ...query,
-      select: ["COUNT(?iri) AS ?count"]
+      select: ["COUNT(DISTINCT ?iri) AS ?count"]
     };
 
     if (options?.order && ["title"].indexOf(options.order) !== -1) {
@@ -258,73 +266,83 @@ export class CatalogService {
     return this.sparql.getDocumentFields<Dataset | Distribution>(iri, undefined, this.prefixes);
   }
 
+
+  async getPublishers() {
+
+    const query = `
+    ${this.prefixesString}
+    SELECT ?iri (SAMPLE(?labels) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
+    WHERE {
+      ?datasetIri a dcat:Dataset ;
+        dct:publisher ?iri .
+      ?iri skos:prefLabel|rpp:má-název-orgánu-veřejné-moci ?labels .
+      ${this.createPublisherFilter("?datasetIri")}
+    }
+    GROUP BY ?iri
+    ORDER BY DESC(?count)
+    `;
+
+    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+
+    }
+
   async getThemes() {
 
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(*) as ?count"],
-      where: [
-        {
-          s: "?datasetIri", po: [
-            { p: "a", o: "dcat:Dataset" },
-            { p: "dcat:theme", o: "?iri" }
-          ]
-        },
-        { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
-      ],
-      filter: ["LANG(?prefLabel) = 'cs'",],
-      group: "?iri",
-      order: "DESC(?count)"
-    };
-
-    if (this.configService.config.publishers) {
-      query.where!.push({ s: "?datasetIri", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
-    }
-
-    return this.sparql.query<{ iri: string, label: string, count: string }>(buildQuery(query));
-
+    const query = `${this.prefixesString}
+      SELECT ?iri (SAMPLE(?prefLabel) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
+      WHERE {
+        ?datasetIri a dcat:Dataset ; dcat:theme ?iri .
+        ?iri skos:prefLabel ?prefLabel .
+        FILTER(LANG(?prefLabel) = 'cs')
+        ${this.createPublisherFilter("?datasetIri")}
   }
+      GROUP BY ?iri
+      ORDER BY DESC(?count)`;
+
+    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+
+    }
 
   async getKeywords() {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?label", "COUNT(*) as ?count"],
-      where: [{ s: "?s", p: "dcat:keyword", o: "?label" }],
-      filter: ["LANG(?label) = 'cs'"],
-      group: "?label",
-      order: "DESC(?count)"
-    };
-
-    if (this.configService.config.publishers) {
-      query.where!.push({ s: "?s", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
-    }
-
-    return this.sparql.query<{ label: string, count: string }>(buildQuery(query));
+    const query = `${this.prefixesString}
+      SELECT ?label (COUNT(DISTINCT ?datasetIri) as ?count)
+      WHERE {
+        ?datasetIri a dcat:Dataset ; dcat:keyword ?label .
+        FILTER(LANG(?label) = 'cs') .
+        ${this.createPublisherFilter("?datasetIri")}
+      }
+      GROUP BY ?label
+      ORDER BY DESC(?count)`;
+    return this.sparql.query<{ label: string, count: string }>(query);
 
   }
 
   async getFormats() {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri", "SAMPLE(?prefLabel) AS ?label", "COUNT(DISTINCT ?datasetIri) as ?count"],
-      where: [
-        { s: "?datasetIri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dcat:distribution", o: "?distributionIri" }] },
-        { s: "?distributionIri", p: "dct:format", o: "?iri" },
-        { s: "?iri", p: "skos:prefLabel", o: "?prefLabel" }
-      ],
-      filter: ["LANG(?prefLabel) = 'en'"],
-      group: "?iri",
-      order: "DESC(?count)"
-    };
+    const query = `${this.prefixesString}
+      SELECT ?iri (SAMPLE(?prefLabel) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
+      WHERE {
+        ?datasetIri a dcat:Dataset ; dcat:distribution ?distributionIri .
+        ?distributionIri dct:format ?iri .
+        ?iri skos:prefLabel ?prefLabel .
+        FILTER(LANG(?prefLabel) = 'en') .
+        ${this.createPublisherFilter("?datasetIri")}
+      }
+      GROUP BY ?iri
+      ORDER BY DESC(?count)`;
 
-    if (this.configService.config.publishers) {
-      query.where!.push({ s: "?datasetIri", p: "dct:publisher", o: "?publisher" });
-      query.filter!.push(`?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})`)
+
+    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+
     }
 
-    return this.sparql.query<{ iri: string, label: string, count: string }>(buildQuery(query));
+  private createPublisherFilter(iri: string) {
+
+    if (!this.configService.config.publishers) return "";
+
+    return `
+    ${iri} dct:publisher ?publisher .
+      FILTER(?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})) .
+        `;
 
   }
 
