@@ -24,7 +24,7 @@ export interface Dataset {
   iri: string;
   title: string;
   description: string;
-  isPartOf: string;
+  // isPartOf: string;
   distributions?: string[];
   publisher?: string;
   accrualPeriodicity?: string;

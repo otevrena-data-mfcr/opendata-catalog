@@ -33,7 +33,7 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
 
   dataset?: Dataset;
   childDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
-  parentDatasets: Pick<Dataset, "iri" | "title" | "description">[] = [];
+  parentDatasets: Pick<Dataset, "iri" | "title">[] = [];
 
   private paramsSubscription = this.route.params.subscribe(params => this.loadDataset(params["iri"]));
 
@@ -74,20 +74,19 @@ export class DatasetViewComponent implements OnInit, OnDestroy {
   }
 
   async loadParentDatasets(dataset: Dataset) {
-    const parentDatasets = [];
+    const parentDatasets: Pick<Dataset, "iri" | "title">[] = [];
 
-    if (dataset.isPartOf) {
+    let iri: string | undefined = dataset.iri;
+    let parent: Pick<Dataset, "iri" | "title"> | undefined;
 
-      let parentIri: string | undefined = dataset.isPartOf;
+    do {
+      parent = await this.catalog.getDatasetParent(iri).catch(err => undefined);
 
-      while (parentIri) {
-        try {
-          const parent: Dataset = await this.catalog.getDataset(parentIri);
-          parentDatasets.unshift(parent);
-          parentIri = parent.isPartOf;
-        } catch (err) { parentIri = undefined; }
-      }
-    }
+      if (parent) parentDatasets.unshift(parent);
+
+      iri = parent?.iri;
+
+    } while (iri);
 
     return parentDatasets;
   }

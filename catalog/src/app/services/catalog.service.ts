@@ -149,14 +149,28 @@ export class CatalogService {
     return this.sparql.query<{ iri: string, title: string, description: string }>(query);
   }
 
-  async getDataset(iri: string, lang: string = "cs"): Promise<Dataset> {
+  async getDatasetParent(iri: string): Promise<Pick<Dataset, "iri" | "title">> {
+    const query = `${this.createPrefixes(["dct"])}
+    SELECT ?iri ?title
+    WHERE {
+      <${iri}> dct:isPartOf ?iri .
+      ?iri dct:title ?title .
+      FILTER(LANG(?title) = '${this.lang}') .
+    }`
+
+    return this.sparql.query<{ iri: string, title: string }>(query).then(results => results[0]);
+
+  }
+
+  async getDataset(iri: string): Promise<Dataset> {
 
     const datasetQuery = `${this.createPrefixes()}
       SELECT ?title ?description ?isPartOf ?publisher ?publisherIri ?documentation ?accrualPeriodicity
       WHERE {
         <${iri}> dct:title ?title .
+        FILTER(LANG(?title) = '${this.lang}') .
+
         OPTIONAL { <${iri}> dct:description ?description . FILTER(LANG(?description) = '${this.lang}') }
-        OPTIONAL { <${iri}> dct:isPartOf ?isPartOf . }
         OPTIONAL { <${iri}> foaf:page ?documentation . }
         OPTIONAL { 
           <${iri}> dct:publisher ?publisherIri .
