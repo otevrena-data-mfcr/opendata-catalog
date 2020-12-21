@@ -195,7 +195,7 @@ export class CatalogService {
       WHERE {
         <${iri}> dcat:theme ?iri .
         ?iri skos:prefLabel ?title .
-        FILTER ( strstarts(str(?iri), '${this.configService.config.themesPrefix}') )
+        ${this.configService.config.themesPrefix ? `FILTER ( strstarts(str(?iri), '${this.configService.config.themesPrefix}') )` : ""}
         FILTER ( LANG(?title) = '${this.lang}' )
       }`;
     const themes = await this.sparql.query<{ iri: string, title: string }>(themesQuery);
@@ -343,8 +343,8 @@ export class CatalogService {
       WHERE {
         ?datasetIri a dcat:Dataset ; dcat:theme ?iri .
         ?iri skos:prefLabel ?prefLabel .
-        FILTER(LANG(?prefLabel) = 'cs')
-        FILTER ( strstarts(str(?iri), '${themesPrefix}') )
+        FILTER(LANG(?prefLabel) = 'cs')       
+        ${themesPrefix ? `FILTER ( strstarts(str(?iri), '${themesPrefix}') )` : ""}
         ${this.createPublisherFilter("?datasetIri")}
       }
       GROUP BY ?iri
