@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 
-import { SparqlService } from "app/services/sparql.service";
-import { Dataset, Distribution, DistributionFields, DistributionServiceFields } from 'app/schema';
+import { DocumentFields, SparqlService } from "app/services/sparql.service";
+import { Dataset, Distribution } from 'app/schema';
 
 import { buildQuery, QueryDefinition } from "app/lib/sparql-builder";
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface DatasetQueryOptions {
   limit?: number;
@@ -19,6 +20,18 @@ export interface DatasetQueryOptions {
   };
 }
 
+enum Prefix {
+  dct = "http://purl.org/dc/terms/",
+  dcat = "http://www.w3.org/ns/dcat#",
+  xml = "http://www.w3.org/2001/XMLSchema#",
+  rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  skos = "http://www.w3.org/2004/02/skos/core#",
+  foaf = "http://xmlns.com/foaf/0.1/",
+  rpp = "https://slovník.gov.cz/legislativní/sbírka/111/2009/pojem/",
+  iana = "http://www.iana.org/assignments/media-types/",
+};
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,20 +43,6 @@ export class CatalogService {
   publishers: { iri: string, label: string, count: string }[] = [];
 
   lang: string = "cs";
-
-  private prefixes = {
-    dct: "http://purl.org/dc/terms/",
-    dcat: "http://www.w3.org/ns/dcat#",
-    xml: "http://www.w3.org/2001/XMLSchema#",
-    rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    skos: "http://www.w3.org/2004/02/skos/core#",
-    foaf: "http://xmlns.com/foaf/0.1/",
-    rpp: "https://slovník.gov.cz/legislativní/sbírka/111/2009/pojem/",
-  };
-
-  private prefixesString = Object.entries(this.prefixes)
-    .map(([name, prefix]) => `PREFIX ${name}: <${prefix}>`)
-    .join("\n");
 
   constructor(
     private configService: ConfigService,
@@ -62,7 +61,7 @@ export class CatalogService {
   async findDatasets(options?: DatasetQueryOptions) {
 
     const query: QueryDefinition = {
-      prefixes: this.prefixes,
+      prefixes: Prefix,
       where: [
         { s: "?iri", po: [{ p: "a", o: "dcat:Dataset" }, { p: "dct:title", o: "?title" }] },
         { s: "?iri", p: "dct:description", o: "?description", optional: true, optionalFilter: `LANG(?description) = '${this.lang}'` },
@@ -116,104 +115,82 @@ export class CatalogService {
 
   }
 
-  async findDocumentsByIri(iri: string) {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri", "?type"],
-      where: [{ s: "?iri", p: "rdf:type", o: "?type" }],
-      filter: [`str(?iri) = '${iri}'`]
-    };
-
-    return this.sparql.query<{ iri: string, type: string }>(buildQuery(query));
+  async getDocumentType(iri: string): Promise<string | undefined> {
+    const query = `SELECT ?type WHERE { <${iri}> a ?type . }`;
+    return this.sparql.query<{ type: string }>(query).then(data => data[0]?.type);
   }
 
   async findDocumentsByIdentifier(identifier: string) {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri", "?type"],
-      where: [{ s: "?iri", po: [{ p: "rdf:type", o: "?type" }, { p: "dct:identifier", o: "?identifier" }] }],
-      filter: [`str(?identifier) = '${identifier}'`]
-    };
+    const query = `${this.createPrefixes(["dct"])}
+      SELECT ?iri ?type
+      WHERE { ?iri a ?type ; dct:identifier <${identifier}> . }`
 
-    return this.sparql.query<{ iri: string, type: string }>(buildQuery(query));
+    return this.sparql.query<{ iri: string, type: string }>(query);
   }
 
   async findDatasetByDistribution(iri: string) {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri"],
-      where: [{ s: "?iri", p: "dcat:distribution", o: "?distribution" }],
-      filter: [`str(?distribution) = '${iri}'`]
-    };
+    const query = `${this.createPrefixes(["dcat"])}
+      SELECT ?iri
+      WHERE { ?iri dcat:distribution <${iri}> . }`;
 
-    return this.sparql.query<{ iri: string }>(buildQuery(query));
+    return this.sparql.query<{ iri: string }>(query);
   }
 
   async findChildDatasets(parentIri: string) {
-    const query: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: ["?iri", "?title", "?description"],
-      where: [
-        {
-          s: "?iri", po: [
-            { p: "dct:isPartOf", o: "?parentIri" },
-            { p: "dct:title", o: "?title" }
-          ]
-        },
-        { s: "?iri", p: "dct:description", o: "?description", optional: true, optionalFilter: `LANG(?description) = '${this.lang}'` },
-      ],
-      filter: [
-        `str(?parentIri) = '${parentIri}'`,
-        `LANG(?title) = '${this.lang}'`
-      ]
-    };
+    const query = `${this.createPrefixes()}
+      SELECT ?iri ?title ?description
+      WHERE {
+        ?iri dct:isPartOf <${parentIri}> .
+        ?iri dct:title ?title .
+        OPTIONAL { ?iri dct:description ?description . FILTER (LANG(?description) = '${this.lang}') }
+        FILTER (LANG(?title) = '${this.lang}') .
+      }`
 
-    return this.sparql.query<{ iri: string, title: string, description: string }>(buildQuery(query));
+    return this.sparql.query<{ iri: string, title: string, description: string }>(query);
   }
 
   async getDataset(iri: string, lang: string = "cs"): Promise<Dataset> {
 
-    const datasetQuery: QueryDefinition = {
-      prefixes: this.prefixes,
-      select: [
-        "?title",
-        "?description",
-        "?isPartOf",
-        "?publisher",
-        "?documentation",
-      ],
-      where: [
-        { s: `<${iri}>`, p: "dct:title", o: "?title" },
-        { s: `<${iri}>`, optional: true, p: "dct:description", o: "?description", optionalFilter: `LANG(?description) = '${this.lang}'` },
-        { s: `<${iri}>`, optional: true, p: "dct:isPartOf", o: "?isPartOf" },
-        { s: `<${iri}>`, optional: true, p: "foaf:page", o: "?documentation" },
-        { s: `<${iri}>`, optional: true, p: "dct:publisher", o: "?publisher" },
-      ],
-      filter: [`LANG(?title) = '${this.lang}'`]
-    };
+    const datasetQuery = `${this.createPrefixes()}
+      SELECT ?title ?description ?isPartOf ?publisher ?documentation
+      WHERE {
+        <${iri}> dct:title ?title .
+        OPTIONAL { <${iri}> dct:description ?description . FILTER(LANG(?description) = '${this.lang}') }
+        OPTIONAL { <${iri}> dct:isPartOf ?isPartOf . }
+        OPTIONAL { <${iri}> foaf:page ?documentation . }
+        OPTIONAL { <${iri}> dct:publisher ?publisher . }
+        FILTER(LANG(?title) = '${this.lang}') .
+      }`;
 
-    const dataset = await this.sparql.query<Pick<Dataset, "title" | "description" | "isPartOf" | "publisher" | "documentation">>(buildQuery(datasetQuery)).then(results => results[0]);
+    const dataset = await this.sparql.query<{
+      "title": string,
+      "description": string,
+      "isPartOf": string,
+      "publisher": string,
+      "documentation": string,
+    }>(datasetQuery).then(results => results[0]);
 
-    const keywordsQuery = {
-      prefixes: this.prefixes,
-      select: ["?keyword"],
-      where: [{ s: `<${iri}>`, p: "dct:keyword", o: "?keyword" }]
-    };
-    const keywords = await this.sparql.query<{ keyword: string }>(buildQuery(keywordsQuery)).then(results => results.map(result => result.keyword));
+    const keywordsQuery = `${this.createPrefixes()}
+      SELECT ?keyword
+      WHERE {
+        <${iri}> dct:keyword ?keyword
+        FILTER ( LANG(?keyword) = '${this.lang}' )
+      }`;
+    const keywords = await this.sparql.query<{ keyword: string }>(keywordsQuery).then(results => results.map(result => result.keyword));
 
-    const themesQuery = `${this.prefixesString}
-    SELECT ?iri ?title
-    WHERE {
-      <${iri}> dcat:theme ?iri .
-      ?iri skos:prefLabel ?title .
-      FILTER ( LANG(?title) = '${this.lang}' )
-    }`;
+    const themesQuery = `${this.createPrefixes(["skos", "dcat"])}
+      SELECT ?iri ?title
+      WHERE {
+        <${iri}> dcat:theme ?iri .
+        ?iri skos:prefLabel ?title .
+        FILTER ( strstarts(str(?iri), '${this.configService.config.themesPrefix}') )
+        FILTER ( LANG(?title) = '${this.lang}' )
+      }`;
     const themes = await this.sparql.query<{ iri: string, title: string }>(themesQuery);
 
-    const distributionsQuery = `${this.prefixesString}
-    SELECT ?distributionIri
-    WHERE { <${iri}> dcat:distribution ?distributionIri }
-    `;
+    const distributionsQuery = `${this.createPrefixes(["dcat"])}
+      SELECT ?distributionIri
+      WHERE { <${iri}> dcat:distribution ?distributionIri }`;
     const distributions = await this.sparql.query<{ distributionIri: string }>(distributionsQuery).then(results => results.map(result => result.distributionIri));
 
     return {
@@ -233,78 +210,158 @@ export class CatalogService {
     };
   }
 
-  // TODO: rewrite to direct query instead of getDocumentFields
-  async getDistribution(iri: string, lang: string = "cs"): Promise<Distribution> {
-    const result = await this.sparql.getDocumentFields<DistributionFields>(iri, "dcat:Distribution", this.prefixes);
-    const format = this.formats.find(format => format.iri === result["dct:format"]?.[0]);
+  async getDistribution(iri: string): Promise<Distribution> {
+
+    const distributionQuery = `${this.createPrefixes()}
+      SELECT ?format ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
+      WHERE {       
+        OPTIONAL { <${iri}> dct:format ?format . }
+        OPTIONAL { <${iri}> dcat:mediaType ?mediaType . }
+        OPTIONAL { <${iri}> dcat:downloadURL ?downloadUrl . }
+        OPTIONAL { <${iri}> dcat:accessURL ?accessUrl . }
+        OPTIONAL { <${iri}> dcat:compressFormat ?compressFormat . }
+        OPTIONAL { <${iri}> dcat:packageFormat ?packageFormat . }
+        OPTIONAL { <${iri}> dcat:accessService ?accessService . }
+      }
+      LIMIT 1
+      `;
+    const result = await this.sparql.query<{
+      "format"?: string,
+      "mediaType"?: string,
+      "downloadUrl"?: string,
+      "accessUrl"?: string,
+      "compressFormat"?: string,
+      "packageFormat"?: string,
+      "accessService"?: string,
+    }>(distributionQuery).then(results => results[0]);
+
+    const format = this.formats.find(format => format.iri === result.format);
 
     const distribution: Distribution = {
       iri,
       format: format?.label,
-      mediaType: result["dcat:mediaType"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
-      downloadUrl: result["dcat:downloadURL"]?.[0],
-      accessUrl: result["dcat:accessURL"]?.[0],
-      compressFormat: result["dcat:compressFormat"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
-      packageFormat: result["dcat:packageFormat"]?.[0].replace("http://www.iana.org/assignments/media-types/", ""),
+      mediaType: result.mediaType?.replace(Prefix.iana, ""),
+      downloadUrl: result.downloadUrl,
+      accessUrl: result.accessUrl,
+      compressFormat: result.compressFormat?.replace(Prefix.iana, ""),
+      packageFormat: result.packageFormat?.replace(Prefix.iana, ""),
     };
 
-    if (result["dcat:accessService"]) {
-      const serviceResult = await this.sparql.getDocumentFields<DistributionServiceFields>(result["dcat:accessService"][0], "dcat:DataService", this.prefixes);
+    if (result.accessService) {
+
+      const serviceQuery = `${this.createPrefixes()}
+        SELECT ?title ?endpointURL ?endpointDescription
+        WHERE {         
+          OPTIONAL { <${result.accessService}> dct:title ?title . FILTER(LANG(?title) = '${this.lang}') . }
+          OPTIONAL { <${result.accessService}> dcat:endpointURL ?endpointURL . }
+          OPTIONAL { <${result.accessService}> dcat:endpointDescription ?endpointDescription . }
+        }
+        LIMIT 1`;
+
+      const serviceResult = await this.sparql.query<{
+        "title"?: string;
+        "endpointURL"?: string;
+        "endpointDescription"?: string;
+      }>(serviceQuery).then(results => results[0]);
 
       distribution.accessService = {
-        iri: result["dcat:accessService"]?.[0],
-        title: serviceResult["dct:title"]?.[lang]?.[0],
-        endpointURL: serviceResult["dcat:endpointURL"]?.[0],
-        endpointDescription: serviceResult["dcat:endpointDescription"]?.[0],
-      }
+        iri: result.accessService,
+        title: serviceResult.title,
+        endpointURL: serviceResult.endpointURL,
+        endpointDescription: serviceResult.endpointDescription,
+      };
     }
 
     return distribution;
   }
 
-  async getDocument(iri: string) {
-    return this.sparql.getDocumentFields<Dataset | Distribution>(iri, undefined, this.prefixes);
+  async getDocument(iri: string, type?: string) {
+    const datasetQuery = `${this.createPrefixes()}
+        SELECT ?field ?value
+        WHERE {
+          <${iri}>${type ? ` a ${type} ; ` : ""}?field ?value .
+        }`;
+
+    const datasetFieldsResult = await this.sparql.rawQuery<DocumentFields>(datasetQuery);
+
+    if (!datasetFieldsResult.results.bindings.length) {
+      throw new HttpErrorResponse({ error: "No fields for document iri", status: 404, statusText: "Not Found", url: this.configService.config.endpoint });
+    }
+
+    return datasetFieldsResult.results.bindings.reduce((acc, doc) => {
+
+      let value = doc.value.value;
+      let field = doc.field.value;
+      let lang = doc.value["xml:lang"];
+
+      if (doc.field.type === "uri") Object.entries(Prefix).forEach(([prefix, uri]) => field = field.replace(uri, prefix + ":"));
+      if (doc.value.type === "uri" && typeof value === "string") Object.entries(Prefix).forEach(([prefix, uri]) => value = value.replace(uri, prefix + ":"));
+
+      if (lang) {
+        if (!acc[field]) acc[field] = {};
+        if (!acc[field][lang]) acc[field][lang] = [];
+        acc[field][lang].push(value);
+      }
+      else {
+        if (!acc[field]) acc[field] = [];
+        acc[field].push(value);
+      }
+      return acc;
+
+    }, {} as any);
+  }
+
+  async getPublisher(iri: string) {
+    const query = `${this.createPrefixes(["skos", "rpp", "dcat"])}
+    SELECT ?name
+    WHERE {
+      <${iri}> foaf:name|rpp:má-název-orgánu-veřejné-moci ?name .
+      FILTER(LANG(?labels) = '${this.lang}') .
+    }`;
+    return this.sparql.query<{ name: string }>(query);
   }
 
 
   async getPublishers() {
 
-    const query = `
-    ${this.prefixesString}
-    SELECT ?iri (SAMPLE(?labels) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
-    WHERE {
-      ?datasetIri a dcat:Dataset ;
-        dct:publisher ?iri .
-      ?iri skos:prefLabel|rpp:má-název-orgánu-veřejné-moci ?labels .
-      ${this.createPublisherFilter("?datasetIri")}
-    }
-    GROUP BY ?iri
-    ORDER BY DESC(?count)
-    `;
-
-    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
-
-    }
-
-  async getThemes() {
-
-    const query = `${this.prefixesString}
-      SELECT ?iri (SAMPLE(?prefLabel) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
+    const query = `${this.createPrefixes(["foaf", "rpp", "dcat", "dct"])}
+      SELECT ?iri (SAMPLE(?labels) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
       WHERE {
-        ?datasetIri a dcat:Dataset ; dcat:theme ?iri .
-        ?iri skos:prefLabel ?prefLabel .
-        FILTER(LANG(?prefLabel) = 'cs')
+        ?datasetIri a dcat:Dataset ;
+          dct:publisher ?iri .
+        ?iri foaf:name|rpp:má-název-orgánu-veřejné-moci ?labels .
+        FILTER(LANG(?labels) = '${this.lang}')
         ${this.createPublisherFilter("?datasetIri")}
-  }
+      }
       GROUP BY ?iri
       ORDER BY DESC(?count)`;
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
 
-    }
+  }
+
+  async getThemes() {
+
+    const themesPrefix = this.configService.config.themesPrefix;
+
+    const query = `${this.createPrefixes()}
+      SELECT ?iri (SAMPLE(?prefLabel) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
+      WHERE {
+        ?datasetIri a dcat:Dataset ; dcat:theme ?iri .
+        ?iri skos:prefLabel ?prefLabel .
+        FILTER(LANG(?prefLabel) = 'cs')
+        FILTER ( strstarts(str(?iri), '${themesPrefix}') )
+        ${this.createPublisherFilter("?datasetIri")}
+      }
+      GROUP BY ?iri
+      ORDER BY DESC(?count)`;
+
+    return this.sparql.query<{ iri: string, label: string, count: string }>(query);
+
+  }
 
   async getKeywords() {
-    const query = `${this.prefixesString}
+    const query = `${this.createPrefixes()}
       SELECT ?label (COUNT(DISTINCT ?datasetIri) as ?count)
       WHERE {
         ?datasetIri a dcat:Dataset ; dcat:keyword ?label .
@@ -318,7 +375,7 @@ export class CatalogService {
   }
 
   async getFormats() {
-    const query = `${this.prefixesString}
+    const query = `${this.createPrefixes()}
       SELECT ?iri (SAMPLE(?prefLabel) AS ?label) (COUNT(DISTINCT ?datasetIri) as ?count)
       WHERE {
         ?datasetIri a dcat:Dataset ; dcat:distribution ?distributionIri .
@@ -333,7 +390,7 @@ export class CatalogService {
 
     return this.sparql.query<{ iri: string, label: string, count: string }>(query);
 
-    }
+  }
 
   private createPublisherFilter(iri: string) {
 
@@ -343,7 +400,13 @@ export class CatalogService {
     ${iri} dct:publisher ?publisher .
       FILTER(?publisher IN(${this.configService.config.publishers.map(item => "<" + item + ">").join(", ")})) .
         `;
-
   }
+
+  private createPrefixes(prefixes?: (keyof typeof Prefix)[]) {
+    if (!prefixes) prefixes = <(keyof typeof Prefix)[]>Object.keys(Prefix);
+
+    return prefixes.map(name => `PREFIX ${name}: <${Prefix[name]}>`).join("\n");
+  }
+
 
 }

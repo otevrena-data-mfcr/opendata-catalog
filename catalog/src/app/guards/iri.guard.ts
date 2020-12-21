@@ -16,19 +16,17 @@ export class IriGuard implements CanActivate {
 
     try {
       const iri = next.params["iri"];
-      const results = await this.catalog.findDocumentsByIri(iri);
+      const type = await this.catalog.getDocumentType(iri);
 
-      for (let result of results) {
-        switch (result.type) {
+      switch (type) {
 
-          case "http://www.w3.org/ns/dcat#Dataset":
-            return this.router.createUrlTree(["/datasets", result.iri], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
+        case "http://www.w3.org/ns/dcat#Dataset":
+          return this.router.createUrlTree(["/datasets", iri], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
 
-          case "http://www.w3.org/ns/dcat#Distribution":
-            const datasetResult = await this.catalog.findDatasetByDistribution(result.iri);
-            if (datasetResult[0]) return this.router.createUrlTree(["/datasets", datasetResult[0].iri]);
-            else return this.router.createUrlTree(["/not-found"], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
-        }
+        case "http://www.w3.org/ns/dcat#Distribution":
+          const datasetResult = await this.catalog.findDatasetByDistribution(iri);
+          if (datasetResult[0]) return this.router.createUrlTree(["/datasets", datasetResult[0].iri]);
+          else return this.router.createUrlTree(["/not-found"], /* Removed unsupported properties by Angular migration: replaceUrl. */ {});
       }
 
       return this.router.createUrlTree(["/not-found"]);
