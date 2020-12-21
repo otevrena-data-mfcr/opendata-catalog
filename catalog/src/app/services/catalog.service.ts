@@ -38,13 +38,9 @@ export class CatalogService {
     foaf: "http://xmlns.com/foaf/0.1/",
   };
 
-  private prefixesString = `PREFIX dct: <http://purl.org/dc/terms/>
-  PREFIX dcat: <http://www.w3.org/ns/dcat#>
-  PREFIX xml: <http://www.w3.org/2001/XMLSchema#>
-  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-  PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-  `
+  private prefixesString = Object.entries(this.prefixes)
+    .map(([name, prefix]) => `PREFIX ${name}: <${prefix}>`)
+    .join("\n");
 
   constructor(
     private configService: ConfigService,
