@@ -6,6 +6,18 @@ h3 {
   margin: 0 0 1em 0;
 }
 
+.tabs {
+  a {
+    color: var(--primary);
+    padding: 0.2em;
+    text-decoration: none;
+  }
+  a.active,
+  a:hover {
+    border-bottom: 2px solid var(--primary);
+  }
+}
+
 .buttons {
   text-align: center;
   .btn {

@@ -9,9 +9,8 @@
     </h3>
 
     <div class="tabs">
-      <a class="btn small mr-1" [class.primary]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a>
-      <a *ngIf="showPreview.code" class="btn small mr-1" [class.primary]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a>
-      <!-- <a *ngIf="showPreview.command-stata" class="btn small mr-1" [class.primary]="tab === 'commands'" (click)="tab = 'commands'">stažení </a> -->
+      <h4 class="d-inline-block"><a class="small mr-3" [class.active]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a></h4>
+      <h4 class="d-inline-block"><a *ngIf="showPreview.code" class="small mr-3" [class.active]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a></h4>
     </div>
 
     <div class="previews my-3">
@@ -33,7 +32,7 @@
       <a *ngIf="!distributionService && url" [href]="url" class="btn primary">
         Stáhnout <ng-container *ngIf="headers?.contentLength">{{headers?.contentLength | prettyBytes}}</ng-container>
       </a>
-      <small class="last-modified" *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
+      <small class="last-modified" *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm"}}</small>
     </div>
 
 
