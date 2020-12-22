@@ -1,5 +1,5 @@
 <div class="row">
-  <menu class="col-4">
+  <menu class="col-md-4">
 
     <div *ngIf="publishers.length > 1" class="mb-5">
       <h3>Poskytovatel</h3>
@@ -23,7 +23,7 @@
 
   </menu>
 
-  <main class="col-8">
+  <main class="col-md-8">
 
     <div class="info">
       <p *ngIf="!loading">
@@ -42,7 +42,7 @@
     </div>
 
     <div class="pager">
-      <a *ngIf="datasets.length < count" (click)="loadDatasets(true)" class="btn">Načíst dalších {{limit}}</a>
+      <a *ngIf="datasets.length < count" (click)="loadDatasets(true)" class="btn secondary">Načíst dalších {{limit}}</a>
     </div>
 
   </main>

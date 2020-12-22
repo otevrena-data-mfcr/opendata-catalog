@@ -6,10 +6,10 @@ nav {
     list-style: none;
     padding: 0.667em;
     margin: 0 1em;
-    border-radius: var(--button-border-radius, 0);
+    border-radius: var(--border-radius, 0);
   }
   a.active {
-    color: var(--menu-active-text, #fff);
-    background: var(--menu-active-bg, #09f);
+    color: #fff;
+    background: var(--primary, #09f);
   }
 }

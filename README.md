@@ -23,6 +23,18 @@ Projekt je postaven na JavaScriptovém frameworku Angular 10. Pro instalaci sta�
 | cors-gateway | Ne      | URL                                        |           |                                                                                                                                                 |
 | theme-prefix | Ne      | IRI                                        |           | Omezí vypsaná témata pouze na ty, jejichž IRI začíná takto.                                                                                     |
 
+#### Stylování
+
+Stylovat komponentu katalogu lze CSS proměnnými nastavenými na CSS selector `opendata-catalog`. Proměnné se také dědí z `:root`:
+
+```css
+opendata-catalog {
+  --primary: #0087c8; /* barva pro primární tlačítka */
+  --link-color: #0087c8; /* barva pro odkazy */
+  --border-radius: 0; /* poloměr zaoblení rohů u tlačítek a dalších prvků */
+  --bg-light: #eee; /* pozadí karty distribuce a datové sady */
+}
+```
 
 ## Kde je implementováno
 

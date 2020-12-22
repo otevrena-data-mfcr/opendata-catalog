@@ -9,9 +9,9 @@
     </h3>
 
     <div class="tabs">
-      <a class="btn small mr-1" [class.secondary]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a>
-      <a *ngIf="showPreview.code" class="btn small mr-1" [class.secondary]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a>
-      <!-- <a *ngIf="showPreview.command-stata" class="btn small mr-1" [class.secondary]="tab === 'commands'" (click)="tab = 'commands'">stažení </a> -->
+      <a class="btn small mr-1" [class.primary]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a>
+      <a *ngIf="showPreview.code" class="btn small mr-1" [class.primary]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a>
+      <!-- <a *ngIf="showPreview.command-stata" class="btn small mr-1" [class.primary]="tab === 'commands'" (click)="tab = 'commands'">stažení </a> -->
     </div>
 
     <div class="previews my-3">
