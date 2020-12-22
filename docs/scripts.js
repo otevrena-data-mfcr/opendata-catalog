@@ -10,7 +10,7 @@ function renderSnippet(data) {
   if (data.hideChild) o += "  hide-child=\"" + data.hideChild + "\"\n";
   if (data.themesPrefix) o += "  themes-prefix=\"" + data.themesPrefix + "\"\n";
   o += "></opendata-catalog>\n";
-  o += "<script src=\"https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@" + (data.version || "latest") + "/package/catalog.min.js\"><" + "/script>";
+  o += "<script src=\"https://cdn.jsdelivr.net/npm/@otevrena-data-mfcr/opendata-catalog@" + (data.version || "latest") + "/package/catalog.js\"><" + "/script>";
 
   return o;
 }
