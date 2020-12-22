@@ -4,7 +4,7 @@ import { CatalogService } from './services/catalog.service';
 import { Config, ConfigService } from './services/config.service';
 import { ErrorService } from './services/error.service';
 
-import * as packageJSON from "../../package.json";
+import * as packageJSON from "../../../package.json";
 
 @Component({
   selector: 'opendata-catalog',

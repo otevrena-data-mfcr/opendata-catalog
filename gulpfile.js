@@ -11,14 +11,14 @@ function clearPackageDir(cb) {
 }
 
 function buildPackage() {
-  return src(["./dist/*.js"])
+  return src(["./catalog/dist/*.js"])
     .pipe(concat("catalog.js"))
     .pipe(dest("./package/"));
 }
 
 function copyAssets() {
   const assets = [
-    "./dist/3rdpartylicenses.txt"
+    "./catalog/dist/3rdpartylicenses.txt"
   ];
   return src(assets).pipe(dest("./package/"));
 }
