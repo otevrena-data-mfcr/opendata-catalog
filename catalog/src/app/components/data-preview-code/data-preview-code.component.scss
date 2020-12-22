@@ -1,9 +1,11 @@
-.preview {
+:host {
+  display: block;
   width: 100%;
   max-height: 20vh;
   overflow: auto;
   border-radius: 2px;
   background-color: #000;
+  padding: 1em;
 
   pre {
     font-size: 0.8em;

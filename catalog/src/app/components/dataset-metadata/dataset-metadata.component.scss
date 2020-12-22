@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+}
+.list a {
+  display: block;
+}
+
+.keyword {
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  background-color: var(--light-grey, #ddd);
+  border-radius: var(--border-radius, 0);
+}

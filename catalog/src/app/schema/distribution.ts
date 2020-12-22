@@ -9,7 +9,7 @@ export interface Distribution {
   accessUrl?: string;
   compressFormat?: string;
   packageFormat?: string;
-  accessService?: DistributionService;
+  accessService?: string;
 }
 
 export interface DistributionService {

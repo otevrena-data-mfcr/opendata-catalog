@@ -1,10 +1,12 @@
 <div class="breadcrumbs">
   <a routerLink="/">Katalog datových sad</a>
-  <span> / </span>
-  <ng-container *ngFor="let parentDataset of parentDatasets">
+  <span class="item d-block d-lg-inline" *ngFor="let parentDataset of parentDatasets">
+    <span class="d-none d-lg-inline"> / </span>
+    <span class="d-inline d-lg-none"> '- </span>
     <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
-    <span> / </span>
-  </ng-container>
+  </span>
+  <span class="d-none d-lg-inline"> / </span>
+  <span class="d-inline d-lg-none"> '- </span>
   <a>{{dataset?.title}}</a>
 </div>
 
@@ -13,12 +15,13 @@
   <p>{{dataset?.description}}</p>
 </div>
 
-<div *ngIf="childDatasets.length" class="childDatasets mb-5">
-  <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="mb-3"></app-dataset-card>
-</div>
-
 <div *ngIf="dataset?.documentation" class="documentation mb-5">
   <a class="btn primary" [href]="dataset?.documentation">Otevřít dokumentaci</a>
+</div>
+
+<div *ngIf="childDatasets.length" class="childDatasets mb-5">
+  <h3>Podřízené datové sady</h3>
+  <app-dataset-card *ngFor="let childDataset of childDatasets" [dataset]="childDataset" class="mb-3"></app-dataset-card>
 </div>
 
 <div *ngIf="dataset?.distributions?.length" class="distributions mb-5">
@@ -27,60 +30,6 @@
 </div>
 
 <div class="metadata mb-5">
-  <h3>Katalogizační záznam</h3>
-  <table class="small">
-    <tbody>
-      <tr>
-        <th>IRI:</th>
-        <td>{{dataset?.iri}}</td>
-      </tr>
-      <tr>
-        <th>Název:</th>
-        <td>{{dataset?.title}}</td>
-      </tr>
-      <tr>
-        <th>Poskytovatel:</th>
-        <td><a [routerLink]="['/datasets',{publisher:dataset?.publisherIri}]">{{dataset?.publisher}}</a></td>
-      </tr>
-      <tr>
-        <th>Dokumentace:</th>
-        <td><a *ngIf="dataset?.documentation" [href]="dataset?.documentation" target="_blank">{{dataset?.documentation}}</a></td>
-      </tr>
-      <tr>
-        <th>Kontaktní bod:</th>
-        <td>{{dataset?.contactPoint}}</td>
-      </tr>
-      <tr>
-        <th>Klíčová slova:</th>
-        <td>
-          <ng-container *ngFor="let keyword of dataset?.keywords;let isLast=last">
-            <a [routerLink]="['/datasets',{keyword:keyword}]">{{keyword}}</a>
-            <ng-container *ngIf="!isLast">, </ng-container>
-          </ng-container>
-        </td>
-      </tr>
-      <tr>
-        <th>Témata:</th>
-        <td class="list">
-          <a *ngFor="let theme of dataset?.themes" [routerLink]="['/datasets',{theme:theme.iri}]">{{theme.title}}</a>
-        </td>
-      </tr>
-      <tr>
-        <th>Frekvence aktualizace:</th>
-        <td>{{dataset?.accrualPeriodicity}}</td>
-      </tr>
-      <tr>
-        <th>Časové pokrytí:</th>
-        <td>{{dataset?.temporalFrom | date: "d. M. y"}} - {{dataset?.temporalTo | date: "d. M. y"}}</td>
-      </tr>
-      <tr>
-        <th>Časové rozlišení:</th>
-        <td>{{dataset?.temporalResolution}}</td>
-      </tr>
-      <tr>
-        <th>Související území:</th>
-        <td><a *ngFor="let url of dataset?.spatial" [href]="dataset?.spatial" target="_blank">{{url}}</a></td>
-      </tr>
-    </tbody>
-  </table>
+  <h3>Metadata</h3>
+  <app-dataset-metadata [dataset]="dataset"></app-dataset-metadata>
 </div>

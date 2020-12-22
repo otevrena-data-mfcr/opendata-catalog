@@ -241,12 +241,16 @@ export class CatalogService {
     };
   }
 
-  async getDistribution(iri: string): Promise<Distribution> {
+  async getDistribution(iri: string) {
 
-    const distributionQuery = `${this.createPrefixes(["dct", "dcat"])}
-      SELECT ?format ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
+    const distributionQuery = `${this.createPrefixes(["dct", "dcat", "skos"])}
+      SELECT ?format ?formatIri ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
       WHERE {       
-        OPTIONAL { <${iri}> dct:format ?format . }
+        OPTIONAL {
+          <${iri}> dct:format ?formatIri .
+          ?formatIri skos:prefLabel ?format .
+          FILTER(LANG(?format) = 'en') .
+        }
         OPTIONAL { <${iri}> dcat:mediaType ?mediaType . }
         OPTIONAL { <${iri}> dcat:downloadURL ?downloadUrl . }
         OPTIONAL { <${iri}> dcat:accessURL ?accessUrl . }
@@ -256,8 +260,9 @@ export class CatalogService {
       }
       LIMIT 1
       `;
-    const result = await this.sparql.query<{
+    const metadata = await this.sparql.query<{
       "format"?: string,
+      "formatIri"?: string,
       "mediaType"?: string,
       "downloadUrl"?: string,
       "accessUrl"?: string,
@@ -266,44 +271,42 @@ export class CatalogService {
       "accessService"?: string,
     }>(distributionQuery).then(results => results[0]);
 
-    const format = this.formats.find(format => format.iri === result.format);
-
-    const distribution: Distribution = {
+    return {
       iri,
-      format: format?.label,
-      mediaType: result.mediaType?.replace(Prefix.iana, ""),
-      downloadUrl: result.downloadUrl,
-      accessUrl: result.accessUrl,
-      compressFormat: result.compressFormat?.replace(Prefix.iana, ""),
-      packageFormat: result.packageFormat?.replace(Prefix.iana, ""),
+      format: metadata.format,
+      formatIri: metadata.formatIri,
+      mediaType: metadata.mediaType?.replace(Prefix.iana, ""),
+      downloadUrl: metadata.downloadUrl,
+      accessUrl: metadata.accessUrl,
+      compressFormat: metadata.compressFormat?.replace(Prefix.iana, ""),
+      packageFormat: metadata.packageFormat?.replace(Prefix.iana, ""),
+      accessService: metadata.accessService
     };
+  }
+  async getDistributionService(iri: string) {
 
-    if (result.accessService) {
-
-      const serviceQuery = `${this.createPrefixes()}
+    const serviceQuery = `${this.createPrefixes()}
         SELECT ?title ?endpointURL ?endpointDescription
         WHERE {         
-          OPTIONAL { <${result.accessService}> dct:title ?title . FILTER(LANG(?title) = '${this.lang}') . }
-          OPTIONAL { <${result.accessService}> dcat:endpointURL ?endpointURL . }
-          OPTIONAL { <${result.accessService}> dcat:endpointDescription ?endpointDescription . }
+          OPTIONAL { <${iri}> dct:title ?title . FILTER(LANG(?title) = '${this.lang}') . }
+          OPTIONAL { <${iri}> dcat:endpointURL ?endpointURL . }
+          OPTIONAL { <${iri}> dcat:endpointDescription ?endpointDescription . }
         }
         LIMIT 1`;
 
-      const serviceResult = await this.sparql.query<{
-        "title"?: string;
-        "endpointURL"?: string;
-        "endpointDescription"?: string;
-      }>(serviceQuery).then(results => results[0]);
+    const serviceResult = await this.sparql.query<{
+      "title"?: string;
+      "endpointURL"?: string;
+      "endpointDescription"?: string;
+    }>(serviceQuery).then(results => results[0]);
 
-      distribution.accessService = {
-        iri: result.accessService,
-        title: serviceResult.title,
-        endpointURL: serviceResult.endpointURL,
-        endpointDescription: serviceResult.endpointDescription,
-      };
-    }
+    return {
+      iri,
+      title: serviceResult.title,
+      endpointURL: serviceResult.endpointURL,
+      endpointDescription: serviceResult.endpointDescription,
+    };
 
-    return distribution;
   }
 
   async getDocument(iri: string, type?: string) {

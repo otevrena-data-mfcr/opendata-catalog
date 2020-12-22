@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Distribution } from 'app/schema';
+import { Distribution, DistributionService } from 'app/schema';
 import { HttpClient } from '@angular/common/http';
 import * as prettyBytes from "pretty-bytes";
 import { ConfigService } from 'app/services/config.service';
@@ -20,7 +20,8 @@ export class DistributionCardComponent implements OnInit, OnChanges {
 
   url?: string;
 
-  metadata?: Distribution;
+  distribution?: Distribution;
+  distributionService?: DistributionService;
 
   headers?: {
     lastModified: string | null,
@@ -29,8 +30,11 @@ export class DistributionCardComponent implements OnInit, OnChanges {
     acceptRanges: string | null
   };
 
+  tab: string = "metadata";
+
   private previewFormats = {
-    code: ["text/csv", "application/json", "application/xml"]
+    code: ["text/csv", "application/json", "application/xml"],
+    table: ["text/csv"]
   };
 
   showPreview: { [type: string]: boolean } = {};
@@ -51,28 +55,34 @@ export class DistributionCardComponent implements OnInit, OnChanges {
       this.load(this.iri);
     }
     else {
-      this.metadata = undefined;
+      this.distribution = undefined;
+      this.distributionService = undefined;
       this.headers = undefined;
     }
 
   }
 
   private async load(iri: string) {
-    this.metadata = await this.catalog.getDistribution(iri);
+    this.distribution = await this.catalog.getDistribution(iri);
 
-    this.url = this.metadata.downloadUrl || this.metadata.accessUrl;
+    this.url = this.distribution.downloadUrl || this.distribution.accessUrl;
 
-    if (!this.metadata?.accessService && this.url) {
-      this.headers = await this.loadHeaders(this.url);
+    if (this.distribution?.accessService) {
+      this.distributionService = await this.catalog.getDistributionService(this.distribution.accessService);
     }
 
-    // show preview only if we can load arbitrary bytes of file
-    this.showPreview = {};
+    if (!this.distributionService && this.url) {
 
-    if (!!this.url && this.headers?.acceptRanges === "bytes") {
-      Object.entries(this.previewFormats).forEach(([type, mime]) => {
-        this.showPreview[type] = !!this.headers?.contentType && mime.indexOf(this.headers?.contentType) !== -1;
-      });
+      this.headers = await this.loadHeaders(this.url);
+
+      // show preview only if we can load arbitrary bytes of file
+      this.showPreview = {};
+
+      if (this.headers?.acceptRanges === "bytes") {
+        Object.entries(this.previewFormats).forEach(([type, mime]) => {
+          this.showPreview[type] = !!this.headers?.contentType && mime.indexOf(this.headers?.contentType) !== -1;
+        });
+      }
     }
 
   }
@@ -84,10 +94,10 @@ export class DistributionCardComponent implements OnInit, OnChanges {
     const headers = {
       'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
       'Pragma': 'no-cache',
-      'Expires': '0'
+      'Expires': '0',
     };
     try {
-      const response = await this.http.head(url, { observe: "response", headers: headers }).toPromise();
+      const response = await this.http.head(url, { observe: "response", headers: headers, }).toPromise();
 
       return {
         lastModified: response.headers.get("last-modified"),

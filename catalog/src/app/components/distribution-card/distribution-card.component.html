@@ -1,55 +1,41 @@
 <div class="row">
   <div class="col-md-8 col-xl-9">
-    <h3 *ngIf="metadata?.accessService">
-      {{metadata?.accessService?.title}}
+    <h3 *ngIf="distributionService">
+      {{distributionService?.title}}
     </h3>
-    <h3 *ngIf="!metadata?.accessService">
-      {{metadata?.format}}
+    <h3 *ngIf="!distributionService">
+      {{distribution?.format}}
 
     </h3>
 
-    <div class="previews">
-      <app-data-preview-code *ngIf="showPreview.code" [mime]="metadata?.mediaType" [url]="metadata?.downloadUrl"></app-data-preview-code>
+    <div class="tabs">
+      <a class="btn small mr-1" [class.secondary]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a>
+      <a *ngIf="showPreview.code" class="btn small mr-1" [class.secondary]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a>
+      <!-- <a *ngIf="showPreview.command-stata" class="btn small mr-1" [class.secondary]="tab === 'commands'" (click)="tab = 'commands'">stažení </a> -->
     </div>
 
-
-    <div class="metadata">
-      <table class="small">
-        <tr>
-          <th>IRI:</th>
-          <td>{{iri}}</td>
-        </tr>
-
-        <tr>
-          <th>Typ obsahu:</th>
-          <td>{{metadata?.mediaType || "neznámý"}}</td>
-        </tr>
-        <tr>
-          <th>Typ komprese:</th>
-          <td>{{metadata?.compressFormat || "žádný"}}</td>
-        </tr>
-        <tr>
-          <th>Typ balíčku:</th>
-          <td>{{metadata?.packageFormat || "žádný"}}</td>
-        </tr>
-      </table>
+    <div class="previews my-3">
+      <app-distribution-metadata *ngIf="tab == 'metadata'" [distribution]="distribution" [distributionService]="distributionService"></app-distribution-metadata>
+      <app-data-preview-code *ngIf="tab == 'code'" [mime]="distribution?.mediaType" [url]="distribution?.downloadUrl"></app-data-preview-code>
     </div>
+
   </div>
 
   <div class="col-md-4 col-xl-3">
 
     <div class="buttons mb-3">
-      <a *ngIf="metadata?.accessService && metadata?.accessService?.endpointDescription" [href]="metadata?.accessService?.endpointDescription" target="_blank" class="btn primary">
+      <a *ngIf="distributionService && distributionService?.endpointDescription" [href]="distributionService?.endpointDescription" target="_blank" class="btn primary">
         Popis služby
       </a>
-      <a *ngIf="metadata?.accessService && !metadata?.accessService?.endpointDescription && url" [href]="url" target="_blank" class="btn primary">
+      <a *ngIf="distributionService && !distributionService?.endpointDescription && url" [href]="url" target="_blank" class="btn primary">
         URL služby
       </a>
-      <a *ngIf="!metadata?.accessService && url" [href]="url" class="btn primary">
-        Stáhnout <ng-container *ngIf="headers?.contentLength">{{headers.contentLength | prettyBytes}}</ng-container>
+      <a *ngIf="!distributionService && url" [href]="url" class="btn primary">
+        Stáhnout <ng-container *ngIf="headers?.contentLength">{{headers?.contentLength | prettyBytes}}</ng-container>
       </a>
-      <small *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
+      <small class="last-modified" *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm:ss"}}</small>
     </div>
+
 
 
   </div>

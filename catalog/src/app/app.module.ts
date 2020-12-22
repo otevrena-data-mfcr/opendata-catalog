@@ -23,6 +23,8 @@ import { DataPreviewCodeComponent } from './components/data-preview-code/data-pr
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
 import { DatasetCardComponent } from './components/dataset-card/dataset-card.component';
 import { createCustomElement } from '@angular/elements';
+import { DatasetMetadataComponent } from './components/dataset-metadata/dataset-metadata.component';
+import { DistributionMetadataComponent } from './components/distribution-metadata/distribution-metadata.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import { createCustomElement } from '@angular/elements';
     NavFilterComponent,
     DatasetCardComponent,
     DataPreviewCodeComponent,
+    DatasetMetadataComponent,
+    DistributionMetadataComponent,
   ],
   imports: [
     BrowserModule,

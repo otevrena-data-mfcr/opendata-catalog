@@ -1,18 +1,15 @@
 :host {
 }
 
+.breadcrumbs {
+  overflow: hidden;
+  .item {
+    white-space: nowrap;
+  }
+}
+
 .script {
   min-height: 10vh;
   background-color: #000;
   border-radius: 2px;
-}
-
-.metadata {
-  table {
-    width: 100%;
-    // border: 1px solid #ccc;
-  }
-  .list a {
-    display: block;
-  }
 }

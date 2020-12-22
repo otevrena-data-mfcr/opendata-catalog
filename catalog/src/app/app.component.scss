@@ -34,12 +34,17 @@ th {
   padding: 0.6em 1em;
   border-radius: var(--button-border-radius, 2px);
 }
+.btn.small {
+  padding: 0.4em 0.6em;
+}
+a.btn {
+  color: inherit;
+}
 a.btn:hover {
   text-decoration: none;
 }
 
-a.btn.primary,
-a.btn.active {
+a.btn.primary {
   background-color: var(--primary, #0087c8);
   color: #fff;
 }
@@ -57,6 +62,10 @@ a {
 }
 a:hover {
   text-decoration: underline;
+}
+a.disabled {
+  pointer-events: none;
+  opacity: 0.8;
 }
 
 small,
