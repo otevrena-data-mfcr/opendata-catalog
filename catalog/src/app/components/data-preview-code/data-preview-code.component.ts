@@ -34,6 +34,8 @@ export class DataPreviewCodeComponent implements OnInit, OnChanges {
 
   async load(url: string) {
 
+    this.data = "Načítám...";
+
     const headers = {
       'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
       'Pragma': 'no-cache',
