@@ -10,7 +10,7 @@ function clearPackageDir(cb) {
   cb();
 }
 
-function buildPackage() {
+function concatJs() {
   return src(["./catalog/dist/*.js"])
     .pipe(concat("catalog.js"))
     .pipe(dest("./package/"));
@@ -23,4 +23,4 @@ function copyAssets() {
   return src(assets).pipe(dest("./package/"));
 }
 
-exports.buildPackage = series(clearPackageDir, buildPackage, copyAssets);
+exports.buildPackage = series(clearPackageDir, concatJs, copyAssets);
