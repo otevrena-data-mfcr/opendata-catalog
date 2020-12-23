@@ -36,7 +36,7 @@ function renderIframe() {
   @import url('https://rsms.me/inter/inter.css');
 
   html,body{
-    font-family: 'Inter var', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
   }
 `;
