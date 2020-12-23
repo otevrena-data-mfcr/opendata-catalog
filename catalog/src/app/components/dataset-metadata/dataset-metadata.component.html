@@ -38,7 +38,7 @@
     </tr>
     <tr>
       <th>Časové pokrytí:</th>
-      <td>{{dataset?.temporalFrom | date: "d. M. y"}} - {{dataset?.temporalTo | date: "d. M. y"}}</td>
+      <td>{{dataset?.temporalFrom | date: "d. M. y"}}<ng-container *ngIf="dataset?.temporalFrom && dataset?.temporalTo"> - </ng-container>{{dataset?.temporalTo | date: "d. M. y"}}</td>
     </tr>
     <tr>
       <th>Časové rozlišení:</th>
