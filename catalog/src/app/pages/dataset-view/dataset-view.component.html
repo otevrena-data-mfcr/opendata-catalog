@@ -5,9 +5,11 @@
     <span class="d-inline d-lg-none"> '- </span>
     <a [routerLink]="['/datasets',parentDataset.iri]">{{parentDataset.title}}</a>
   </span>
-  <span class="d-none d-lg-inline"> / </span>
-  <span class="d-inline d-lg-none"> '- </span>
-  <a>{{dataset?.title}}</a>
+  <span class="item d-block d-lg-inline">
+    <span class="d-none d-lg-inline"> / </span>
+    <span class="d-inline d-lg-none"> '- </span>
+    <a>{{dataset?.title}}</a>
+  </span>
 </div>
 
 <div class="description my-4">
