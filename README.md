@@ -32,7 +32,7 @@ opendata-catalog {
   --primary: #0087c8; /* barva pro primární tlačítka */
   --link-color: #0087c8; /* barva pro odkazy */
   --border-radius: 0; /* poloměr zaoblení rohů u tlačítek a dalších prvků */
-  --bg-light: #eee; /* pozadí karty distribuce a datové sady */
+  --bg-light: #eee; /* pozadí karet distribuce a datové sady a klíčových slov */
 }
 ```
 
