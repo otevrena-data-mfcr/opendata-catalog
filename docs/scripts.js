@@ -32,7 +32,14 @@ function renderIframe() {
   container.innerHTML = "";
 
   var snippet = editor.getValue();
-  var style = "html,body{font-family: sans-serif;font-size: 11pt;}";
+  var style = `
+  @import url('https://rsms.me/inter/inter.css');
+
+  html,body{
+    font-family: 'Inter var', sans-serif;
+    font-size: 15px;
+  }
+`;
 
   var iframeHtml = "<!DOCTYPE html><html><head><style>" + style + "</style></head><body>" + snippet + "</body></html>";
 
