@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ConfigService } from 'app/services/config.service';
 
 @Component({
   selector: 'app-data-preview-code',
@@ -17,7 +18,8 @@ export class DataPreviewCodeComponent implements OnInit, OnChanges {
   data?: string;
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private configService:ConfigService
   ) { }
 
   ngOnInit(): void {
@@ -42,6 +44,8 @@ export class DataPreviewCodeComponent implements OnInit, OnChanges {
       'Expires': '0',
       "Range": `bytes=0-2048`
     };
+
+    if(this.configService.config.corsGateway) url = this.configService.config.corsGateway + url;
 
     this.data = await this.http.get(url, { headers, responseType: "text" }).toPromise();
 
