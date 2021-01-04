@@ -29,6 +29,7 @@ enum Prefix {
   foaf = "http://xmlns.com/foaf/0.1/",
   rpp = "https://slovník.gov.cz/legislativní/sbírka/111/2009/pojem/",
   iana = "http://www.iana.org/assignments/media-types/",
+  pu = "https://data.gov.cz/slovník/podmínky-užití/",
 };
 
 
@@ -307,6 +308,30 @@ export class CatalogService {
       endpointDescription: serviceResult.endpointDescription,
     };
 
+  }
+
+  async getDistributionLicense(iri: string) {
+    const query = `${this.createPrefixes(["pu"])}
+      SELECT ?o1 ?o2 ?o3 ?o4
+      WHERE {       
+        OPTIONAL { <${iri}> pu:specifikace [ pu:autorské-dílo ?o1 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:databáze-jako-autorské-dílo ?o2 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:databáze-chráněná-zvláštními-právy ?o3 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:osobní-údaje ?o4 ] . }
+      }`;
+    const result = await this.sparql.query<{
+      "o1"?: string,
+      "o2"?: string,
+      "o3"?: string,
+      "o4"?: string,
+    }>(query).then(results => results[0]);
+
+    return {
+      "autorské-dílo": result.o1,
+      "databáze-jako-autorské-dílo": result.o2,
+      "databáze-chráněná-zvláštními-právy": result.o3,
+      "osobní-údaje": result.o4,
+    };
   }
 
   async getDocument(iri: string, type?: string) {

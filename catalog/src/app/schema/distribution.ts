@@ -1,5 +1,3 @@
-import { LangString } from './basics';
-
 
 export interface Distribution {
   iri: string;
@@ -17,4 +15,11 @@ export interface DistributionService {
   title?: string;
   endpointURL?: string;
   endpointDescription?: string
+}
+
+export interface DistributionLicence {
+  "autorské-dílo"?: string;
+  "databáze-jako-autorské-dílo"?: string;
+  "databáze-chráněná-zvláštními-právy"?: string;
+  "osobní-údaje"?: string;
 }

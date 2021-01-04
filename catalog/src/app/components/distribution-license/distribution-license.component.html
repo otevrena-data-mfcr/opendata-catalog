@@ -1,0 +1,49 @@
+<ng-container *ngIf="license">
+
+  <div *ngIf="license['autorské-dílo']" [ngSwitch]="license['autorské-dílo']" class="license">
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/neobsahuje-autorská-díla/'" class="ok">
+      Neobsahuje autorská díla. <a href="https://data.gov.cz/podmínky-užití/neobsahuje-autorská-díla/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/obsahuje-více-autorských-děl/'" class="warning">
+      Obsahuje více autorských děl. <a href="https://data.gov.cz/podmínky-užití/obsahuje-více-autorských-děl/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchDefault class="warning">     
+      Autorské dílo. <a [href]="license['autorské-dílo']" target="_blank">Otevřít licenci</a>
+    </p>
+  </div>
+
+  <div *ngIf="license['databáze-jako-autorské-dílo']" [ngSwitch]="license['databáze-jako-autorské-dílo']" class="license">
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/není-autorskoprávně-chráněnou-databází/'" class="ok">
+      Není autorskoprávně chráněnou databází. <a href="https://data.gov.cz/podmínky-užití/není-autorskoprávně-chráněnou-databází/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchDefault class="warning">     
+      Autorskoprávně chráněná databáze. <a [href]="license['databáze-jako-autorské-dílo']" target="_blank">Otevřít licenci</a>
+    </p>
+  </div>
+
+  <div *ngIf="license['databáze-chráněná-zvláštními-právy']" [ngSwitch]="license['databáze-chráněná-zvláštními-právy']" class="license">
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/není-chráněna-zvláštním-právem-pořizovatele-databáze/'" class="ok">
+      Není chráněn zvláštním právem pořizovatele databáze. <a href="https://data.gov.cz/podmínky-užití/není-chráněna-zvláštním-právem-pořizovatele-databáze/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchDefault class="warning">
+      Zvláštní právo pořizovatele databáze. <a [href]="license['databáze-chráněná-zvláštními-právy']" target="_blank">Otevřít licenci</a>
+    </p>
+  </div>
+
+  <div *ngIf="license['osobní-údaje']" [ngSwitch]="license['osobní-údaje']" class="license">
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/neobsahuje-osobní-údaje/'" class="ok">
+      Neobsahuje osobní údaje. <a href="https://data.gov.cz/podmínky-užití/neobsahuje-osobní-údaje/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchCase="'https://data.gov.cz/podmínky-užití/obsahuje-osobní-údaje/'" class="warning">
+      Obsahuje osobní údaje. <a href="https://data.gov.cz/podmínky-užití/obsahuje-osobní-údaje/" target="_blank">ⓘ</a>
+    </p>
+    <p *ngSwitchDefault class="warning">
+      Může obsahovat osobní údaje. <a [href]="license['osobní-údaje']" target="_blank">Více informací</a>
+    </p>
+  </div>
+
+</ng-container>
+
+<p *ngIf="license === null">
+  Podmínky užití nejsou specifikovány.
+</p>

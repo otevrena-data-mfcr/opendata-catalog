@@ -1,0 +1,18 @@
+.license {
+  p {
+    text-align: left;
+    position: relative;
+    padding-left: 26px;
+  }
+  p::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  p.ok::after {
+    content: "✅";
+  }
+  p.warning::after {
+    content: "⚠️";
+  }
+}
