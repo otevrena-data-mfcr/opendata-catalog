@@ -30,7 +30,7 @@ export class DistributionCardComponent implements OnInit, OnChanges {
     acceptRanges: string | null
   };
 
-  tab: string = "metadata";
+  tab: string = "license";
 
   private previewFormats = {
     code: ["text/csv", "application/json", "application/xml"],
