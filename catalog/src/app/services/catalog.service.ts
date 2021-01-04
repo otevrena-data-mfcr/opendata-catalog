@@ -244,7 +244,7 @@ export class CatalogService {
 
   async getDistribution(iri: string) {
 
-    const distributionQuery = `${this.createPrefixes(["dct", "dcat", "skos"])}
+    const query = `${this.createPrefixes(["dct", "dcat", "skos"])}
       SELECT ?format ?formatIri ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
       WHERE {       
         OPTIONAL {
@@ -270,7 +270,7 @@ export class CatalogService {
       "compressFormat"?: string,
       "packageFormat"?: string,
       "accessService"?: string,
-    }>(distributionQuery).then(results => results[0]);
+    }>(query).then(results => results[0]);
 
     return {
       iri,
@@ -286,7 +286,7 @@ export class CatalogService {
   }
   async getDistributionService(iri: string) {
 
-    const serviceQuery = `${this.createPrefixes()}
+    const query = `${this.createPrefixes(["dct", "dcat"])}
         SELECT ?title ?endpointURL ?endpointDescription
         WHERE {         
           OPTIONAL { <${iri}> dct:title ?title . FILTER(LANG(?title) = '${this.lang}') . }
@@ -295,17 +295,17 @@ export class CatalogService {
         }
         LIMIT 1`;
 
-    const serviceResult = await this.sparql.query<{
+    const result = await this.sparql.query<{
       "title"?: string;
       "endpointURL"?: string;
       "endpointDescription"?: string;
-    }>(serviceQuery).then(results => results[0]);
+    }>(query).then(results => results[0]);
 
     return {
       iri,
-      title: serviceResult.title,
-      endpointURL: serviceResult.endpointURL,
-      endpointDescription: serviceResult.endpointDescription,
+      title: result.title,
+      endpointURL: result.endpointURL,
+      endpointDescription: result.endpointDescription,
     };
 
   }
