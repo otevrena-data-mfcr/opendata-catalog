@@ -5,15 +5,16 @@
     </h3>
     <h3 *ngIf="!distributionService">
       {{distribution?.format}}
-
     </h3>
 
     <div class="tabs">
-      <h4 class="d-inline-block"><a class="small mr-3" [class.active]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a></h4>
+      <h4 class="d-inline-block"><a class="small mr-3" [class.active]="tab === 'license'" (click)="tab = 'license'">Podmínky užití</a></h4>
       <h4 class="d-inline-block"><a *ngIf="showPreview.code" class="small mr-3" [class.active]="tab === 'code'" (click)="tab = 'code'">Ukázka dat</a></h4>
+      <h4 class="d-inline-block"><a class="small mr-3" [class.active]="tab === 'metadata'" (click)="tab = 'metadata'">Metadata</a></h4>
     </div>
 
     <div class="previews my-3">
+      <app-distribution-license *ngIf="tab == 'license'" [iri]="distribution?.iri"></app-distribution-license>
       <app-distribution-metadata *ngIf="tab == 'metadata'" [distribution]="distribution" [distributionService]="distributionService"></app-distribution-metadata>
       <app-data-preview-code *ngIf="tab == 'code'" [mime]="distribution?.mediaType" [url]="distribution?.downloadUrl"></app-data-preview-code>
     </div>
@@ -34,8 +35,6 @@
       </a>
       <small class="last-modified" *ngIf="headers?.lastModified">Poslední změna {{headers?.lastModified | date:"d. M. y H:mm"}}</small>
     </div>
-
-
 
   </div>
 </div>
