@@ -1,6 +1,7 @@
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, DoBootstrap, Injector, ErrorHandler } from '@angular/core';
+import { createCustomElement } from '@angular/elements';
 
 // import { HighlightModule, HIGHLIGHT_OPTIONS } from "ngx-highlightjs";
 
@@ -18,14 +19,13 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NavFilterComponent } from './components/nav-filter/nav-filter.component';
 import { DistributionCardComponent } from './components/distribution-card/distribution-card.component';
 import { DataPreviewCodeComponent } from './components/data-preview-code/data-preview-code.component';
+import { DatasetMetadataComponent } from './components/dataset-metadata/dataset-metadata.component';
+import { DistributionMetadataComponent } from './components/distribution-metadata/distribution-metadata.component';
+import { DistributionLicenseComponent } from './components/distribution-license/distribution-license.component';
+import { DatasetCardComponent } from './components/dataset-card/dataset-card.component';
 
 /* PIPES */
 import { PrettyBytesPipe } from './pipes/pretty-bytes.pipe';
-import { DatasetCardComponent } from './components/dataset-card/dataset-card.component';
-import { createCustomElement } from '@angular/elements';
-import { DatasetMetadataComponent } from './components/dataset-metadata/dataset-metadata.component';
-import { DistributionMetadataComponent } from './components/distribution-metadata/distribution-metadata.component';
-
 
 @NgModule({
   declarations: [
@@ -42,6 +42,7 @@ import { DistributionMetadataComponent } from './components/distribution-metadat
     DataPreviewCodeComponent,
     DatasetMetadataComponent,
     DistributionMetadataComponent,
+    DistributionLicenseComponent,
   ],
   imports: [
     BrowserModule,

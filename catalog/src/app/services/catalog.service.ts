@@ -29,6 +29,7 @@ enum Prefix {
   foaf = "http://xmlns.com/foaf/0.1/",
   rpp = "https://slovník.gov.cz/legislativní/sbírka/111/2009/pojem/",
   iana = "http://www.iana.org/assignments/media-types/",
+  pu = "https://data.gov.cz/slovník/podmínky-užití/",
 };
 
 
@@ -243,7 +244,7 @@ export class CatalogService {
 
   async getDistribution(iri: string) {
 
-    const distributionQuery = `${this.createPrefixes(["dct", "dcat", "skos"])}
+    const query = `${this.createPrefixes(["dct", "dcat", "skos"])}
       SELECT ?format ?formatIri ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
       WHERE {       
         OPTIONAL {
@@ -269,7 +270,7 @@ export class CatalogService {
       "compressFormat"?: string,
       "packageFormat"?: string,
       "accessService"?: string,
-    }>(distributionQuery).then(results => results[0]);
+    }>(query).then(results => results[0]);
 
     return {
       iri,
@@ -285,7 +286,7 @@ export class CatalogService {
   }
   async getDistributionService(iri: string) {
 
-    const serviceQuery = `${this.createPrefixes()}
+    const query = `${this.createPrefixes(["dct", "dcat"])}
         SELECT ?title ?endpointURL ?endpointDescription
         WHERE {         
           OPTIONAL { <${iri}> dct:title ?title . FILTER(LANG(?title) = '${this.lang}') . }
@@ -294,19 +295,43 @@ export class CatalogService {
         }
         LIMIT 1`;
 
-    const serviceResult = await this.sparql.query<{
+    const result = await this.sparql.query<{
       "title"?: string;
       "endpointURL"?: string;
       "endpointDescription"?: string;
-    }>(serviceQuery).then(results => results[0]);
+    }>(query).then(results => results[0]);
 
     return {
       iri,
-      title: serviceResult.title,
-      endpointURL: serviceResult.endpointURL,
-      endpointDescription: serviceResult.endpointDescription,
+      title: result.title,
+      endpointURL: result.endpointURL,
+      endpointDescription: result.endpointDescription,
     };
 
+  }
+
+  async getDistributionLicense(iri: string) {
+    const query = `${this.createPrefixes(["pu"])}
+      SELECT ?o1 ?o2 ?o3 ?o4
+      WHERE {       
+        OPTIONAL { <${iri}> pu:specifikace [ pu:autorské-dílo ?o1 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:databáze-jako-autorské-dílo ?o2 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:databáze-chráněná-zvláštními-právy ?o3 ] . }
+        OPTIONAL { <${iri}> pu:specifikace [ pu:osobní-údaje ?o4 ] . }
+      }`;
+    const result = await this.sparql.query<{
+      "o1"?: string,
+      "o2"?: string,
+      "o3"?: string,
+      "o4"?: string,
+    }>(query).then(results => results[0]);
+
+    return {
+      "autorské-dílo": result.o1,
+      "databáze-jako-autorské-dílo": result.o2,
+      "databáze-chráněná-zvláštními-právy": result.o3,
+      "osobní-údaje": result.o4,
+    };
   }
 
   async getDocument(iri: string, type?: string) {
