@@ -1,36 +1,69 @@
 <div class="metadata">
   <table class="small">
+
     <tr>
       <th>IRI:</th>
       <td>{{distribution?.iri}}</td>
     </tr>
-    <tr *ngIf="distribution?.accessUrl && distribution?.accessUrl !== distribution?.downloadUrl">
-      <th>Přístupové URL:</th>
-      <td>{{distribution?.accessUrl}}</td>
-    </tr>
-    <tr *ngIf="!distributionService">
-      <th>URL pro stažení:</th>
-      <td>{{distribution?.downloadUrl}}</td>
-    </tr>
-    <tr *ngIf="distributionService">
-      <th>Popis služby:</th>
-      <td>{{distributionService?.endpointDescription}}</td>
-    </tr>
-    <tr>
-      <th>Formát:</th>
-      <td><a *ngIf="distribution?.format" [routerLink]="['/datasets',{format:distribution.formatIri}]">{{distribution?.format}}</a></td>
-    </tr>
-    <tr>
-      <th>MIME typ:</th>
-      <td>{{distribution?.mediaType || "neznámý"}}</td>
-    </tr>
-    <tr>
-      <th>Typ komprese:</th>
-      <td>{{distribution?.compressFormat || "žádný"}}</td>
-    </tr>
-    <tr>
-      <th>Typ balíčku:</th>
-      <td>{{distribution?.packageFormat || "žádný"}}</td>
-    </tr>
+
+    <ng-container *ngIf="!distributionService">
+      <tr *ngIf="distribution?.title">
+        <th>Název:</th>
+        <td>{{distribution?.title}}</td>
+      </tr>
+      <tr *ngIf="!distribution?.downloadUrl || distribution?.downloadUrl !== distribution?.accessUrl">
+        <th>Přístupové URL:</th>
+        <td><a [href]="distribution?.accessUrl" target="_blank">{{distribution?.accessUrl}}</a></td>
+      </tr>
+      <tr *ngIf="distribution?.downloadUrl">
+        <th>URL pro stažení:</th>
+        <td><a [href]="distribution?.downloadUrl" target="_blank">{{distribution?.downloadUrl}}</a></td>
+      </tr>
+      <tr *ngIf="distribution?.conformsTo">
+        <th>Odkaz na specifikaci:</th>
+        <td><a [href]="distribution?.conformsTo" target="_blank">{{distribution?.conformsTo}}</a></td>
+      </tr>
+      <tr>
+        <th>Formát:</th>
+        <td><a *ngIf="distribution?.format" [routerLink]="['/datasets',{format:distribution.formatIri}]">{{distribution?.format}}</a></td>
+      </tr>
+      <tr>
+        <th>MIME typ:</th>
+        <td>{{distribution?.mediaType || "neznámý"}}</td>
+      </tr>
+      <tr>
+        <th>Typ komprese:</th>
+        <td>{{distribution?.compressFormat || "žádný"}}</td>
+      </tr>
+      <tr>
+        <th>Typ balíčku:</th>
+        <td>{{distribution?.packageFormat || "žádný"}}</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="distributionService">
+      <tr>
+        <th>Název služby:</th>
+        <td>{{distributionService?.title}}</td>
+      </tr>
+      <tr *ngIf="!distributionService?.endpointURL || distributionService?.endpointURL !== distribution?.accessUrl">
+        <th>Přístupové URL:</th>
+        <td><a [href]="distribution?.accessUrl" target="_blank">{{distribution?.accessUrl}}</a></td>
+      </tr>
+      <tr *ngIf="distribution?.conformsTo">
+        <th>Odkaz na specifikaci:</th>
+        <td><a [href]="distribution?.conformsTo" target="_blank">{{distribution?.conformsTo}}</a></td>
+      </tr>
+      <tr>
+        <th>Přístupový bod:</th>
+        <td>{{distributionService?.endpointURL}}</td>
+      </tr>
+      <tr>
+        <th>Popis služby:</th>
+        <td><a [href]="distributionService?.endpointDescription" target="_blank">{{distributionService?.endpointDescription}}</a></td>
+      </tr>
+    </ng-container>
+
+
   </table>
 </div>

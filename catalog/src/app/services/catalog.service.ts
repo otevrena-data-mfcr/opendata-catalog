@@ -245,8 +245,12 @@ export class CatalogService {
   async getDistribution(iri: string) {
 
     const query = `${this.createPrefixes(["dct", "dcat", "skos"])}
-      SELECT ?format ?formatIri ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService
+      SELECT ?name ?format ?formatIri ?mediaType ?downloadUrl ?accessUrl ?compressFormat ?packageFormat ?accessService ?conformsTo
       WHERE {       
+        OPTIONAL {
+          <${iri}> dct:title ?title .
+          FILTER(LANG(?title) = 'en') .
+        }
         OPTIONAL {
           <${iri}> dct:format ?formatIri .
           ?formatIri skos:prefLabel ?format .
@@ -258,10 +262,12 @@ export class CatalogService {
         OPTIONAL { <${iri}> dcat:compressFormat ?compressFormat . }
         OPTIONAL { <${iri}> dcat:packageFormat ?packageFormat . }
         OPTIONAL { <${iri}> dcat:accessService ?accessService . }
+        OPTIONAL { <${iri}> dct:conformsTo ?conformsTo . }
       }
       LIMIT 1
       `;
     const metadata = await this.sparql.query<{
+      "title"?: string,
       "format"?: string,
       "formatIri"?: string,
       "mediaType"?: string,
@@ -270,10 +276,12 @@ export class CatalogService {
       "compressFormat"?: string,
       "packageFormat"?: string,
       "accessService"?: string,
+      "conformsTo"?: string,
     }>(query).then(results => results[0]);
 
     return {
       iri,
+      title: metadata.title,
       format: metadata.format,
       formatIri: metadata.formatIri,
       mediaType: metadata.mediaType?.replace(Prefix.iana, ""),
@@ -281,7 +289,8 @@ export class CatalogService {
       accessUrl: metadata.accessUrl,
       compressFormat: metadata.compressFormat?.replace(Prefix.iana, ""),
       packageFormat: metadata.packageFormat?.replace(Prefix.iana, ""),
-      accessService: metadata.accessService
+      accessService: metadata.accessService,
+      conformsTo: metadata.conformsTo
     };
   }
   async getDistributionService(iri: string) {

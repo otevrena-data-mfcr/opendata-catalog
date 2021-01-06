@@ -1,6 +1,7 @@
 
 export interface Distribution {
   iri: string;
+  title?: string;
   format?: string;
   mediaType?: string;
   downloadUrl?: string;
@@ -8,6 +9,7 @@ export interface Distribution {
   compressFormat?: string;
   packageFormat?: string;
   accessService?: string;
+  conformsTo?: string;
 }
 
 export interface DistributionService {
