@@ -1,0 +1,11 @@
+
+version: "3.8"
+
+services:
+  
+  opendata-catalog:
+    build: https://github.com/otevrena-data-mfcr/opendata-catalog.git#:docker     
+    image: opendata-catalog   
+    environment:
+      SPARQL_ENDPOINT: https://data.gov.cz/sparql
+      CATALOG_VERSION: latest     
