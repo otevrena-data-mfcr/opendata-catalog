@@ -7,5 +7,5 @@ services:
     build: https://github.com/otevrena-data-mfcr/opendata-catalog.git#:docker     
     image: opendata-catalog   
     environment:
-      SPARQL_ENDPOINT: https://data.gov.cz/sparql
+      SPARQL_ENDPOINT: https://opendata.mfcr.cz/lod/sparql
       CATALOG_VERSION: latest     
