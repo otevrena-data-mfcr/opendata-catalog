@@ -1,9 +1,6 @@
 FROM nginx:alpine
 
-COPY index.html /usr/share/nginx/html/
+COPY index.html /data/
 
-COPY entrypoint.sh /entrypoint-replace-env.sh
-
-RUN chmod +x /entrypoint-replace-env.sh
-
-ENTRYPOINT [ "/entrypoint-replace-env.sh" ]
+COPY entrypoint-replace-env.sh /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/entrypoint-replace-env.sh
