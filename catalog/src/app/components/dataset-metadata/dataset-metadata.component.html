@@ -48,5 +48,13 @@
       <th>Související území:</th>
       <td><a *ngFor="let url of dataset?.spatial" [href]="dataset?.spatial" target="_blank">{{url}}</a></td>
     </tr>
+    <tr>
+      <th>Specifikace</th>
+      <td>{{dataset?.specificace}}</td>
+    </tr>
+    <tr>
+      <th>Klasifikace dle EuroVoc</th>
+      <td>{{dataset?.klasifikace_EuroVoc}}</td>
+    </tr>
   </tbody>
 </table>
