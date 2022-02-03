@@ -201,6 +201,8 @@ export class CatalogService {
       "temporalTo": string,
       "temporalResolution": string,
       "spatial": string,
+      "conformsTo": string,
+      "eurovoc": string,
     }>(datasetQuery).then(results => results[0]);
 
     const keywordsQuery = `${this.createPrefixes(["dcat"])}
@@ -277,6 +279,7 @@ export class CatalogService {
       "packageFormat"?: string,
       "accessService"?: string,
       "conformsTo"?: string,
+      "sch_ma"?: string,
     }>(query).then(results => results[0]);
 
     return {
@@ -290,6 +293,7 @@ export class CatalogService {
       compressFormat: metadata.compressFormat?.replace(Prefix.iana, ""),
       packageFormat: metadata.packageFormat?.replace(Prefix.iana, ""),
       accessService: metadata.accessService,
+      sch_ma: metadata.sch_ma,
       conformsTo: metadata.conformsTo
     };
   }
