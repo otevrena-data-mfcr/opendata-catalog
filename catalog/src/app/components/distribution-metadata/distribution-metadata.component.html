@@ -32,6 +32,10 @@
         <td>{{distribution?.mediaType || "neznámý"}}</td>
       </tr>
       <tr>
+        <th>Schéma:</th>
+        <td>{{distribution?.sch_ma || "neznámý"}}</td>
+      </tr>
+      <tr>
         <th>Typ komprese:</th>
         <td>{{distribution?.compressFormat || "žádný"}}</td>
       </tr>
@@ -61,10 +65,6 @@
       <tr>
         <th>Popis služby:</th>
         <td><a [href]="distributionService?.endpointDescription" target="_blank">{{distributionService?.endpointDescription}}</a></td>
-      </tr>
-      <tr>
-        <th>Schéma:</th>
-        <td>{{distributionService?.sch_ma}}</td>
       </tr>
     </ng-container>
 
