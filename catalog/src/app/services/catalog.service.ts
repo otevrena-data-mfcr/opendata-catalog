@@ -202,7 +202,7 @@ export class CatalogService {
       "temporalResolution": string,
       "spatial": string,
       "conformsTo": string,
-      "eurovoc": string,
+      "koncept_euroVoc": string,
     }>(datasetQuery).then(results => results[0]);
 
     const keywordsQuery = `${this.createPrefixes(["dcat"])}
