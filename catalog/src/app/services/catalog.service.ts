@@ -279,7 +279,6 @@ export class CatalogService {
       "packageFormat"?: string,
       "accessService"?: string,
       "conformsTo"?: string,
-      "sch_ma"?: string,
     }>(query).then(results => results[0]);
 
     return {
