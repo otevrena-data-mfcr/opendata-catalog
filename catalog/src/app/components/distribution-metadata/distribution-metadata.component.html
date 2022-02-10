@@ -32,10 +32,6 @@
         <td>{{distribution?.mediaType || "neznámý"}}</td>
       </tr>
       <tr>
-        <th>Schéma:</th>
-        <td>{{distribution?.sch_ma || "neznámý"}}</td>
-      </tr>
-      <tr>
         <th>Typ komprese:</th>
         <td>{{distribution?.compressFormat || "žádný"}}</td>
       </tr>
@@ -55,7 +51,7 @@
         <td><a [href]="distribution?.accessUrl" target="_blank">{{distribution?.accessUrl}}</a></td>
       </tr>
       <tr *ngIf="distribution?.conformsTo">
-        <th>Odkaz na specifikaci:</th>
+        <th>Schéma:</th>
         <td><a [href]="distribution?.conformsTo" target="_blank">{{distribution?.conformsTo}}</a></td>
       </tr>
       <tr>
