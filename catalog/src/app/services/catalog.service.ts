@@ -292,7 +292,6 @@ export class CatalogService {
       compressFormat: metadata.compressFormat?.replace(Prefix.iana, ""),
       packageFormat: metadata.packageFormat?.replace(Prefix.iana, ""),
       accessService: metadata.accessService,
-      sch_ma: metadata.sch_ma,
       conformsTo: metadata.conformsTo
     };
   }
