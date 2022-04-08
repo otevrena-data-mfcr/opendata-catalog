@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "ng build --prod --outputHashing=none",
     "dev": "ng serve"
