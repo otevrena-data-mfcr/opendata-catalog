@@ -15,7 +15,7 @@ export interface DatasetFields {
   "dct:temporal": string[];
   "dcat:contactPoint": string[];
   "foaf:page": string[];
-  "dcat:conformsTo": string[];
+  "dct:conformsTo": string[];
   "dcat:koncept_euroVoc": string[];
   "dcat:spatialResolutionInMeters": string[];
   "dcat:temporalResolution": string[];
