@@ -1,26 +1,23 @@
-import { Injectable, Query } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 import { ConfigService } from './config.service';
 
-import { QueryDefinitionPrefixes } from 'app/lib/sparql-builder';
-
 export interface SparqlResult<T extends { [key: string]: any }> {
-  head: { link: string[], vars: string[] };
+  head: { link: string[]; vars: string[] };
 
   results: {
-    distinct: boolean,
-    ordered: boolean,
+    distinct: boolean;
+    ordered: boolean;
     bindings: {
       [K in keyof T]: {
         type: string;
         value: T[K];
         datatype?: string;
-        "xml:lang"?: string;
-      }
+        'xml:lang'?: string;
+      };
     }[];
-  }
-
+  };
 }
 
 export interface DocumentFields {
@@ -28,34 +25,28 @@ export interface DocumentFields {
   value: any;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SparqlService {
-
-  constructor(
-    private configService: ConfigService,
-    private http: HttpClient,
-  ) {
-  }
-
-
+  constructor(private configService: ConfigService, private http: HttpClient) {}
 
   async query<T>(query: string): Promise<T[]> {
-    const response = await this.rawQuery<any>(query)
+    const response = await this.rawQuery<any>(query);
 
-    return response.results.bindings.map(doc => {
+    return response.results.bindings.map((doc) => {
       return Object.entries(doc).reduce((acc, [key, value]) => {
         acc[key] = value.value;
         return acc;
       }, {} as any);
     });
-
   }
 
-  rawQuery<T>(query: string) {
-    return this.http.get<SparqlResult<T>>(this.configService.config.endpoint, { params: { query }, headers: { "Accept": "application/json" } }).toPromise()
+  rawQuery<T extends { [key: string]: any }>(query: string) {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    return this.http.post<SparqlResult<T>>(this.configService.config.endpoint, { query }, { headers }).toPromise();
   }
-
 }
