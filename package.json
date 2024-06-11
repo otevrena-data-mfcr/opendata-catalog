@@ -1,7 +1,7 @@
 {
   "name": "@otevrena-data-mfcr/opendata-catalog",
   "description": "Projekt sdíleného katalogu otevřených dat pro české organizace, který zobrazuje data z vystaveného SPARQL endpointu dle [OFN Ministerstva vnitra](https://ofn.gov.cz/rozhran%C3%AD-katalog%C5%AF-otev%C5%99en%C3%BDch-dat/draft/).",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "scripts": {
     "build:catalog": "cd catalog && npm run build",
     "package": "gulp buildPackage",
