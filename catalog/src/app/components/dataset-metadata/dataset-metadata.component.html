@@ -2,19 +2,25 @@
   <tbody>
     <tr>
       <th>IRI:</th>
-      <td>{{dataset?.iri}}</td>
+      <td>{{ dataset?.iri }}</td>
     </tr>
     <tr>
       <th>Název:</th>
-      <td>{{dataset?.title}}</td>
+      <td>{{ dataset?.title }}</td>
     </tr>
     <tr>
       <th>Poskytovatel:</th>
-      <td><a [routerLink]="['/datasets',{publisher:dataset?.publisherIri}]">{{dataset?.publisher}}</a></td>
+      <td>
+        <a [routerLink]="['/datasets', { publisher: dataset?.publisherIri }]">{{ dataset?.publisher }}</a>
+      </td>
     </tr>
     <tr>
       <th>Dokumentace:</th>
-      <td><a *ngIf="dataset?.documentation" [href]="dataset?.documentation" target="_blank">{{dataset?.documentation}}</a></td>
+      <td>
+        <a *ngIf="dataset?.documentation" [href]="dataset?.documentation" target="_blank">{{
+          dataset?.documentation
+        }}</a>
+      </td>
     </tr>
     <tr>
       <th>Kontaktní bod:</th>
@@ -23,38 +29,51 @@
     <tr>
       <th>Klíčová slova:</th>
       <td>
-        <a *ngFor="let keyword of dataset?.keywords" [routerLink]="['/datasets',{keyword:keyword}]" class="keyword mr-1">{{keyword}}</a>
+        <a
+          *ngFor="let keyword of dataset?.keywords"
+          [routerLink]="['/datasets', { keyword: keyword }]"
+          class="keyword mr-1"
+          >{{ keyword }}</a
+        >
       </td>
     </tr>
     <tr>
       <th>Témata:</th>
       <td class="list">
-        <a *ngFor="let theme of dataset?.themes" [routerLink]="['/datasets',{theme:theme.iri}]">{{theme.title}}</a>
+        <a *ngFor="let theme of dataset?.themes" [routerLink]="['/datasets', { theme: theme.iri }]">{{
+          theme.title
+        }}</a>
       </td>
     </tr>
     <tr>
       <th>Frekvence aktualizace:</th>
-      <td>{{dataset?.accrualPeriodicity}}</td>
+      <td>{{ dataset?.accrualPeriodicity }}</td>
     </tr>
     <tr>
       <th>Časové pokrytí:</th>
-      <td>{{dataset?.temporalFrom | date: "d. M. y"}}<ng-container *ngIf="dataset?.temporalFrom && dataset?.temporalTo"> - </ng-container>{{dataset?.temporalTo | date: "d. M. y"}}</td>
+      <td>
+        {{ dataset?.temporalFrom | date : "d. M. y"
+        }}<ng-container *ngIf="dataset?.temporalFrom && dataset?.temporalTo"> - </ng-container
+        >{{ dataset?.temporalTo | date : "d. M. y" }}
+      </td>
     </tr>
     <tr>
       <th>Časové rozlišení:</th>
-      <td>{{parseDuration(dataset?.temporalResolution)}}</td>
+      <td>{{ parseDuration(dataset?.temporalResolution) }}</td>
     </tr>
     <tr>
       <th>Související území:</th>
-      <td><a *ngFor="let url of dataset?.spatial" [href]="dataset?.spatial" target="_blank">{{url}}</a></td>
+      <td>
+        <a *ngFor="let url of dataset?.spatial" [href]="dataset?.spatial" target="_blank">{{ url }}</a>
+      </td>
     </tr>
     <tr>
       <th>Specifikace</th>
-      <td>{{dataset?.conformsTo}}</td>
+      <td>{{ dataset?.conformsTo }}</td>
     </tr>
     <tr>
       <th>Klasifikace dle EuroVoc</th>
-      <td>{{dataset?.koncept_euroVoc}}</td>
+      <td>{{ dataset?.koncept_eurovoc }}</td>
     </tr>
   </tbody>
 </table>
