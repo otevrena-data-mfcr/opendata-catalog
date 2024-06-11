@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { ConfigService } from './config.service';
@@ -43,10 +43,17 @@ export class SparqlService {
   }
 
   rawQuery<T extends { [key: string]: any }>(query: string) {
-    const headers = {
-      Accept: 'application/json',
+    const headers = new HttpHeaders({
+      Accept: 'application/sparql-results+json',
       'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    return this.http.post<SparqlResult<T>>(this.configService.config.endpoint, { query }, { headers }).toPromise();
+    });
+
+    const body = new HttpParams({
+      fromObject: {
+        query: query,
+      },
+    });
+
+    return this.http.post<SparqlResult<T>>(this.configService.config.endpoint, body, { headers }).toPromise();
   }
 }
