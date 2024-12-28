@@ -25,7 +25,7 @@ opendata-catalog {
 
 ## Kde je implementováno
 
- - Ministerstvo financí (https://opendata.mfcr.cz/catalog)
+ - Ministerstvo financí (https://data.mf.gov.cz/catalog)
 
 ## Vývoj
 
